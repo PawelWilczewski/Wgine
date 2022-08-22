@@ -20,6 +20,7 @@ project "Wgine"
 	location "Wgine"
 	kind "SharedLib"
 	language "C++"
+	cppdialect "C++17"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -48,8 +49,6 @@ project "Wgine"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines {
@@ -64,18 +63,18 @@ project "Wgine"
 
 	filter "configurations:Debug"
 		defines "WGINE_DEBUG"
-		symbols "On"
 		runtime "Debug"
+		symbols "On"
 
 	filter "configurations:Release"
 		defines "WGINE_RELEASE"
-		optimize "On"
 		runtime "Release"
+		optimize "On"
 
 	filter "configurations:Dist"
 		defines "WGINE_DIST"
-		optimize "On"
 		runtime "Release"
+		optimize "On"
 
 
 project "Sandbox"
