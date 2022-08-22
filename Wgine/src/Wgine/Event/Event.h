@@ -45,7 +45,7 @@ namespace Wgine
 		}
 
 	protected:
-		bool handled = false;
+		bool m_Handled = false;
 	};
 
 	class EventDispatcher
@@ -55,21 +55,21 @@ namespace Wgine
 
 	public:
 		EventDispatcher(Event &event)
-			: event(event) {}
+			: m_Event(event) {}
 
 		template<typename T>
 		bool Dispatch(EventFn<T> func)
 		{
-			if (event.GetEventType() == T::GetStaticType())
+			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				event.handled = func(*(T*) &event);
+				m_Event.m_Handled = func(*(T*) &m_Event);
 				return true;
 			}
 			return false;
 		}
 
 	private:
-		Event &event;
+		Event &m_Event;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Event& e)

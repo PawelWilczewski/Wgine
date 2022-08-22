@@ -7,35 +7,35 @@ namespace Wgine
 	class WGINE_API KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return keyCode; }
+		inline int GetKeyCode() const { return m_KeyCode; }
 		
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
 		KeyEvent(int keyCode)
-			: keyCode(keyCode) {}
+			: m_KeyCode(keyCode) {}
 
-		int keyCode;
+		int m_KeyCode;
 	};
 
 	class WGINE_API KeyPressedEvent : public KeyEvent
 	{
 	public:
 		KeyPressedEvent(int keyCode, int repeatCount)
-			: KeyEvent(keyCode), repeatCount(repeatCount) {}
+			: KeyEvent(keyCode), m_RepeatCount(repeatCount) {}
 
-		inline int GetRepeatCount() const { return repeatCount; }
+		inline int GetRepeatCount() const { return m_RepeatCount; }
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "Key Pressed Event: " << keyCode << " (" << repeatCount << " repeats)";
+			ss << "Key Pressed Event: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
 
 	private:
-		int repeatCount;
+		int m_RepeatCount;
 	};
 
 	class WGINE_API KeyReleasedEvent : public KeyEvent
@@ -47,7 +47,7 @@ namespace Wgine
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyReleasedEvent: " << keyCode;
+			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 
