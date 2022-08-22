@@ -9,7 +9,7 @@
 namespace Wgine {
 	Wgine::Application::Application()
 	{
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = Window::Create();
 	}
 
 	Wgine::Application::~Application()

@@ -5,22 +5,12 @@ namespace Wgine
 {
 	static bool s_GLFWInitialized = false;
 
-	Window *Window::Create(const WindowProps &props)
+	std::unique_ptr<Window> Window::Create(const WindowProps &props)
 	{
-		return new WindowsWindow(props);
+		return std::make_unique<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps &props)
-	{
-		Init(props);
-	}
-
-	WindowsWindow::~WindowsWindow()
-	{
-		Shutdown();
-	}
-
-	void WindowsWindow::Init(const WindowProps &props)
 	{
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
@@ -28,6 +18,7 @@ namespace Wgine
 
 		WGINE_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
+		// TODO: window should not be initializing GLFW directly
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on system shutdown
@@ -43,7 +34,7 @@ namespace Wgine
 		SetVSync(true);
 	}
 
-	void WindowsWindow::Shutdown()
+	WindowsWindow::~WindowsWindow()
 	{
 		glfwDestroyWindow(m_Window);
 	}
