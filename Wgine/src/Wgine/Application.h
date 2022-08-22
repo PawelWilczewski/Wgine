@@ -3,6 +3,8 @@
 #include "Core.h"
 #include "Window.h"
 
+#include "Event/ApplicationEvent.h"
+
 namespace Wgine {
 	class WGINE_API Application
 	{
@@ -12,7 +14,11 @@ namespace Wgine {
 
 		void Run();
 
+		void OnEvent(Event &e);
+
 	private:
+		bool OnWindowClosed(WindowCloseEvent &e);
+
 		std::unique_ptr<Window> m_Window;
 		bool m_Running = true;
 	};
