@@ -50,6 +50,7 @@ project "Wgine"
 		cppdialect "C++17"
 		staticruntime "On"
 		systemversion "latest"
+		buildoptions "/MDd"
 
 		defines {
 			"WGINE_PLATFORM_WINDOWS",
