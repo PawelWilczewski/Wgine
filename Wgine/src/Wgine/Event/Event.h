@@ -2,9 +2,6 @@
 
 #include "Wgine/Core.h"
 
-#include <string>
-#include <functional>
-
 namespace Wgine
 {
 	// Blocking event system

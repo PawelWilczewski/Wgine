@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Wgine
 {
 	class WGINE_API KeyEvent : public Event

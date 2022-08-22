@@ -10,6 +10,11 @@ workspace "Wgine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Includes relative to root
+IncludeDir = {}
+IncludeDir["GLFW"] = "Wgine/thirdparty/GLFW/include"
+
+include "Wgine/thirdparty/GLFW"
 
 project "Wgine"
 	location "Wgine"
@@ -18,6 +23,9 @@ project "Wgine"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediate/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "WginePCH.h"
+	pchsource "Wgine/src/WginePCH.cpp"
 
 	files
 	{
@@ -28,7 +36,14 @@ project "Wgine"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/thirdparty/spdlog/include"
+		"%{prj.name}/thirdparty/spdlog/include",
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

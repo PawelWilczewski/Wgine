@@ -1,11 +1,15 @@
+#include "WginePCH.h"
 #include "Application.h"
 
 #include "Event/ApplicationEvent.h"
 #include "Wgine/Log.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Wgine {
 	Wgine::Application::Application()
 	{
+		m_Window = std::unique_ptr<Window>(Window::Create());
 	}
 
 	Wgine::Application::~Application()
@@ -14,9 +18,12 @@ namespace Wgine {
 
 	void Wgine::Application::Run()
 	{
-		WindowResizeEvent e(1920, 1080);
-		WGINE_TRACE(e);
+		while (m_Running)
+		{
+			glClearColor(0, 1, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
 
-		while (true);
+			m_Window->OnUpdate();
+		}
 	}
 }
