@@ -6,3 +6,8 @@
 	path = Wgine/thirdparty/GLFW
 	url = https://github.com/PawelWilczewski/glfw
 	ignore = dirty
+[submodule "Wgine/thirdparty/ImGui"]
+	path = Wgine/thirdparty/ImGui
+	url = https://github.com/PawelWilczewski/imgui/
+	branch = docking
+	ignore = dirty
