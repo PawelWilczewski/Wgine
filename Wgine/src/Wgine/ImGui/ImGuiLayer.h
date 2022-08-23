@@ -16,7 +16,7 @@ namespace Wgine
 		void OnEvent(Event &event);
 
 	private:
-
+		float m_Time = 0.f;
 	};
 }
 

@@ -15,11 +15,13 @@ Wgine::LayerStack::~LayerStack()
 void Wgine::LayerStack::PushLayer(Layer *layer)
 {
 	m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);
+	layer->OnAttach();
 }
 
 void Wgine::LayerStack::PushOverlay(Layer *overlay)
 {
 	m_Layers.emplace_back(overlay);
+	overlay->OnAttach();
 }
 
 void Wgine::LayerStack::PopLayer(Layer *layer)

@@ -9,8 +9,13 @@ namespace Wgine {
 
 #define BIND_EVENT(x) (std::bind(&Application::x, this, std::placeholders::_1))
 
+	Application *Application::s_Instance = nullptr;
+
 	Wgine::Application::Application()
 	{
+		WGINE_CORE_ASSERT(s_Instance == nullptr, "Attempting to create multiple applications!");
+		s_Instance = this;
+
 		m_Window = Window::Create();
 		m_Window->SetEventCallback(BIND_EVENT(OnEvent));
 	}
@@ -51,10 +56,10 @@ namespace Wgine {
 			glClearColor(0, 1, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			m_Window->OnUpdate();
-
 			for (auto layer : m_LayerStack)
 				layer->OnUpdate();
+
+			m_Window->OnUpdate();
 		}
 	}
 
