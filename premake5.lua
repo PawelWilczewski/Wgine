@@ -14,9 +14,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Wgine/thirdparty/GLFW/include"
 IncludeDir["Glad"] = "Wgine/thirdparty/Glad/include"
+IncludeDir["ImGui"] = "Wgine/thirdparty/ImGui/include"
 
 include "Wgine/thirdparty/GLFW"
 include "Wgine/thirdparty/Glad"
+include "Wgine/thirdparty/ImGui"
 
 project "Wgine"
 	location "Wgine"
@@ -42,13 +44,15 @@ project "Wgine"
 		"%{prj.name}/src",
 		"%{prj.name}/thirdparty/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
+		"ImGui",
 		"opengl32.lib"
 	}
 
@@ -58,7 +62,8 @@ project "Wgine"
 		defines {
 			"WGINE_PLATFORM_WINDOWS",
 			"WGINE_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"IMGUI_IMPL_OPENGL_LOADER_CUSTOM"
 		}
 
 		postbuildcommands
