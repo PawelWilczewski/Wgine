@@ -13,8 +13,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Includes relative to root
 IncludeDir = {}
 IncludeDir["GLFW"] = "Wgine/thirdparty/GLFW/include"
+IncludeDir["Glad"] = "Wgine/thirdparty/Glad/include"
 
 include "Wgine/thirdparty/GLFW"
+include "Wgine/thirdparty/Glad"
 
 project "Wgine"
 	location "Wgine"
@@ -39,12 +41,14 @@ project "Wgine"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/thirdparty/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 
