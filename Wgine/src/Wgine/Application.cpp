@@ -25,6 +25,23 @@ namespace Wgine {
 		d.Dispatch<WindowCloseEvent>(BIND_EVENT(OnWindowClosed));
 
 		WGINE_CORE_TRACE("Event happened: {0}", e);
+
+		for (auto i = m_LayerStack.end(); i != m_LayerStack.begin(); )
+		{
+			(*--i)->OnEvent(e);
+			if (e.WasHandled())
+				break;
+		}
+	}
+
+	void Application::PushLayer(Layer *layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer *overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
 	}
 
 	void Wgine::Application::Run()
@@ -35,6 +52,9 @@ namespace Wgine {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			m_Window->OnUpdate();
+
+			for (auto layer : m_LayerStack)
+				layer->OnUpdate();
 		}
 	}
 

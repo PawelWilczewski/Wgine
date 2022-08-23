@@ -39,10 +39,8 @@ namespace Wgine
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
-		inline bool IsInCategory(EventCategory category)
-		{
-			return GetCategoryFlags() & category;
-		}
+		inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
+		inline bool WasHandled() const { return m_Handled; }
 
 	protected:
 		bool m_Handled = false;
