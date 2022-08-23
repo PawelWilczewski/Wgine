@@ -57,7 +57,8 @@ project "Wgine"
 
 		defines {
 			"WGINE_PLATFORM_WINDOWS",
-			"WGINE_BUILD_DLL"
+			"WGINE_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands

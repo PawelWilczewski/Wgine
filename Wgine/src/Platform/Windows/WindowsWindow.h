@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Wgine/Window.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Wgine
