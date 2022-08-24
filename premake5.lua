@@ -15,6 +15,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Wgine/thirdparty/GLFW/include"
 IncludeDir["Glad"] = "Wgine/thirdparty/Glad/include"
 IncludeDir["ImGui"] = "Wgine/thirdparty/ImGui"
+IncludeDir["glm"] = "Wgine/thirdparty/glm"
 
 group "Dependencies"
 	include "Wgine/thirdparty/GLFW"
@@ -47,7 +48,8 @@ group ""
 			"%{prj.name}/thirdparty/spdlog/include",
 			"%{IncludeDir.GLFW}",
 			"%{IncludeDir.Glad}",
-			"%{IncludeDir.ImGui}"
+			"%{IncludeDir.ImGui}",
+			"%{IncludeDir.glm}"
 		}
 
 		links
@@ -106,7 +108,8 @@ group ""
 		includedirs
 		{
 			"Wgine/thirdparty/spdlog/include",
-			"Wgine/src"
+			"Wgine/src",
+			"%{IncludeDir.glm}"
 		}
 
 		links
