@@ -8,6 +8,10 @@ namespace Wgine
 {
 	Input *Input::s_Instance = new WindowsInput();
 
+	// ------------------------------------------------------------------------------------
+	// NO NEED TO CONVERT INPUT KEY CODES BECAUASE BY DEFAUTL THEY ARE COMPATIBLE WITH GLFW
+	// ------------------------------------------------------------------------------------
+
 	bool WindowsInput::IsKeyPressedImpl(int keyCode)
 	{
 		auto window = static_cast<GLFWwindow *>(Application::Get().GetWindow().GetNativeWindow());
