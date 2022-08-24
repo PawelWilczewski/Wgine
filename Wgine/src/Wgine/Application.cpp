@@ -7,8 +7,6 @@
 
 namespace Wgine {
 
-#define BIND_EVENT(x) (std::bind(&Application::x, this, std::placeholders::_1))
-
 	Application *Application::s_Instance = nullptr;
 
 	Wgine::Application::Application()
@@ -17,7 +15,7 @@ namespace Wgine {
 		s_Instance = this;
 
 		m_Window = Window::Create();
-		m_Window->SetEventCallback(BIND_EVENT(OnEvent));
+		m_Window->SetEventCallback(WGINE_BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	Wgine::Application::~Application()
@@ -27,7 +25,7 @@ namespace Wgine {
 	void Application::OnEvent(Event &e)
 	{
 		EventDispatcher d(e);
-		d.Dispatch<WindowCloseEvent>(BIND_EVENT(OnWindowClosed));
+		d.Dispatch<WindowCloseEvent>(WGINE_BIND_EVENT_FN(Application::OnWindowClosed));
 
 		WGINE_CORE_TRACE("Event happened: {0}", e);
 
