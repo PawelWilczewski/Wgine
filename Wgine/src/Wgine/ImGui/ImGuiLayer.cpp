@@ -1,13 +1,13 @@
 #include "WginePCH.h"
 #include "ImGuiLayer.h"
 
+#include "imgui.h"
 #include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
 #include "Wgine/Application.h"
-#include "Wgine/Event/KeyEvent.h"
-#include "Wgine/Event/MouseEvent.h"
 
+// temp
 #include "GLFW/glfw3.h"
-#include "imgui.h"
+#include "glad/glad.h"
 
 namespace Wgine
 {
@@ -84,106 +84,74 @@ namespace Wgine
 
 	void ImGuiLayer::OnEvent(Event &event)
 	{
-		ImGuiIO &io = ImGui::GetIO();
-		/*auto ed = EventDispatcher(event);
-		ed.Dispatch(WGINE_BIND_EVENT_FN(ImGuiLayer::OnKeyPressed));*/
-
-		switch (event.GetEventType())
-		{
-		case Wgine::EventType::None:
-			break;
-		case Wgine::EventType::WindowClose:
-			break;
-		case Wgine::EventType::WindowResize:
-			break;
-		case Wgine::EventType::WindowFocus:
-			break;
-		case Wgine::EventType::WindowLostFocus:
-			break;
-		case Wgine::EventType::WindowMoved:
-			break;
-		case Wgine::EventType::AppTick:
-			break;
-		case Wgine::EventType::AppUpdate:
-			break;
-		case Wgine::EventType::AppRender:
-			break;
-		case Wgine::EventType::KeyPressed:
-		{
-			auto &e = dynamic_cast<KeyPressedEvent &>(event);
-			io.KeysDown[e.GetKeyCode()] = true;
-			break;
-		}
-		case Wgine::EventType::KeyReleased:
-		{
-			auto &e = dynamic_cast<KeyReleasedEvent &>(event);
-			io.KeysDown[e.GetKeyCode()] = false;
-			break;
-		}
-		case Wgine::EventType::MouseButtonPressed:
-		{
-			auto &e = dynamic_cast<MouseButtonPressedEvent &>(event);
-			io.MouseDown[e.GetMouseButton()] = true;
-			break;
-		}
-		case Wgine::EventType::MouseButtonReleased:
-		{
-			auto &e = dynamic_cast<MouseButtonReleasedEvent &>(event);
-			io.MouseDown[e.GetMouseButton()] = false;
-			break;
-		}
-		case Wgine::EventType::MouseMoved:
-		{
-			auto &e = dynamic_cast<MouseMovedEvent &>(event);
-			io.MousePos = ImVec2(e.GetX(), e.GetY());
-			break;
-		}
-		case Wgine::EventType::MouseScrolled:
-		{
-			auto &e = dynamic_cast<MouseScrolledEvent &>(event);
-			io.MouseWheel = e.GetOffsetY();
-			io.MouseWheelH = e.GetOffsetX();
-			break;
-		}
-		default:
-			break;
-		}
-
-		//event.m_Handled = true;
+		auto ed = EventDispatcher(event);
+		ed.Dispatch<KeyPressedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnKeyPressed));
+		ed.Dispatch<KeyReleasedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnKeyReleased));
+		ed.Dispatch<KeyTypedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnKeyTyped));
+		ed.Dispatch<MouseButtonPressedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressed));
+		ed.Dispatch<MouseButtonReleasedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleased));
+		ed.Dispatch<MouseMovedEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnMouseMoved));
+		ed.Dispatch<MouseScrolledEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnMouseScrolled));
+		ed.Dispatch<WindowResizeEvent>(WGINE_BIND_EVENT_FN(ImGuiLayer::OnWindowResized));
 	}
 
-	//bool ImGuiLayer::OnKeyPressed(KeyPressedEvent &e)
-	//{
-	//	return false;
-	//}
+	bool ImGuiLayer::OnKeyPressed(KeyPressedEvent &e)
+	{
+		auto &io = ImGui::GetIO();
+		io.KeysDown[e.GetKeyCode()] = true;
 
-	//bool ImGuiLayer::OnKeyReleased(KeyReleasedEvent &e)
-	//{
-	//	return false;
-	//}
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 
-	//bool ImGuiLayer::OnMouseButtonPressed(MouseButtonPressedEvent &e)
-	//{
-	//	return false;
-	//}
+		return true;
+	}
 
-	//bool ImGuiLayer::OnMouseButtonReleased(MouseButtonReleasedEvent &e)
-	//{
-	//	return false;
-	//}
+	bool ImGuiLayer::OnKeyReleased(KeyReleasedEvent &e)
+	{
+		ImGui::GetIO().KeysDown[e.GetKeyCode()] = false;
+		return true;
+	}
 
-	//bool ImGuiLayer::OnMouseMoved(MouseMovedEvent &e)
-	//{
-	//	return false;
-	//}
+	bool ImGuiLayer::OnKeyTyped(KeyTypedEvent &e)
+	{
+		ImGui::GetIO().AddInputCharacter(e.GetKeyCode());
+		return true;
+	}
 
-	//bool ImGuiLayer::OnMouseScrolled(MouseScrolledEvent &e)
-	//{
-	//	return false;
-	//}
+	bool ImGuiLayer::OnMouseButtonPressed(MouseButtonPressedEvent &e)
+	{
+		ImGui::GetIO().MouseDown[e.GetMouseButton()] = true;
+		return true;
+	}
 
-	//bool ImGuiLayer::OnWindowResized(WindowResizeEvent &e)
-	//{
-	//	return false;
-	//}
+	bool ImGuiLayer::OnMouseButtonReleased(MouseButtonReleasedEvent &e)
+	{
+		ImGui::GetIO().MouseDown[e.GetMouseButton()] = false;
+		return true;
+	}
+
+	bool ImGuiLayer::OnMouseMoved(MouseMovedEvent &e)
+	{
+		ImGui::GetIO().MousePos = ImVec2(e.GetX(), e.GetY());
+		return true;
+	}
+
+	bool ImGuiLayer::OnMouseScrolled(MouseScrolledEvent &e)
+	{
+		ImGui::GetIO().MouseWheel += e.GetOffsetY();
+		ImGui::GetIO().MouseWheelH += e.GetOffsetX();
+		return true;
+	}
+
+	bool ImGuiLayer::OnWindowResized(WindowResizeEvent &e)
+	{
+		auto &io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
+		io.DisplayFramebufferScale = ImVec2(1.f, 1.f);
+		glViewport(0, 0, e.GetWidth(), e.GetHeight());
+
+		return true;
+	}
 }
