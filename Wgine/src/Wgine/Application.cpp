@@ -1,7 +1,7 @@
 #include "WginePCH.h"
 #include "Application.h"
 
-#include "Wgine/Log.h"
+#include "Input.h"
 
 #include <glad/glad.h>
 
@@ -56,6 +56,9 @@ namespace Wgine {
 
 			for (auto layer : m_LayerStack)
 				layer->OnUpdate();
+
+			auto [x, y] = Input::GetMousePosition();
+			WGINE_CORE_TRACE("{0} {1}", x, y);
 
 			m_Window->OnUpdate();
 		}

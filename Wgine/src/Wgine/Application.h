@@ -5,6 +5,7 @@
 #include "Window.h"
 #include "Wgine/LayerStack.h"
 #include "Event/ApplicationEvent.h"
+#include "Window.h"
 
 namespace Wgine {
 	class WGINE_API Application
