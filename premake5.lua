@@ -39,7 +39,9 @@ group ""
 		files
 		{
 			"%{prj.name}/src/**.h",
-			"%{prj.name}/src/**.cpp"
+			"%{prj.name}/src/**.cpp",
+			"%{prj.name}/vendor/glm/glm/**.hpp",
+			"%{prj.name}/vendor/glm/glm/**.inl"
 		}
 
 		includedirs
@@ -67,12 +69,11 @@ group ""
 				"WGINE_PLATFORM_WINDOWS",
 				"WGINE_BUILD_DLL",
 				"GLFW_INCLUDE_NONE",
-				"IMGUI_IMPL_OPENGL_LOADER_CUSTOM"
 			}
 
 			postbuildcommands
 			{
-				("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+				("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 			}
 
 		filter "configurations:Debug"

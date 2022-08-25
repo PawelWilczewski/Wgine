@@ -5,7 +5,8 @@
 #include "Window.h"
 #include "Wgine/LayerStack.h"
 #include "Event/ApplicationEvent.h"
-#include "Window.h"
+
+#include "Wgine/ImGui/ImGuiLayer.h"
 
 namespace Wgine {
 	class WGINE_API Application
@@ -28,6 +29,7 @@ namespace Wgine {
 		bool OnWindowClosed(WindowCloseEvent &e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer *m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

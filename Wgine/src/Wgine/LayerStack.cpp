@@ -3,7 +3,7 @@
 
 Wgine::LayerStack::LayerStack()
 {
-	m_LayerInsert = m_Layers.begin();
+	
 }
 
 Wgine::LayerStack::~LayerStack()
@@ -14,7 +14,7 @@ Wgine::LayerStack::~LayerStack()
 
 void Wgine::LayerStack::PushLayer(Layer *layer)
 {
-	m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);
+	m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex++, layer);
 	layer->OnAttach();
 }
 
@@ -30,7 +30,8 @@ void Wgine::LayerStack::PopLayer(Layer *layer)
 	if (i != m_Layers.end())
 	{
 		m_Layers.erase(i);
-		m_LayerInsert--;
+		m_LayerInsertIndex--;
+		layer->OnDetach();
 	}
 }
 
@@ -38,5 +39,8 @@ void Wgine::LayerStack::PopOverlay(Layer *overlay)
 {
 	auto i = std::find(m_Layers.begin(), m_Layers.end(), overlay);
 	if (i != m_Layers.end())
+	{
 		m_Layers.erase(i);
+		overlay->OnDetach();
+	}
 }
