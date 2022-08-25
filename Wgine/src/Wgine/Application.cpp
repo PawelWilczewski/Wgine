@@ -68,7 +68,7 @@ namespace Wgine {
 			}
 		)";
 
-		m_Shader.reset(new Shader(vertexSource, fragmentSource));
+		m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
 	}
 
 	Wgine::Application::~Application()

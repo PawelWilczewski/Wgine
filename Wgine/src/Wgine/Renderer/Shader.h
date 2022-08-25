@@ -7,13 +7,11 @@ namespace Wgine
 	class Shader
 	{
 	public:
-		Shader(const std::string &vertexSource, const std::string &fragmentSource);
-		~Shader();
+		virtual ~Shader() {};
 
-		void Bind();
-		void Unbind();
+		virtual void Bind() = 0;
+		virtual void Unbind() = 0;
 
-	private:
-		uint32_t m_RendererID;
+		static Shader *Create(const std::string &vertexSource, const std::string &fragmentSource);
 	};
 }
