@@ -25,10 +25,10 @@ group "Dependencies"
 group ""
 	project "Wgine"
 		location "Wgine"
-		kind "SharedLib"
+		kind "StaticLib"
 		language "C++"
 		cppdialect "C++17"
-		staticruntime "off"
+		staticruntime "on"
 
 		targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 		objdir ("intermediate/" .. outputdir .. "/%{prj.name}")
@@ -62,40 +62,41 @@ group ""
 			"opengl32.lib"
 		}
 
+		defines {
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+
 		filter "system:windows"
 			systemversion "latest"
 
 			defines {
 				"WGINE_PLATFORM_WINDOWS",
-				"WGINE_BUILD_DLL",
 				"GLFW_INCLUDE_NONE",
-			}
-
-			postbuildcommands
-			{
-				("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 			}
 
 		filter "configurations:Debug"
 			defines "WGINE_DEBUG"
 			runtime "Debug"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Release"
 			defines "WGINE_RELEASE"
 			runtime "Release"
-			optimize "On"
+			optimize "on"
 
 		filter "configurations:Dist"
 			defines "WGINE_DIST"
 			runtime "Release"
-			optimize "On"
+			optimize "on"
+			symbols "off"
 
 
 	project "Sandbox"
 		location "Sandbox"
 		kind "ConsoleApp"
 		language "C++"
+		cppdialect "C++17"
+		staticruntime "on"
 
 		targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 		objdir ("intermediate/" .. outputdir .. "/%{prj.name}")
@@ -119,22 +120,20 @@ group ""
 		}
 
 		filter "system:windows"
-			cppdialect "C++17"
-			staticruntime "On"
 			systemversion "latest"
-
 			defines {
 				"WGINE_PLATFORM_WINDOWS"
 			}
 
 		filter "configurations:Debug"
 			defines "WGINE_DEBUG"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Release"
 			defines "WGINE_RELEASE"
-			optimize "On"
+			optimize "on"
 
 		filter "configurations:Dist"
 			defines "WGINE_DIST"
-			optimize "On"
+			optimize "on"
+			symbols "off"

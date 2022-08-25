@@ -24,7 +24,7 @@ namespace Wgine
 		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 
 	private:
-		int m_MouseX, m_MouseY;
+		float m_MouseX, m_MouseY;
 	};
 
 	class WGINE_API MouseScrolledEvent : public Event

@@ -1,13 +1,21 @@
 #pragma once
 
 #ifdef WGINE_PLATFORM_WINDOWS
+#if WGINE_DYNAMIC_LINK
 	#ifdef WGINE_BUILD_DLL
 		#define WGINE_API __declspec(dllexport)
 	#else
 		#define WGINE_API __declspec(dllimport)
 	#endif
 #else
+	#define WGINE_API
+#endif
+#else
 	#error Unsupported platform!
+#endif
+
+#ifdef WGINE_DEBUG
+	#define WGINE_ENABLE_ASSERTS
 #endif
 
 #ifdef WGINE_ENABLE_ASSERTS
