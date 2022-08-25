@@ -11,12 +11,12 @@ public:
 
 	void OnUpdate() override
 	{
-		WGINE_INFO("ExampleLayer::Update");
+		;
 	}
 
 	void OnEvent(Wgine::Event &event) override
 	{
-		WGINE_TRACE("Example layer update: {0}", event);
+		;
 	}
 };
 
