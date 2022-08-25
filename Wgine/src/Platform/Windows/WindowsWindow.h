@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Wgine/Window.h"
+#include "Wgine/Renderer/RenderingContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -26,6 +27,7 @@ namespace Wgine
 
 	private:
 		GLFWwindow *m_Window;
+		RenderingContext *m_Context;
 
 		struct WindowData
 		{
