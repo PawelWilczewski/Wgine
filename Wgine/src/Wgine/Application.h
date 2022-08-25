@@ -7,6 +7,7 @@
 #include "Event/ApplicationEvent.h"
 
 #include "Wgine/ImGui/ImGuiLayer.h"
+#include "Wgine/Renderer/Shader.h"
 
 namespace Wgine {
 	class WGINE_API Application
@@ -34,7 +35,7 @@ namespace Wgine {
 		LayerStack m_LayerStack;
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
-
+		std::unique_ptr<Shader> m_Shader;
 	private:
 		static Application *s_Instance;
 	};

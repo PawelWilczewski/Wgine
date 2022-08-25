@@ -42,10 +42,38 @@ namespace Wgine {
 		glGenBuffers(1, &m_IndexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 
-		unsigned int indices[3] = {
-			0, 1, 2
-		};
+		unsigned int indices[3] = { 0, 1, 2 };
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::string vertexSource = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			
+			out vec3 v_Position;
+
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string fragmentSource = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 Color;
+			
+			in vec3 v_Position;
+
+			void main()
+			{
+				// Color = vec4(0.5, 0.8, 0.2, 1.0);
+				Color = vec4(v_Position + 0.5, 1.0);
+			}
+		)";
+
+		m_Shader.reset(new Shader(vertexSource, fragmentSource));
 	}
 
 	Wgine::Application::~Application()
@@ -59,6 +87,7 @@ namespace Wgine {
 			glClearColor(0.15f, 0.15f, 0.15f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			m_Shader->Bind();
 			glBindVertexArray(m_VertexArray);
 			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
