@@ -10,8 +10,8 @@ namespace Wgine
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:	return new OpenGLVertexArray();
+			case Renderer::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
+			case Renderer::API::OpenGL:	return new OpenGLVertexArray();
 		}
 
 		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");

@@ -5,7 +5,7 @@
 #include "Renderer/Buffer.h"
 
 #include "Wgine/Renderer/Renderer.h"
-#include "Wgine/Renderer/RendererCommand.h"
+#include "Wgine/Renderer/RenderCommand.h"
 
 namespace Wgine {
 
@@ -143,8 +143,8 @@ namespace Wgine {
 	{
 		while (m_Running)
 		{
-			RendererCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
-			RendererCommand::Clear();
+			RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
+			RenderCommand::Clear();
 
 			Renderer::BeginScene(); {
 

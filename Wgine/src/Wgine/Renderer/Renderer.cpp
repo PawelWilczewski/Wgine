@@ -3,6 +3,8 @@
 
 namespace Wgine
 {
+	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
+
 	void Renderer::BeginScene()
 	{
 
@@ -16,6 +18,6 @@ namespace Wgine
 	void Renderer::Submit(const std::shared_ptr<VertexArray> &vertexArray)
 	{
 		vertexArray->Bind();
-		RendererCommand::DrawIndexed(vertexArray);
+		RenderCommand::DrawIndexed(vertexArray);
 	}
 }

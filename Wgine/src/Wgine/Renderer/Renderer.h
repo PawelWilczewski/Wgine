@@ -1,17 +1,25 @@
 #pragma once
 
-#include "RendererCommand.h"
+#include "RenderCommand.h"
 
 namespace Wgine
 {
 	class Renderer
 	{
 	public:
+		enum class API
+		{
+			None = 0, OpenGL = 1
+		};
+
+	public:
 		static void BeginScene();
 		static void EndScene();
 
 		static void Submit(const std::shared_ptr<VertexArray> &vertexArray);
 
-		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+		inline static API GetAPI() { return s_API; }
+	private:
+		static API s_API;
 	};
 }
