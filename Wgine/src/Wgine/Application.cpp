@@ -4,7 +4,8 @@
 #include "Input.h"
 #include "Renderer/Buffer.h"
 
-#include <glad/glad.h>
+#include "Wgine/Renderer/Renderer.h"
+#include "Wgine/Renderer/RendererCommand.h"
 
 namespace Wgine {
 
@@ -142,16 +143,18 @@ namespace Wgine {
 	{
 		while (m_Running)
 		{
-			glClearColor(0.15f, 0.15f, 0.15f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RendererCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
+			RendererCommand::Clear();
 
-			m_SquareShader->Bind();
-			m_SquareVertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::BeginScene(); {
 
-			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+				m_SquareShader->Bind();
+				Renderer::Submit(m_SquareVertexArray);
+
+				m_Shader->Bind();
+				Renderer::Submit(m_VertexArray);
+
+			} Renderer::EndScene();
 
 			for (auto layer : m_LayerStack)
 				layer->OnUpdate();

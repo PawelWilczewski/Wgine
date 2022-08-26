@@ -10,10 +10,10 @@ namespace Wgine
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:		WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-			case RendererAPI::OpenGL:	return new OpenGLVertexBuffer(vertices, size);
-			default:					WGINE_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
+			case RendererAPI::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return new OpenGLVertexBuffer(vertices, size);
 		}
+		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
 		return nullptr;
 	}
 
@@ -21,10 +21,10 @@ namespace Wgine
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:		WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-			case RendererAPI::OpenGL:	return new OpenGLIndexBuffer(indices, size);
-			default:					WGINE_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
+			case RendererAPI::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return new OpenGLIndexBuffer(indices, size);
 		}
+		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
 		return nullptr;
 	}
 }
