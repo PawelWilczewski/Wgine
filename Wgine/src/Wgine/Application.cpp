@@ -10,26 +10,6 @@ namespace Wgine {
 
 	Application *Application::s_Instance = nullptr;
 
-	static GLenum ShaderDataTypeToOpenGLBaseType(const ShaderDataType &type)
-	{
-		switch (type)
-		{
-			case ShaderDataType::Float:		return GL_FLOAT;
-			case ShaderDataType::Float2:	return GL_FLOAT;
-			case ShaderDataType::Float3:	return GL_FLOAT;
-			case ShaderDataType::Float4:	return GL_FLOAT;
-			case ShaderDataType::Mat3:		return GL_FLOAT;
-			case ShaderDataType::Mat4:		return GL_FLOAT;
-			case ShaderDataType::Int:		return GL_INT;
-			case ShaderDataType::Int2:		return GL_INT;
-			case ShaderDataType::Int3:		return GL_INT;
-			case ShaderDataType::Int4:		return GL_INT;
-			case ShaderDataType::Bool:		return GL_BOOL;
-		}
-		WGINE_CORE_ASSERT(false, "Unknown ShaderDataType!");
-		return 0;
-	}
-
 	Wgine::Application::Application()
 	{
 		WGINE_CORE_ASSERT(s_Instance == nullptr, "Attempting to create multiple applications!");
@@ -41,10 +21,7 @@ namespace Wgine {
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
-
-		// opengl triangle data
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
+		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.1f, 0.2f, 1.0f,
@@ -52,32 +29,41 @@ namespace Wgine {
 			 0.0f,  0.5f, 0.0f, 0.2f, 0.5f, 0.9f, 1.0f,
 		};
 
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		std::shared_ptr<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-		{
-			BufferLayout layout = {
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-			};
-			m_VertexBuffer->SetLayout(layout);
-		}
-
-		uint32_t index = 0;
-		for (const auto &element : m_VertexBuffer->GetBufferLayout())
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				m_VertexBuffer->GetBufferLayout().GetStride(),
-				(const void *)element.Offset);
-			index++;
-		}
-
+		BufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" },
+		};
+		vertexBuffer->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		std::shared_ptr<IndexBuffer> indexBuffer;
+		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(indexBuffer);
+
+
+		m_SquareVertexArray.reset(VertexArray::Create());
+		float verticesSquare[3 * 4] = {
+			-0.6f,  0.6f, 0.0f,
+			-0.6f, -0.6f, 0.0f,
+			 0.6f, -0.6f, 0.0f,
+			 0.6f,  0.6f, 0.0f,
+		};
+
+		std::shared_ptr<VertexBuffer> squareVertexBuffer;
+		squareVertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
+		squareVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			});
+		m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
+
+		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		std::shared_ptr<IndexBuffer> squareIndexBuffer;
+		squareIndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
 		std::string vertexSource = R"(
 			#version 330 core
@@ -113,6 +99,35 @@ namespace Wgine {
 		)";
 
 		m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
+
+		std::string vertexSource2 = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			
+			out vec3 v_Position;
+
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string fragmentSource2 = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 Color;
+			
+			in vec3 v_Position;
+
+			void main()
+			{
+				Color = vec4(0.5, 0.8, 0.2, 1.0);
+			}
+		)";
+
+		m_Shader2.reset(Shader::Create(vertexSource2, fragmentSource2));
 	}
 
 	Wgine::Application::~Application()
@@ -126,9 +141,13 @@ namespace Wgine {
 			glClearColor(0.15f, 0.15f, 0.15f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			m_Shader2->Bind();
+			m_SquareVertexArray->Bind();
+			glDrawElements(GL_TRIANGLES, m_SquareVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
 			m_Shader->Bind();
-			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			m_VertexArray->Bind();
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (auto layer : m_LayerStack)
 				layer->OnUpdate();
