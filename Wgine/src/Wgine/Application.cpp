@@ -21,50 +21,30 @@ namespace Wgine {
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
+		// triangle data
 		m_VertexArray.reset(VertexArray::Create());
 
+		// triangle vertex buffer
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.1f, 0.2f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.1f, 0.8f, 0.4f, 1.0f,
 			 0.0f,  0.5f, 0.0f, 0.2f, 0.5f, 0.9f, 1.0f,
 		};
-
 		std::shared_ptr<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		BufferLayout layout = {
+		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },
-		};
-		vertexBuffer->SetLayout(layout);
+			});
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
+		// triangle index buffer
 		unsigned int indices[3] = { 0, 1, 2 };
 		std::shared_ptr<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-
-		m_SquareVertexArray.reset(VertexArray::Create());
-		float verticesSquare[3 * 4] = {
-			-0.6f,  0.6f, 0.0f,
-			-0.6f, -0.6f, 0.0f,
-			 0.6f, -0.6f, 0.0f,
-			 0.6f,  0.6f, 0.0f,
-		};
-
-		std::shared_ptr<VertexBuffer> squareVertexBuffer;
-		squareVertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
-		squareVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			});
-		m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
-
-		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<IndexBuffer> squareIndexBuffer;
-		squareIndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
-
+		// triangle shaders
 		std::string vertexSource = R"(
 			#version 330 core
 
@@ -100,7 +80,31 @@ namespace Wgine {
 
 		m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
 
-		std::string vertexSource2 = R"(
+		// square data
+		m_SquareVertexArray.reset(VertexArray::Create());
+
+		// square vertex buffer
+		float verticesSquare[3 * 4] = {
+			-0.6f,  0.6f, 0.0f,
+			-0.6f, -0.6f, 0.0f,
+			 0.6f, -0.6f, 0.0f,
+			 0.6f,  0.6f, 0.0f,
+		};
+		std::shared_ptr<VertexBuffer> squareVertexBuffer;
+		squareVertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
+		squareVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			});
+		m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
+
+		// square indices
+		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		std::shared_ptr<IndexBuffer> squareIndexBuffer;
+		squareIndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
+
+		// square shaders
+		std::string squareVertexSource = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
@@ -114,7 +118,7 @@ namespace Wgine {
 			}
 		)";
 
-		std::string fragmentSource2 = R"(
+		std::string squareFragmentSource = R"(
 			#version 330 core
 
 			layout(location = 0) out vec4 Color;
@@ -127,7 +131,7 @@ namespace Wgine {
 			}
 		)";
 
-		m_Shader2.reset(Shader::Create(vertexSource2, fragmentSource2));
+		m_SquareShader.reset(Shader::Create(squareVertexSource, squareFragmentSource));
 	}
 
 	Wgine::Application::~Application()
@@ -141,7 +145,7 @@ namespace Wgine {
 			glClearColor(0.15f, 0.15f, 0.15f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			m_Shader2->Bind();
+			m_SquareShader->Bind();
 			m_SquareVertexArray->Bind();
 			glDrawElements(GL_TRIANGLES, m_SquareVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 

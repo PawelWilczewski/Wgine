@@ -39,7 +39,7 @@ namespace Wgine {
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;
 
-		std::shared_ptr<Shader> m_Shader2;
+		std::shared_ptr<Shader> m_SquareShader;
 		std::shared_ptr<VertexArray> m_SquareVertexArray;
 	private:
 		static Application *s_Instance;
