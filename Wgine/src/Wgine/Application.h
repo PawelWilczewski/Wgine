@@ -45,6 +45,8 @@ namespace Wgine {
 
 		Camera m_Camera;
 
+		glm::vec3 m_CameraPosition;
+
 	private:
 		static Application *s_Instance;
 	};

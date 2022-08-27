@@ -25,6 +25,8 @@ namespace Wgine
 		const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4 &GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
+		const Transform &GetTransform() const { return m_Transform; }
+
 	protected:
 		void UpdateViewMatrix();
 		virtual void UpdateProjectionMatrix() {};

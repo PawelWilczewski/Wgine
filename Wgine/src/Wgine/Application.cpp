@@ -9,6 +9,9 @@
 
 #include "Wgine/Camera.h"
 
+#include "Wgine/KeyCodes.h"
+#include "Wgine/Time.h"
+
 namespace Wgine {
 
 	Application *Application::s_Instance = nullptr;
@@ -19,10 +22,19 @@ namespace Wgine {
 		WGINE_CORE_ASSERT(s_Instance == nullptr, "Attempting to create multiple applications!");
 		s_Instance = this;
 
+
 		m_Window->SetEventCallback(WGINE_BIND_EVENT_FN(Application::OnEvent));
 
 		m_Camera.SetPosition({ 0.f, 0.f, 5.f });
-		m_Camera.SetRotation({ 0.f, 0.f, 30.f });
+		m_Camera.SetRotation({ 0.f, 90.f, 0.f });
+		m_CameraPosition = m_Camera.GetTransform().Position;
+		auto forward = m_Camera.GetTransform().GetForwardVector();
+		auto right = m_Camera.GetTransform().GetRightVector();
+		auto up = m_Camera.GetTransform().GetUpVector();
+		//WGINE_CORE_INFO("Forward: {0}, Right: {1}, Up: {2}",
+		//	m_Camera.GetTransform().GetForwardVector(),
+		//	m_Camera.GetTransform().GetRightVector(),
+		//	m_Camera.GetTransform().GetUpVector());
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -142,6 +154,8 @@ namespace Wgine {
 		)";
 
 		m_SquareShader.reset(Shader::Create(squareVertexSource, squareFragmentSource));
+
+		m_Window->SetVSync(false);
 	}
 
 	Wgine::Application::~Application()
@@ -150,10 +164,33 @@ namespace Wgine {
 
 	void Wgine::Application::Run()
 	{
+
 		while (m_Running)
 		{
+			Time::FrameBegin();
+
 			RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 			RenderCommand::Clear();
+
+			auto deltaSeconds = Time::GetDeltaSeconds();
+			WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f/deltaSeconds);
+			auto speed = 60.f;
+			if (Input::IsKeyPressed(WGINE_KEY_W))
+			{
+				m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * speed * deltaSeconds);
+			}
+			if (Input::IsKeyPressed(WGINE_KEY_S))
+			{
+				m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * (-speed * deltaSeconds));
+			}
+			if (Input::IsKeyPressed(WGINE_KEY_D))
+			{
+				m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (speed * deltaSeconds));
+			}
+			if (Input::IsKeyPressed(WGINE_KEY_A))
+			{
+				m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (-speed * deltaSeconds));
+			}
 
 			Renderer::BeginScene(m_Camera); {
 
