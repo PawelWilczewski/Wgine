@@ -8,6 +8,10 @@ namespace Wgine
 	class Camera
 	{
 	public:
+		Camera()
+			: m_Transform(), m_ProjectionMatrix(glm::mat4(1.f)), m_ViewMatrix(glm::mat4(1.f)), m_ViewProjectionMatrix(glm::mat4(1.f))
+		{}
+
 		Camera(Transform transform)
 			: m_Transform(transform), m_ProjectionMatrix(glm::mat4(1.f)), m_ViewMatrix(glm::mat4(1.f)), m_ViewProjectionMatrix(glm::mat4(1.f))
 		{}
@@ -23,7 +27,7 @@ namespace Wgine
 
 	protected:
 		void UpdateViewMatrix();
-		virtual void UpdateProjectionMatrix() = 0;
+		virtual void UpdateProjectionMatrix() {};
 
 	protected:
 		glm::mat4 m_ProjectionMatrix;
@@ -36,6 +40,10 @@ namespace Wgine
 	class PerspectiveCamera : public Camera
 	{
 	public:
+		PerspectiveCamera()
+			: Camera(), m_FOV(45.f), m_NearClip(0.1f), m_FarClip(100000.f), m_Width(1600.f), m_Height(900.f)
+		{}
+
 		PerspectiveCamera(Transform transform, float fovVert = 45.f, float width = 1600.f, float height = 900.f, float nearClip = 0.1f, float farClip = 100000.f)
 			: Camera(transform), m_FOV(fovVert), m_Width(width), m_Height(height), m_NearClip(nearClip), m_FarClip(farClip)
 		{
@@ -59,7 +67,11 @@ namespace Wgine
 	class OrthographicCamera : public Camera
 	{
 	public:
-		OrthographicCamera(Transform transform = Transform(), float left = -1.f, float right = 1.f, float bottom = -1.f, float top = 1.f)
+		OrthographicCamera()
+			: Camera(), m_Left(-1.f), m_Right(1.f), m_Bottom(-1.f), m_Top(1.f)
+		{}
+
+		OrthographicCamera(Transform transform, float left = -1.f, float right = 1.f, float bottom = -1.f, float top = 1.f)
 			: Camera(transform), m_Left(left), m_Right(right), m_Bottom(bottom), m_Top(top)
 		{
 			UpdateProjectionMatrix();

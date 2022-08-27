@@ -10,6 +10,7 @@
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/Renderer/Buffer.h"
 #include "Wgine/Renderer/VertexArray.h"
+#include "Wgine/Camera.h"
 
 namespace Wgine {
 	class WGINE_API Application
@@ -41,6 +42,9 @@ namespace Wgine {
 
 		std::shared_ptr<Shader> m_SquareShader;
 		std::shared_ptr<VertexArray> m_SquareVertexArray;
+
+		Camera m_Camera;
+
 	private:
 		static Application *s_Instance;
 	};
