@@ -2,14 +2,21 @@
 
 #include "Wgine/Application.h"
 
+#include "Wgine/Log.h"
+
+#include "Wgine/Time.h"
+
 #include "Wgine/Input.h"
 #include "Wgine/KeyCodes.h"
 #include "Wgine/MouseButtonCodes.h"
 
+#include "Wgine/Renderer/RenderCommand.h"
+#include "Wgine/Renderer/Renderer.h"
+
+#include "Wgine/Camera.h"
+
 #include "Wgine/Layer.h"
 #include "Wgine/ImGui/ImGuiLayer.h"
-
-#include "Wgine/Log.h"
 
 // ENTRY POINT
 #include "Wgine/EntryPoint.h"
