@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Transform.h"
+#include "Wgine/Core/Transform.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace Wgine

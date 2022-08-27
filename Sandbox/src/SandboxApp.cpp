@@ -136,30 +136,21 @@ public:
 		m_SquareShader.reset(Shader::Create(squareVertexSource, squareFragmentSource));
 	}
 
-	void OnUpdate() override
+	void OnUpdate(const float &deltaSeconds) override
 	{
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
-		auto deltaSeconds = Time::GetDeltaSeconds();
 		WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
 		auto speed = 60.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
-		{
 			m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * speed * deltaSeconds);
-		}
 		if (Input::IsKeyPressed(WGINE_KEY_S))
-		{
 			m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * (-speed * deltaSeconds));
-		}
 		if (Input::IsKeyPressed(WGINE_KEY_D))
-		{
 			m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (speed * deltaSeconds));
-		}
 		if (Input::IsKeyPressed(WGINE_KEY_A))
-		{
 			m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (-speed * deltaSeconds));
-		}
 
 		Renderer::BeginScene(m_Camera); {
 
@@ -171,7 +162,32 @@ public:
 
 	void OnEvent(Wgine::Event &event) override
 	{
-		;
+		EventDispatcher e = { event };
+		e.Dispatch<KeyPressedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnKeyPressed));
+	}
+
+	bool OnKeyPressed(KeyPressedEvent &e)
+	{
+		//auto deltaSeconds = Time::GetDeltaSeconds();
+		//auto speed = 60.f;
+		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
+		//switch (e.GetKeyCode())
+		//{
+		//case WGINE_KEY_W:
+		//	m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * speed * deltaSeconds);
+		//	break;
+		//case WGINE_KEY_S:
+		//	m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetForwardVector() * (-speed * deltaSeconds));
+		//	break;
+		//case WGINE_KEY_D:
+		//	m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (speed * deltaSeconds));
+		//	break;
+		//case WGINE_KEY_A:
+		//	m_Camera.SetPosition(m_Camera.GetTransform().Position + m_Camera.GetTransform().GetRightVector() * (-speed * deltaSeconds));
+		//	break;
+		//}
+
+		return false;
 	}
 
 private:

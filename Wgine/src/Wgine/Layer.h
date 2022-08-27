@@ -13,7 +13,7 @@ namespace Wgine
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(const float &deltaSeconds) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event &event) {}
 

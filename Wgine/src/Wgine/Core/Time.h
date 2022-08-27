@@ -7,6 +7,13 @@ namespace Wgine
 	class Time
 	{
 	public:
+		static void Init()
+		{
+			s_StartTime = std::chrono::high_resolution_clock::now();
+			s_LastFrameTime = s_StartTime;
+			s_CurrentFrameTime = s_StartTime;
+		}
+
 		static float GetTimeSeconds()
 		{
 			auto currentTime = std::chrono::high_resolution_clock::now();
@@ -26,7 +33,7 @@ namespace Wgine
 		}
 
 	private:
-		static const std::chrono::steady_clock::time_point s_StartTime;
+		static std::chrono::steady_clock::time_point s_StartTime;
 		static std::chrono::steady_clock::time_point s_LastFrameTime;
 		static std::chrono::steady_clock::time_point s_CurrentFrameTime;
 	};

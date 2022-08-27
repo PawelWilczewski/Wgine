@@ -10,7 +10,7 @@
 #include "Wgine/Camera.h"
 
 #include "Wgine/KeyCodes.h"
-#include "Wgine/Time.h"
+#include "Wgine/Core/Time.h"
 
 namespace Wgine {
 
@@ -36,13 +36,13 @@ namespace Wgine {
 
 	void Wgine::Application::Run()
 	{
-
+		Time::Init();
 		while (m_Running)
 		{
 			Time::FrameBegin();
 
 			for (auto layer : m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(Time::GetDeltaSeconds());
 
 			// ImGui rendering
 			m_ImGuiLayer->Begin();

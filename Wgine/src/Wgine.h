@@ -4,7 +4,8 @@
 
 #include "Wgine/Log.h"
 
-#include "Wgine/Time.h"
+#include "Wgine/Core/Time.h"
+#include "Wgine/Core/Transform.h"
 
 #include "Wgine/Input.h"
 #include "Wgine/KeyCodes.h"
