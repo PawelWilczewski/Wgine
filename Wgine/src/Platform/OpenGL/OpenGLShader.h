@@ -12,6 +12,7 @@ namespace Wgine
 
 		virtual void Bind();
 		virtual void Unbind();
+		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &mat);
 
 	private:
 		uint32_t m_RendererID;

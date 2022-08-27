@@ -7,6 +7,8 @@
 #include "Wgine/Renderer/Renderer.h"
 #include "Wgine/Renderer/RenderCommand.h"
 
+#include "Wgine/Camera.h"
+
 namespace Wgine {
 
 	Application *Application::s_Instance = nullptr;
@@ -52,13 +54,15 @@ namespace Wgine {
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 			
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 
 				v_Color = a_Color;
 			}
@@ -110,12 +114,14 @@ namespace Wgine {
 
 			layout(location = 0) in vec3 a_Position;
 			
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -143,12 +149,18 @@ namespace Wgine {
 	{
 		while (m_Running)
 		{
+			auto camera = PerspectiveCamera(Transform(), 45.f, m_Window->GetWidth(), m_Window->GetHeight(), 0.1f, 100000.f);
+			//auto camera = OrthographicCamera(Transform());
+			camera.SetPosition({ 0.f, 0.f, 5.f });
+			camera.SetRotation({ 0.f, 0.f, 30.f });
+
 			RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(); {
 
 				m_SquareShader->Bind();
+				m_SquareShader->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 				Renderer::Submit(m_SquareVertexArray);
 
 				m_Shader->Bind();
