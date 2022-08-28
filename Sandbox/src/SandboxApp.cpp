@@ -10,7 +10,7 @@ public:
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
-		m_Camera.SetLocation({ 0.f, 0.f, 3.f });
+		m_Camera.SetLocation({ 0.f, 0.f, 0.f });
 		m_Triangle = std::make_unique<SceneEntity>();
 		// triangle data
 		{
@@ -76,7 +76,7 @@ public:
 		}
 
 		m_Square = std::make_unique<SceneEntity>();
-		m_Square->SetRotation({ 0.f, 30.f, 0.f });
+		m_Square->SetRotation({ 30.f, 0.f, 0.f });
 		// square data
 		{
 			m_Square->MeshData.reset(VertexArray::Create());
