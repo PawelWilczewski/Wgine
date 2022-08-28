@@ -9,6 +9,7 @@ public:
 		: Layer("Example")
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
+		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
 		m_Camera.SetLocation({ 0.f, 0.f, 0.f });
 		m_Camera.SetRotation({ 0.f, 0.f, 0.f });
 		auto forward = m_Camera.GetTransform().GetForwardVector();
@@ -20,6 +21,7 @@ public:
 		//	m_Camera.GetTransform().GetUpVector());
 
 		m_Square = std::make_unique<SceneEntity>();
+		m_Square->SetRotation({ 0.f, 30.f, 0.f });
 		m_Triangle = std::make_unique<SceneEntity>();
 
 		// triangle data
@@ -150,8 +152,8 @@ public:
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
-		WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
-		WGINE_TRACE("Forward: {0}, {1}, {2}", m_Camera.GetForwardVector().x, m_Camera.GetForwardVector().y, m_Camera.GetForwardVector().z);
+		//WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
+		//WGINE_TRACE("Forward: {0}, {1}, {2}", m_Camera.GetForwardVector().x, m_Camera.GetForwardVector().y, m_Camera.GetForwardVector().z);
 		//m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
 
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);

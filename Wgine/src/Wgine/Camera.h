@@ -59,9 +59,9 @@ namespace Wgine
 		virtual void UpdateProjectionMatrix() override
 		{
 			m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_Width / m_Height, m_NearClip, m_FarClip);
+			// we want the camera to face +x:
 			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorUp);
 			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
-			//m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorForward);
 		}
 
 	private:
@@ -90,7 +90,13 @@ namespace Wgine
 		void SetUp(const float &top) { m_Top = top; UpdateProjectionMatrix(); };
 
 	protected:
-		virtual void UpdateProjectionMatrix() override { m_ProjectionMatrix = glm::ortho(m_Left, m_Right, m_Bottom, m_Top); }
+		virtual void UpdateProjectionMatrix() override
+		{
+			m_ProjectionMatrix = glm::ortho(m_Left, m_Right, m_Bottom, m_Top);
+			// we want the camera to face +x:
+			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorUp);
+			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
+		}
 
 	private:
 		float m_Left, m_Right, m_Bottom, m_Top;

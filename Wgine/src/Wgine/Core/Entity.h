@@ -50,13 +50,10 @@ namespace Wgine
 	protected:
 		virtual void UpdateEntityMatrix()
 		{
-			/*auto m = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), Transform::VectorUp);
-			m = glm::rotate(m, glm::radians(90.f), Transform::VectorForward);*/
-
 			auto m = glm::translate(glm::mat4(1.f), m_Transform.Location);
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[0]), Transform::VectorForward); // roll rotation
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), Transform::VectorRight); // pitch rotation
 			m = glm::rotate(m, glm::radians(m_Transform.Rotation[2]), Transform::VectorUp); // yaw rotation
+			m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), Transform::VectorRight); // pitch rotation
+			m = glm::rotate(m, glm::radians(m_Transform.Rotation[0]), Transform::VectorForward); // roll rotation
 			m_EntityMatrix = glm::scale(m, m_Transform.Scale);
 		}
 
