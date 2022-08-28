@@ -198,12 +198,6 @@ public:
 	}
 
 private:
-	std::shared_ptr<Shader> m_Shader;
-	std::shared_ptr<VertexArray> m_VertexArray;
-
-	std::shared_ptr<Shader> m_SquareShader;
-	std::shared_ptr<VertexArray> m_SquareVertexArray;
-
 	std::unique_ptr<SceneEntity> m_Triangle;
 	std::unique_ptr<SceneEntity> m_Square;
 
@@ -215,7 +209,7 @@ class Sandbox : public Wgine::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer())
+		PushLayer(new ExampleLayer());
 	}
 
 	~Sandbox()
