@@ -10,7 +10,7 @@ public:
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
 		m_Camera.SetLocation({ 0.f, 0.f, 0.f });
-		m_Camera.SetRotation({ 0.f, 90.f, 0.f });
+		m_Camera.SetRotation({ 0.f, 0.f, 0.f });
 		auto forward = m_Camera.GetTransform().GetForwardVector();
 		auto right = m_Camera.GetTransform().GetRightVector();
 		auto up = m_Camera.GetTransform().GetUpVector();
@@ -150,20 +150,20 @@ public:
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
-		//WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
+		WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
 		WGINE_TRACE("Forward: {0}, {1}, {2}", m_Camera.GetForwardVector().x, m_Camera.GetForwardVector().y, m_Camera.GetForwardVector().z);
 		//m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
 
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
 		auto speed = 20.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetUpVector() * -speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_S))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetUpVector() * speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_D))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_A))
+		if (Input::IsKeyPressed(WGINE_KEY_S))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * -speed * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_D))
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_A))
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * speed * deltaSeconds);
 
 		Renderer::BeginScene(m_Camera); {
 
@@ -197,7 +197,7 @@ public:
 
 		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
-		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(-delta.y, -delta.x, 0.f) * 0.05f);
+		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(0.f, delta.y, -delta.x) * 0.05f);
 
 		return true;
 	}
