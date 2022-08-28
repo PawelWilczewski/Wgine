@@ -62,7 +62,7 @@ namespace Wgine
 			// we want the camera to face +x:
 			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorUp);
 			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
-			m_ProjectionMatrix = glm::scale(m_ProjectionMatrix, glm::vec3(1.f, 1.f, -1.f));
+			//m_ProjectionMatrix = glm::scale(m_ProjectionMatrix, glm::vec3(1.f, 1.f, -1.f));
 		}
 
 	private:
@@ -95,8 +95,8 @@ namespace Wgine
 		{
 			m_ProjectionMatrix = glm::ortho(m_Left, m_Right, m_Bottom, m_Top);
 			// we want the camera to face +x:
-			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorUp);
-			m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
+			//m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorUp);
+			//m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
 		}
 
 	private:

@@ -29,3 +29,8 @@
 #define BIT(x) (1 << x)
 
 #define WGINE_BIND_EVENT_FN(fn) (std::bind(&fn, this, std::placeholders::_1))
+
+// TODO: ifdef using opengl
+// using openglleft handed system
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED

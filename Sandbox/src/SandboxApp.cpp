@@ -10,7 +10,7 @@ public:
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
-
+		m_Camera.SetLocation({ 0.f, 0.f, 3.f });
 		m_Triangle = std::make_unique<SceneEntity>();
 		// triangle data
 		{
@@ -243,7 +243,7 @@ public:
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
 
 		m_AxisCamera->SetTransform({
-			m_Camera.GetLocation() + m_Camera.GetUpVector() * -0.1f,
+			{0.f, 0.f, 0.f},//m_Camera.GetLocation() + m_Camera.GetUpVector() * -0.1f,
 			m_Camera.GetRotation(),
 			m_Camera.GetScale()
 			});
