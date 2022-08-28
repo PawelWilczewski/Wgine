@@ -7,6 +7,8 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#include <glm/glm.hpp>
+
 namespace Wgine
 {
 	static bool s_GLFWInitialized = false;
@@ -130,7 +132,7 @@ namespace Wgine
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow *window, double x, double y) {
 			WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
 
-			MouseMovedEvent e((float)x, (float)y);
+			MouseMovedEvent e(glm::vec2((float)x, (float)y));
 			data.EventCallback(e);
 			});
 	}

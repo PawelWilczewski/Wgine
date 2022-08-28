@@ -9,7 +9,7 @@ public:
 		: Layer("Example")
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
-		m_Camera.SetLocation({ 0.f, 0.f, 5.f });
+		m_Camera.SetLocation({ 0.f, 0.f, 0.f });
 		m_Camera.SetRotation({ 0.f, 90.f, 0.f });
 		auto forward = m_Camera.GetTransform().GetForwardVector();
 		auto right = m_Camera.GetTransform().GetRightVector();
@@ -88,11 +88,15 @@ public:
 		m_Square->MeshData.reset(VertexArray::Create());
 
 		// square vertex buffer
-		float verticesSquare[3 * 4] = {
-			-0.6f,  0.6f, 0.0f,
-			-0.6f, -0.6f, 0.0f,
-			 0.6f, -0.6f, 0.0f,
-			 0.6f,  0.6f, 0.0f,
+		float verticesSquare[3 * 8] = {
+			-0.6f,  0.6f, -0.5f,
+			-0.6f, -0.6f, -0.5f,
+			 0.6f, -0.6f, -0.5f,
+			 0.6f,  0.6f, -0.5f,
+			 1.0f, -1.0f,  0.2f,
+			 1.0f, -1.0f,  0.8f,
+			 1.0f,  1.0f,  0.8f,
+			 1.0f,  1.0f,  0.2f,
 		};
 		std::shared_ptr<VertexBuffer> squareVertexBuffer;
 		squareVertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
@@ -102,7 +106,7 @@ public:
 		m_Square->MeshData->AddVertexBuffer(squareVertexBuffer);
 
 		// square indices
-		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		unsigned int squareIndices[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
 		std::shared_ptr<IndexBuffer> squareIndexBuffer;
 		squareIndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 		m_Square->MeshData->SetIndexBuffer(squareIndexBuffer);
@@ -146,18 +150,20 @@ public:
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
-		m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
+		//WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
+		WGINE_TRACE("Forward: {0}, {1}, {2}", m_Camera.GetForwardVector().x, m_Camera.GetForwardVector().y, m_Camera.GetForwardVector().z);
+		//m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
 
-		WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
-		auto speed = 60.f;
+		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
+		auto speed = 20.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * speed * deltaSeconds);
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetUpVector() * -speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_S))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * -speed * deltaSeconds);
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetUpVector() * speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_D))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * speed * deltaSeconds);
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_A))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * -speed * deltaSeconds);
 
 		Renderer::BeginScene(m_Camera); {
 
@@ -170,7 +176,30 @@ public:
 	void OnEvent(Wgine::Event &event) override
 	{
 		EventDispatcher e = { event };
+		e.Dispatch<MouseMovedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnMouseMoved));
 		e.Dispatch<KeyPressedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnKeyPressed));
+	}
+	
+	bool OnMouseMoved(MouseMovedEvent &e)
+	{
+		//WGINE_TRACE("{0} {1}", e.GetPosition().x, e.GetPosition().y);
+		auto pos = e.GetPosition();
+		static bool initial = true;
+		if (initial)
+		{
+			m_LastMousePosition = pos;
+			initial = false;
+		}
+		auto delta = pos - m_LastMousePosition;
+		m_LastMousePosition = pos;
+
+		//WGINE_TRACE("Delta: {0} {1}", delta.x, delta.y);
+
+		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+
+		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(-delta.y, -delta.x, 0.f) * 0.05f);
+
+		return true;
 	}
 
 	bool OnKeyPressed(KeyPressedEvent &e)
@@ -200,6 +229,8 @@ public:
 private:
 	std::unique_ptr<SceneEntity> m_Triangle;
 	std::unique_ptr<SceneEntity> m_Square;
+
+	glm::vec2 m_LastMousePosition = glm::vec2(0.f);
 
 	Camera m_Camera;
 };

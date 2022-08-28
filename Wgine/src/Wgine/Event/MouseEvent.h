@@ -1,22 +1,22 @@
 #pragma once
 
 #include "Event.h"
+#include <glm/glm.hpp>
 
 namespace Wgine
 {
 	class WGINE_API MouseMovedEvent : public Event
 	{
 	public:
-		MouseMovedEvent(float mouseX, float mouseY)
-			: m_MouseX(mouseX), m_MouseY(mouseY) {}
+		MouseMovedEvent(glm::vec2 pos)
+			: m_Position(pos) {}
 
-		inline float GetX() const {	return m_MouseX; }
-		inline float GetY() const { return m_MouseY; }
+		inline glm::vec2 GetPosition() const { return m_Position; }
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseMovedEvent: (" << GetX() << ", " << GetY() << ")";
+			ss << "MouseMovedEvent: (" << m_Position.x << ", " << m_Position.y << ")";
 			return ss.str();
 		}
 
@@ -24,7 +24,7 @@ namespace Wgine
 		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 
 	private:
-		float m_MouseX, m_MouseY;
+		glm::vec2 m_Position;
 	};
 
 	class WGINE_API MouseScrolledEvent : public Event

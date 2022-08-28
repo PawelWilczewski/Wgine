@@ -26,7 +26,7 @@ namespace Wgine
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	glm::vec2 WindowsInput::GetMousePositionImpl()
 	{
 		auto window = static_cast<GLFWwindow *>(Application::Get().GetWindow().GetNativeWindow());
 		double x, y;
@@ -36,12 +36,16 @@ namespace Wgine
 
 	float WindowsInput::GetMouseXImpl()
 	{
-		auto [x, y] = GetMousePositionImpl();
-		return x;
+		return GetMousePositionImpl().x;
 	}
+
 	float WindowsInput::GetMouseYImpl()
 	{
-		auto [x, y] = GetMousePositionImpl();
-		return y;
+		return GetMousePositionImpl().y;
 	}
+
+	//glm::vec2 WindowsInput::GetMouseDeltaRelativeImpl()
+	//{
+
+	//}
 }

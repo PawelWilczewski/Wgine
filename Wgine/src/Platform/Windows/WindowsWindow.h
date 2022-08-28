@@ -15,13 +15,16 @@ namespace Wgine
 
 		void OnUpdate() override;
 
-		inline unsigned int GetWidth() const override { return m_Data.Width; }
-		inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual unsigned int GetWidth() const override { return m_Data.Width; }
+		virtual unsigned int GetHeight() const override { return m_Data.Height; }
 
 		// Window attributes
-		inline void SetEventCallback(const EventCallbackFn &callback) override { m_Data.EventCallback = callback; }
-		void SetVSync(bool enabled) override;
-		bool IsVSync() const override;
+		virtual void SetEventCallback(const EventCallbackFn &callback) override { m_Data.EventCallback = callback; }
+		virtual void SetVSync(bool enabled) override;
+		virtual bool IsVSync() const override;
+
+		// TODO: better api (mouse input mode or whatever)
+		virtual void SetShowMouse(const bool &show) override { glfwSetInputMode(m_Window, GLFW_CURSOR, show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED); };
 
 		inline virtual void *GetNativeWindow() const { return m_Window; };
 

@@ -9,8 +9,9 @@ namespace Wgine
 	protected:
 		virtual bool IsKeyPressedImpl(int keyCode) override;
 		virtual bool IsMouseButtonPressedImpl(int button) override;
-		virtual std::pair<float, float> GetMousePositionImpl() override;
+		virtual glm::vec2 GetMousePositionImpl() override;
 		virtual float GetMouseXImpl() override;
 		virtual float GetMouseYImpl() override;
+		//virtual glm::vec2 GetMouseDeltaRelativeImpl() override; // probs bad architecture
 	};
 }

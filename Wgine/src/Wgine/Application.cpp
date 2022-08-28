@@ -28,6 +28,7 @@ namespace Wgine {
 		m_Window->SetEventCallback(WGINE_BIND_EVENT_FN(Application::OnEvent));
 
 		//m_Window->SetVSync(false);
+		m_Window->SetShowMouse(false);
 	}
 
 	Wgine::Application::~Application()
