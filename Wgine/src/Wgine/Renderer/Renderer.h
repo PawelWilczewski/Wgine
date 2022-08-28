@@ -18,7 +18,8 @@ namespace Wgine
 		static void BeginScene(Camera &camera);
 		static void EndScene();
 
-		static void Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray);
+		static void Submit(const SceneEntity &entity);
+		static void Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform);
 
 		inline static API GetAPI() { return s_API; }
 

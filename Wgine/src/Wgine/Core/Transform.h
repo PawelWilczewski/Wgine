@@ -12,12 +12,12 @@ namespace Wgine
 	class Transform
 	{
 	public:
-		glm::vec3 Position, Rotation, Scale;
+		glm::vec3 Location, Rotation, Scale;
 
-		Transform(const glm::vec3 &position = { 0.f, 0.f, 0.f },
+		Transform(const glm::vec3 &location = { 0.f, 0.f, 0.f },
 				  const glm::vec3 &rotation = { 0.f, 0.f, 0.f },
 				     const glm::vec3 &scale = { 1.f, 1.f, 1.f })
-			: Position(position), Rotation(rotation), Scale(scale)
+			: Location(location), Rotation(rotation), Scale(scale)
 		{}
 
 		const glm::vec3 &GetForwardVector() const { return glm::quat(glm::radians(Rotation)) * VectorForward; }
