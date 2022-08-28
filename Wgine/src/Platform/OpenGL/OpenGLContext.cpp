@@ -19,6 +19,10 @@ namespace Wgine
 		WGINE_CORE_INFO("    Vendor: {0}", glGetString(GL_VENDOR));
 		WGINE_CORE_INFO("    Renderer: {0}", glGetString(GL_RENDERER));
 		WGINE_CORE_INFO("    Version: {0}", glGetString(GL_VERSION));
+
+		// We're using left-handed coordinate system
+		glFrontFace(GL_CW);
+		glDepthFunc(GL_GEQUAL);
 	}
 
 	void OpenGLContext::SwapBuffers()

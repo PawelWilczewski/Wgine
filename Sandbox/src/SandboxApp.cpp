@@ -140,9 +140,12 @@ public:
 		}
 
 		m_Axis = std::make_unique<SceneEntity>();
+		m_AxisCamera = std::make_unique<SceneEntity>();
+		//m_Axis->SetRotation({ 0.f, 30.f, 0.f });
 		// axis data
 		{
 			m_Axis->MeshData.reset(VertexArray::Create());
+			m_AxisCamera->MeshData.reset(VertexArray::Create());
 			// triangle vertex buffer
 			float vertices[10 * 7] = {
 				 0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -166,6 +169,7 @@ public:
 				{ ShaderDataType::Float4, "a_Color" },
 				});
 			m_Axis->MeshData->AddVertexBuffer(vertexBuffer);
+			m_AxisCamera->MeshData->AddVertexBuffer(vertexBuffer);
 
 			// triangle index buffer
 			unsigned int indices[18] = { 0, 1, 2, 0, 2, 3,
@@ -174,6 +178,7 @@ public:
 			std::shared_ptr<IndexBuffer> indexBuffer;
 			indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 			m_Axis->MeshData->SetIndexBuffer(indexBuffer);
+			m_AxisCamera->MeshData->SetIndexBuffer(indexBuffer);
 
 			// triangle shaders
 			std::string vertexSource = R"(
@@ -213,6 +218,7 @@ public:
 			)";
 
 			m_Axis->ShaderData.reset(Shader::Create(vertexSource, fragmentSource));
+			m_AxisCamera->ShaderData.reset(Shader::Create(vertexSource, fragmentSource));
 		}
 	}
 
@@ -226,21 +232,28 @@ public:
 		//m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
 
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
-		auto speed = 20.f;
+		auto speed = 5.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_S))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * -speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_D))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_A))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * speed * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_A))
+			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
+
+		m_AxisCamera->SetTransform({
+			m_Camera.GetLocation() + m_Camera.GetUpVector() * -0.1f,
+			m_Camera.GetRotation(),
+			m_Camera.GetScale()
+			});
 
 		Renderer::BeginScene(m_Camera); {
 
 			Renderer::Submit(*m_Square);
 			Renderer::Submit(*m_Triangle);
 			Renderer::Submit(*m_Axis);
+			Renderer::Submit(*m_AxisCamera);
 
 		} Renderer::EndScene();
 	}
@@ -268,7 +281,7 @@ public:
 
 		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
-		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(0.f, delta.y, -delta.x) * 0.05f);
+		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(0.f, delta.y, delta.x) * 0.05f);
 
 		return true;
 	}
@@ -277,6 +290,7 @@ private:
 	std::unique_ptr<SceneEntity> m_Triangle;
 	std::unique_ptr<SceneEntity> m_Square;
 	std::unique_ptr<SceneEntity> m_Axis;
+	std::unique_ptr<SceneEntity> m_AxisCamera;
 
 	glm::vec2 m_LastMousePosition = glm::vec2(0.f);
 

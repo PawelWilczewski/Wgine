@@ -18,6 +18,7 @@ namespace Wgine
 		m = glm::scale(m, m_Transform.Scale);
 		
 		m_ViewMatrix = glm::inverse(m);
+		//m_ViewMatrix = glm::inverse(GetEntityMatrix());
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }
