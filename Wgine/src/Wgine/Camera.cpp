@@ -18,7 +18,22 @@ namespace Wgine
 		m = glm::scale(m, m_Transform.Scale);
 
 		m_ViewMatrix = glm::inverse(m);
-		//m_ViewMatrix = glm::inverse(GetEntityMatrix());
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+	}
+
+	void PerspectiveCamera::UpdateProjectionMatrix()
+	{
+		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_Width / m_Height, m_NearClip, m_FarClip);
+		// we want the camera to face +x:
+		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorUp);
+		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
+	}
+
+	void OrthographicCamera::UpdateProjectionMatrix()
+	{
+		m_ProjectionMatrix = glm::ortho(m_Left, m_Right, m_Bottom, m_Top);
+		// we want the camera to face +x:
+		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorUp);
+		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
 	}
 }

@@ -10,7 +10,7 @@ public:
 	{
 		m_Camera = PerspectiveCamera(Transform(), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
-		m_Camera.SetLocation({ 0.f, 0.f, 3.f });
+
 		m_Triangle = std::make_unique<SceneEntity>();
 		// triangle data
 		{
@@ -76,7 +76,7 @@ public:
 		}
 
 		m_Square = std::make_unique<SceneEntity>();
-		m_Square->SetRotation({ 0.f, 30.f, 0.f });
+		m_Square->SetRotation({ 30.f, 30.f, 30.f });
 		// square data
 		{
 			m_Square->MeshData.reset(VertexArray::Create());
@@ -141,7 +141,7 @@ public:
 
 		m_Axis = std::make_unique<SceneEntity>();
 		m_AxisCamera = std::make_unique<SceneEntity>();
-		//m_Axis->SetRotation({ 0.f, 30.f, 0.f });
+		m_AxisCamera->SetLocation({ 1.f, 2.f, 2.f });
 		// axis data
 		{
 			m_Axis->MeshData.reset(VertexArray::Create());
@@ -227,10 +227,6 @@ public:
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
-		//WGINE_TRACE("Camera rotation: {0}, {1}, {2}", m_Camera.GetRotation().x, m_Camera.GetRotation().y, m_Camera.GetRotation().z);
-		//WGINE_TRACE("Forward: {0}, {1}, {2}", m_Camera.GetForwardVector().x, m_Camera.GetForwardVector().y, m_Camera.GetForwardVector().z);
-		//m_Square->SetLocation(m_Square->GetLocation() + glm::vec3(0.1f, 0.1f, 0.f) * deltaSeconds);
-
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
 		auto speed = 5.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
@@ -242,11 +238,7 @@ public:
 		if (Input::IsKeyPressed(WGINE_KEY_A))
 			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
 
-		m_AxisCamera->SetTransform({
-			{0.f, 0.f, 0.f},//m_Camera.GetLocation() + m_Camera.GetUpVector() * -0.1f,
-			m_Camera.GetRotation(),
-			m_Camera.GetScale()
-			});
+		m_AxisCamera->SetRotation(m_Camera.GetRotation());
 
 		Renderer::BeginScene(m_Camera); {
 
@@ -279,6 +271,7 @@ public:
 
 		//WGINE_TRACE("Delta: {0} {1}", delta.x, delta.y);
 
+		// TODO: should we do something like this to ensure the same rotation always if the same physical movement was performed? regardless of the current res
 		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
 		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(0.f, delta.y, delta.x) * 0.05f);
