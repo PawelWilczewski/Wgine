@@ -15,11 +15,7 @@ namespace Wgine
 		m = glm::rotate(m, glm::radians(m_Transform.Rotation[2]), GetUpVector()); // yaw rotation
 		m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), GetRightVector()); // pitch rotation
 		m = glm::rotate(m, glm::radians(m_Transform.Rotation[0]), GetForwardVector()); // roll rotation
-		//m = glm::rotate(m, glm::radians(90.f), Transform::VectorRight);
-		//m = glm::rotate(m, glm::radians(-90.f), Transform::VectorUp);
-		//m *=glm::lookAtLH(GetLocation(), GetLocation() + GetForwardVector(), GetLocation() + GetUpVector());
 		m = glm::scale(m, m_Transform.Scale);
-
 
 		m_ViewMatrix = glm::inverse(m);
 		//m_ViewMatrix = glm::inverse(GetEntityMatrix());

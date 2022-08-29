@@ -40,7 +40,7 @@ namespace Wgine
 
 		void SetTransform(Transform t) { m_Transform = t; UpdateEntityMatrix(); }
 		void SetLocation(glm::vec3 location) { m_Transform.Location = location; UpdateEntityMatrix(); }
-		void SetRotation(glm::vec3 rotation) { m_Transform.Rotation = { rotation.x, rotation.y, rotation.z }; UpdateEntityMatrix(); }
+		void SetRotation(glm::vec3 rotation) { m_Transform.Rotation = rotation; UpdateEntityMatrix(); }
 		void SetScale(glm::vec3 scale) { m_Transform.Scale = scale; UpdateEntityMatrix(); }
 
 		// TEMP
@@ -52,8 +52,8 @@ namespace Wgine
 		{
 			// note the '-' because we're using left-handed coordinate system
 			auto m = glm::translate(glm::mat4(1.f), m_Transform.Location);
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[2]), -Transform::VectorUp); // yaw rotation
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), -Transform::VectorRight); // pitch rotation
+			m = glm::rotate(m, glm::radians(m_Transform.Rotation[2]), Transform::VectorUp); // yaw rotation
+			m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), Transform::VectorRight); // pitch rotation
 			m = glm::rotate(m, glm::radians(m_Transform.Rotation[0]), Transform::VectorForward); // roll rotation
 			m_EntityMatrix = glm::scale(m, m_Transform.Scale);
 		}
