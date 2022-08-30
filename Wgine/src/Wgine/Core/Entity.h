@@ -44,8 +44,8 @@ namespace Wgine
 		void SetScale(glm::vec3 scale) { m_Transform.Scale = scale; UpdateEntityMatrix(); }
 
 		// TEMP
-		std::shared_ptr<VertexArray> MeshData;
-		std::shared_ptr<Shader> ShaderData;
+		Ref<VertexArray> MeshData;
+		Ref<Shader> ShaderData;
 
 	protected:
 		virtual void UpdateEntityMatrix() { m_EntityMatrix = m_Transform.ToModelMatrix(); }

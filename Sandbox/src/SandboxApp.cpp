@@ -24,7 +24,7 @@ public:
 				 0.5f, -0.5f, 0.0f, 0.1f, 0.8f, 0.4f, 1.0f,
 				 0.0f,  0.5f, 0.0f, 0.2f, 0.5f, 0.9f, 1.0f,
 			};
-			std::shared_ptr<VertexBuffer> vertexBuffer;
+			Ref<VertexBuffer> vertexBuffer;
 			vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 			vertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
@@ -34,7 +34,7 @@ public:
 
 			// triangle index buffer
 			unsigned int indices[3] = { 0, 1, 2 };
-			std::shared_ptr<IndexBuffer> indexBuffer;
+			Ref<IndexBuffer> indexBuffer;
 			indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 			m_Triangle->MeshData->SetIndexBuffer(indexBuffer);
 
@@ -95,7 +95,7 @@ public:
 				 1.0f,  1.0f,  0.8f,
 				 1.0f,  1.0f,  0.2f,
 			};
-			std::shared_ptr<VertexBuffer> squareVertexBuffer;
+			Ref<VertexBuffer> squareVertexBuffer;
 			squareVertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
 			squareVertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
@@ -104,7 +104,7 @@ public:
 
 			// square indices
 			unsigned int squareIndices[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
-			std::shared_ptr<IndexBuffer> squareIndexBuffer;
+			Ref<IndexBuffer> squareIndexBuffer;
 			squareIndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 			m_Square->MeshData->SetIndexBuffer(squareIndexBuffer);
 
@@ -165,7 +165,7 @@ public:
 
 				 0.0f,  0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 1.0f,
 			};
-			std::shared_ptr<VertexBuffer> vertexBuffer;
+			Ref<VertexBuffer> vertexBuffer;
 			vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 			vertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
@@ -178,7 +178,7 @@ public:
 			unsigned int indices[18] = { 0, 1, 2, 0, 2, 3,
 										0, 4, 5, 5, 9, 0,
 										0, 6, 7, 7, 8, 6 };
-			std::shared_ptr<IndexBuffer> indexBuffer;
+			Ref<IndexBuffer> indexBuffer;
 			indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 			m_Axis->MeshData->SetIndexBuffer(indexBuffer);
 			m_AxisCamera->MeshData->SetIndexBuffer(indexBuffer);
@@ -238,7 +238,7 @@ public:
 				1.0f,  1.0f,  0.8f,
 				1.0f,  1.0f,  0.2f,
 		};
-		std::shared_ptr<VertexBuffer> vertexBuffer;
+		Ref<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
@@ -246,7 +246,7 @@ public:
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 		// index buffer
 		unsigned int indices[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
-		std::shared_ptr<IndexBuffer> indexBuffer;
+		Ref<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 		std::string shaderVertexSrc = R"(
@@ -369,13 +369,13 @@ public:
 	}
 
 private:
-	std::unique_ptr<SceneEntity> m_Triangle;
-	std::unique_ptr<SceneEntity> m_Square;
-	std::unique_ptr<SceneEntity> m_Axis;
-	std::unique_ptr<SceneEntity> m_AxisCamera;
+	Scope<SceneEntity> m_Triangle;
+	Scope<SceneEntity> m_Square;
+	Scope<SceneEntity> m_Axis;
+	Scope<SceneEntity> m_AxisCamera;
 
-	std::shared_ptr<VertexArray> m_VertexArray;
-	std::shared_ptr<Shader> m_Shader;
+	Ref<VertexArray> m_VertexArray;
+	Ref<Shader> m_Shader;
 
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
 
