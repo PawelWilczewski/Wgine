@@ -7,6 +7,7 @@ namespace Wgine
 	class OpenGLRenderCommand : public RenderCommand
 	{
 	public:
+		virtual void InitImpl() override;
 		virtual void SetClearColorImpl(const glm::vec4 &color) override;
 		virtual void ClearImpl() override;
 

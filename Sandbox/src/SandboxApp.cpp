@@ -309,6 +309,8 @@ public:
 		m_Texture = Texture2D::Create("assets/textures/coords.png");
 		m_TextureShader->Bind();
 		m_TextureShader->UploadUniformInt("u_Texture", 0);
+
+		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
 	}
 
 	void OnUpdate(const float &deltaSeconds) override
@@ -352,7 +354,8 @@ public:
 
 			m_Texture->Bind();
 			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
-
+			m_TransparentTexture->Bind();
+			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
 		} Renderer::EndScene();
 	}
 
@@ -410,7 +413,7 @@ private:
 	Ref<SceneEntity> m_Axis;
 	Ref<SceneEntity> m_AxisCamera;
 
-	Ref<Texture2D> m_Texture;
+	Ref<Texture2D> m_Texture, m_TransparentTexture;
 
 	Ref<VertexArray> m_VertexArray;
 	Ref<Shader> m_FlatShader, m_TextureShader;

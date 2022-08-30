@@ -15,14 +15,35 @@ namespace Wgine
 
 		m_Width = width;
 		m_Height = height;
+
+		GLenum internalFormat, dataFormat;
+		switch (channels)
+		{
+		case 1:
+			internalFormat = GL_R8;
+			dataFormat = GL_RED;
+			break;
+		case 3:
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+			break;
+		case 4:
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+			break;
+		default:
+			WGINE_CORE_ASSERT(false, "Unsupported image type with {0} channels!", channels);
+			internalFormat = GL_R8; // hypothetically we're not gonna run out of data if use just one channel
+			dataFormat = GL_RED;
+		}
 		
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, GL_RGBA8, m_Width, m_Height);
+		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, image);
 
 		stbi_image_free(image);
 	}

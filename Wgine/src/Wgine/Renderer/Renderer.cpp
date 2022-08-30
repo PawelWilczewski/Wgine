@@ -7,6 +7,11 @@ namespace Wgine
 
 	Renderer::SceneData *Renderer::m_SceneData = new SceneData();
 
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+
 	void Renderer::BeginScene(Camera &camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();

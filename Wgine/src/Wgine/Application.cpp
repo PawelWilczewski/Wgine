@@ -37,6 +37,7 @@ namespace Wgine {
 
 	void Wgine::Application::Run()
 	{
+		Renderer::Init();
 		Time::Init();
 		while (m_Running)
 		{
