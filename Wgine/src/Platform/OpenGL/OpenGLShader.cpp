@@ -1,7 +1,6 @@
 #include "WginePCH.h"
 #include "OpenGLShader.h"
 
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Wgine
@@ -115,19 +114,58 @@ namespace Wgine
 		glDeleteProgram(m_RendererID);
 	}
 
-	void OpenGLShader::Bind()
+	GLint OpenGLShader::GetUniformLocation(const std::string &name)
+	{
+		if (m_UniformLocations.find(name) != m_UniformLocations.end())
+			return m_UniformLocations[name];
+
+		GLint result = glGetUniformLocation(m_RendererID, name.c_str());
+		m_UniformLocations[name] = result;
+		return result;
+	}
+
+	void OpenGLShader::Bind() const
 	{
 		glUseProgram(m_RendererID);
 	}
 
-	void OpenGLShader::Unbind()
+	void OpenGLShader::Unbind() const
 	{
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::UploadUniformMat4(const std::string &name, const glm::mat4 &mat)
+	void OpenGLShader::UploadUniformInt(const std::string &name, const int &val)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+		glUniform1i(GetUniformLocation(name), val);
+	}
+
+	void OpenGLShader::UploadUniformFloat(const std::string &name, const float &val)
+	{
+		glUniform1f(GetUniformLocation(name), val);
+	}
+
+	void OpenGLShader::UploadUniformFloat2(const std::string &name, const glm::vec2 &val)
+	{
+		glUniform2f(GetUniformLocation(name), val.x, val.y);
+	}
+
+	void OpenGLShader::UploadUniformFloat3(const std::string &name, const glm::vec3 &val)
+	{
+		glUniform3f(GetUniformLocation(name), val.x, val.y, val.z);
+	}
+
+	void OpenGLShader::UploadUniformFloat4(const std::string &name, const glm::vec4 &val)
+	{
+		glUniform4f(GetUniformLocation(name), val.x, val.y, val.z, val.w);
+	}
+
+	void OpenGLShader::UploadUniformMat3(const std::string &name, const glm::mat3 &val)
+	{
+		glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(val));
+	}
+
+	void OpenGLShader::UploadUniformMat4(const std::string &name, const glm::mat4 &val)
+	{
+		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(val));
 	}
 }

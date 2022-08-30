@@ -24,6 +24,15 @@ namespace Wgine
 		const glm::vec3 &GetRightVector() const { return glm::quat(glm::radians(Rotation)) * VectorRight; }
 		const glm::vec3 &GetUpVector() const { return glm::quat(glm::radians(Rotation)) * VectorUp; }
 
+		glm::mat4 ToModelMatrix() const
+		{
+			auto m = glm::translate(glm::mat4(1.f), Location);
+			m = glm::rotate(m, glm::radians(Rotation[2]), Transform::VectorUp); // yaw rotation
+			m = glm::rotate(m, glm::radians(Rotation[1]), Transform::VectorRight); // pitch rotation
+			m = glm::rotate(m, glm::radians(Rotation[0]), Transform::VectorForward); // roll rotation
+			return glm::scale(m, Scale);
+		}
+
 		static const glm::vec3 VectorForward;
 		static const glm::vec3 VectorRight;
 		static const glm::vec3 VectorUp;

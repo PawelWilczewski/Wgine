@@ -24,7 +24,8 @@ namespace Wgine
 		virtual bool IsVSync() const override;
 
 		// TODO: better api (mouse input mode or whatever)
-		virtual void SetShowMouse(const bool &show) override { glfwSetInputMode(m_Window, GLFW_CURSOR, show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED); };
+		virtual void SetShowMouse(const bool &show) override { glfwSetInputMode(m_Window, GLFW_CURSOR, show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED); }
+		virtual bool GetShowMouse() const override { return glfwGetInputMode(m_Window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL; }
 
 		inline virtual void *GetNativeWindow() const { return m_Window; };
 

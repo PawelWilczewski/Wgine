@@ -111,12 +111,14 @@ group ""
 		{
 			"Wgine/thirdparty/spdlog/include",
 			"Wgine/src",
+			"%{IncludeDir.ImGui}",
 			"%{IncludeDir.glm}"
 		}
 
 		links
 		{
-			"Wgine"
+			"Wgine",
+			"ImGui"
 		}
 
 		filter "system:windows"

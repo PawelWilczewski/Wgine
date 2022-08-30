@@ -48,15 +48,7 @@ namespace Wgine
 		std::shared_ptr<Shader> ShaderData;
 
 	protected:
-		virtual void UpdateEntityMatrix()
-		{
-			// note the '-' because we're using left-handed coordinate system
-			auto m = glm::translate(glm::mat4(1.f), m_Transform.Location);
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[2]), Transform::VectorUp); // yaw rotation
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[1]), Transform::VectorRight); // pitch rotation
-			m = glm::rotate(m, glm::radians(m_Transform.Rotation[0]), Transform::VectorForward); // roll rotation
-			m_EntityMatrix = glm::scale(m, m_Transform.Scale);
-		}
+		virtual void UpdateEntityMatrix() { m_EntityMatrix = m_Transform.ToModelMatrix(); }
 
 	protected:
 		Transform m_Transform;

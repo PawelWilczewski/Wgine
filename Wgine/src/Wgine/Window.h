@@ -40,6 +40,7 @@ namespace Wgine
 		virtual bool IsVSync() const = 0;
 
 		virtual void SetShowMouse(const bool &show) = 0;
+		virtual bool GetShowMouse() const = 0;
 
 		virtual void *GetNativeWindow() const = 0;
 
