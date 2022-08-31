@@ -3,12 +3,14 @@
 #include "Wgine/Renderer/Shader.h"
 #include <glad/glad.h>
 #include <unordered_map>
+#include <string>
 
 namespace Wgine
 {
 	class OpenGLShader : public Shader
 	{
 	public:
+		OpenGLShader(const std::string &sourceFilePath);
 		OpenGLShader(const std::string &vertexSource, const std::string &fragmentSource);
 		virtual ~OpenGLShader();
 
@@ -24,6 +26,9 @@ namespace Wgine
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) override;
 
 	private:
+		void Compile(const std::unordered_map<GLenum, std::string> &source);
+		std::unordered_map<GLenum, std::string> ExtractShadersSource(const std::string &fileSource);
+
 		GLint GetUniformLocation(const std::string &name);
 
 	private:
