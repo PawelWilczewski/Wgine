@@ -11,7 +11,7 @@ namespace Wgine
 	public:
 		static std::string ReadFile(const std::string &filepath)
 		{
-			std::ifstream file(filepath, std::ios::in, std::ios::binary);
+			std::ifstream file(filepath, std::ios::in | std::ios::binary);
 			if (!file)
 			{
 				WGINE_CORE_ERROR("Trying to read from non-existent file: {0}", filepath);

@@ -42,7 +42,8 @@ namespace Wgine
 		m_RendererID = glCreateProgram();
 		GLuint program = m_RendererID;
 
-		std::vector<GLuint> shaders(data.size());
+		std::vector<GLuint> shaders;
+		shaders.reserve(data.size());
 		for (const auto &s : data)
 		{
 			auto &[type, source] = s;
