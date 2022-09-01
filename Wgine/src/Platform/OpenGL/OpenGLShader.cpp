@@ -4,6 +4,7 @@
 #include "Wgine/Core/FileUtils.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <regex>
+#include <filesystem>
 
 namespace Wgine
 {
@@ -21,14 +22,19 @@ namespace Wgine
 	OpenGLShader::OpenGLShader(const std::string &sourceFilePath)
 	{
 		Compile(ExtractShadersSource(FileUtils::ReadFile(sourceFilePath)));
+
+		std::filesystem::path path = sourceFilePath;
+		m_Name = path.stem().string();
 	}
 
-	OpenGLShader::OpenGLShader(const std::string &vertexSource, const std::string &fragmentSource)
+	OpenGLShader::OpenGLShader(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource)
 	{
 		std::unordered_map<GLenum, std::string> data;
 		data[GL_VERTEX_SHADER] = vertexSource;
 		data[GL_FRAGMENT_SHADER] = fragmentSource;
 		Compile(data);
+
+		m_Name = shaderName;
 	}
 
 	OpenGLShader::~OpenGLShader()

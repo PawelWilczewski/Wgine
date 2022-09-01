@@ -11,7 +11,7 @@ namespace Wgine
 	{
 	public:
 		OpenGLShader(const std::string &sourceFilePath);
-		OpenGLShader(const std::string &vertexSource, const std::string &fragmentSource);
+		OpenGLShader(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;

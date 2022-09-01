@@ -12,6 +12,7 @@
 #include "Wgine/Renderer/VertexArray.h"
 #include "Wgine/Camera.h"
 
+// TODO: application should be able to have multiple windows
 namespace Wgine {
 	class WGINE_API Application
 	{

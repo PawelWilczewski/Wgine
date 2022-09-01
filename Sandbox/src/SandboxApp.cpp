@@ -75,7 +75,7 @@ public:
 			}
 			)";
 
-			m_Triangle->ShaderData.reset(Shader::Create(vertexSource, fragmentSource));
+			m_Triangle->ShaderData = Shader::Create("VertexPosition", vertexSource, fragmentSource);
 		}
 
 		m_Square = std::make_unique<SceneEntity>();
@@ -139,7 +139,7 @@ public:
 			}
 			)";
 
-			m_Square->ShaderData.reset(Shader::Create(squareVertexSource, squareFragmentSource));
+			m_Square->ShaderData = Shader::Create("SquareColor", squareVertexSource, squareFragmentSource);
 		}
 
 		m_Axis = std::make_unique<SceneEntity>();
@@ -220,8 +220,8 @@ public:
 			}
 			)";
 
-			m_Axis->ShaderData.reset(Shader::Create(vertexSource, fragmentSource));
-			m_AxisCamera->ShaderData.reset(Shader::Create(vertexSource, fragmentSource));
+			m_Axis->ShaderData = Shader::Create("VertexColor", vertexSource, fragmentSource);
+			m_AxisCamera->ShaderData = Shader::Create("VertexColor", vertexSource, fragmentSource);
 		}
 
 		m_VertexArray.reset(VertexArray::Create());
@@ -245,9 +245,9 @@ public:
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		m_FlatShader.reset(Shader::Create("assets/shaders/VertexColor.glsl"));
+		m_FlatShader = Shader::Create("assets/shaders/VertexColor.glsl");
 
-		m_TextureShader.reset(Shader::Create("assets/shaders/Texture.glsl"));
+		m_TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 
 		m_Texture = Texture2D::Create("assets/textures/coords.png");
 		m_TextureShader->Bind();
