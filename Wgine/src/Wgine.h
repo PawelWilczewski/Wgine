@@ -17,6 +17,7 @@
 #include "Wgine/ECS/Scene.h"
 #include "Wgine/ECS/Entity.h"
 #include "Wgine/Camera.h"
+#include "Wgine/CameraController.h"
 
 #include "Wgine/Layer.h"
 #include "Wgine/ImGui/ImGuiLayer.h"

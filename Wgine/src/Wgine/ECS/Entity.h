@@ -18,7 +18,7 @@ namespace Wgine
 		virtual void OnStart() {}
 		virtual void OnTick(float deltaSeconds) {}
 		virtual void OnEnd() {}
-		virtual void OnEvent(const Event &e) {}
+		virtual void OnEvent(Event &e) {}
 
 	public:
 		class Scene *GetScene() const { return m_Scene; }

@@ -16,6 +16,8 @@ public:
 		//m_Camera = PerspectiveCamera(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
 
+		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
+
 		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
 		// triangle data
 		{
@@ -284,8 +286,8 @@ public:
 
 		Renderer::BeginScene(*m_Camera); {
 
-			Renderer::Submit(*m_Square);
-			Renderer::Submit(*m_Triangle);
+			//Renderer::Submit(*m_Square);
+			//Renderer::Submit(*m_Triangle);
 			Renderer::Submit(*m_Axis);
 			Renderer::Submit(*m_AxisCamera);
 
@@ -313,47 +315,11 @@ public:
 		ImGui::End();
 	}
 
-	void OnEvent(Wgine::Event &event) override
+	void OnEvent(Event &event) override
 	{
 		m_Scene->OnEvent(event);
-		EventDispatcher e = { event };
-		e.Dispatch<MouseMovedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnMouseMoved));
-		e.Dispatch<MouseButtonPressedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnMouseButtonPressed));
-	}
-	
-	bool OnMouseMoved(MouseMovedEvent &e)
-	{
-		if (Application::Get().GetWindow().GetShowMouse()) // TODO: obv better api and this is blatantly wrong??? shouldn't be negation
-			return false;
-
-		//WGINE_TRACE("{0} {1}", e.GetPosition().x, e.GetPosition().y);
-		auto pos = e.GetPosition();
-		static bool initial = true;
-		if (initial)
-		{
-			m_LastMousePosition = pos;
-			initial = false;
-		}
-		auto delta = pos - m_LastMousePosition;
-		m_LastMousePosition = pos;
-
-		//WGINE_TRACE("Delta: {0} {1}", delta.x, delta.y);
-
-		// TODO: should we do something like this to ensure the same rotation always if the same physical movement was performed? regardless of the current res
-		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
-
-		m_Camera->SetRotation(m_Camera->GetRotation() + glm::vec3(0.f, delta.y, delta.x) * 0.05f);
-
-		return false;
 	}
 
-	bool OnMouseButtonPressed(MouseButtonPressedEvent &e)
-	{
-		auto window = &Application::Get().GetWindow();
-		if (e.GetMouseButton() == WGINE_MOUSE_BUTTON_RIGHT)
-			window->SetShowMouse(!window->GetShowMouse());
-		return true;
-	}
 
 private:
 	Ref<Scene> m_Scene;
@@ -369,8 +335,6 @@ private:
 	Ref<Shader> m_FlatShader, m_TextureShader;
 
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
-
-	glm::vec2 m_LastMousePosition = glm::vec2(0.f);
 };
 
 class Sandbox : public Wgine::Application

@@ -36,7 +36,7 @@ namespace Wgine
 			delete entity;
 	}
 
-	void Scene::OnEvent(const Event &e)
+	void Scene::OnEvent(Event &e)
 	{
 		for (auto entity : m_Entities)
 			entity->OnEvent(e);

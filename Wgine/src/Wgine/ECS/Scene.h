@@ -15,7 +15,7 @@ namespace Wgine
 		void OnStart();
 		void OnTick(float deltaSeconds);
 		void OnEnd();
-		void OnEvent(const Event &e);
+		void OnEvent(Event &e);
 
 	public:
 		float GetDeltaSeconds() const { return m_DeltaSeconds; }
