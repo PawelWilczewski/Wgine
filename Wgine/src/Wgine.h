@@ -15,6 +15,8 @@
 #include "Wgine/Renderer/Renderer.h"
 #include "Wgine/Renderer/Texture.h"
 
+#include "Wgine/ECS/Scene.h"
+#include "Wgine/ECS/Entity.h"
 #include "Wgine/Camera.h"
 
 #include "Wgine/Layer.h"

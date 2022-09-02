@@ -1,34 +1,54 @@
 #pragma once
 
-#include "Transform.h"
+#include "Wgine/Core/Transform.h"
 #include "Wgine/Renderer/VertexArray.h"
 #include "Wgine/Renderer/Shader.h"
+#include "Wgine/Core.h"
+#include "Wgine/Event/Event.h"
 
 namespace Wgine
 {
 	class Entity
 	{
+		friend class Scene;
 	public:
-		// TODO: Add Start(), OnTick(), End()? etc. and ofc add components support etc.
-	private:
+		Entity() {}
 
+	protected:
+		virtual void OnStart() {}
+		virtual void OnTick(float deltaSeconds) {}
+		virtual void OnEnd() {}
+		virtual void OnEvent(const Event &e) {}
+
+	public:
+		class Scene *GetScene() const { return m_Scene; }
+
+		// TODO: this (and the system dedicated to checking this) may be very costly for large scenes?
+		bool GetPropagatesEvents() const { return m_PropagatesEvents; }
+		void SetPropagatesEvents(const bool &propagates) { m_PropagatesEvents = propagates; }
+
+	private:
+		bool m_PropagatesEvents = false;
+		Scene *m_Scene = nullptr; // TODO: this is not memory efficient?
 	};
 
 	class SceneEntity : public Entity
 	{
 	public:
 		SceneEntity()
-			: m_Transform(Transform())
+			: Entity(), m_Transform(Transform())
 		{
 			UpdateEntityMatrix();
 		}
 
 		SceneEntity(Transform transform)
-			: m_Transform(transform)
+			: Entity(), m_Transform(transform)
 		{
 			UpdateEntityMatrix();
 		}
 
+	public:
+		// TODO: in the future this should be a part of transform component so this class is simplified and the actual ECS will improve performance
 		const Transform &GetTransform() const { return m_Transform; }
 		const glm::mat4 &GetEntityMatrix() const { return m_EntityMatrix; }
 		const glm::vec3 &GetLocation() const { return m_Transform.Location; }

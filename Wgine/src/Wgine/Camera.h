@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Core/Entity.h"
+#include "Wgine/ECS/Entity.h"
 
 namespace Wgine
 {
@@ -19,6 +19,7 @@ namespace Wgine
 			UpdateProjectionMatrix();
 		}
 
+	public:
 		// Matrices
 		const glm::mat4 &GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
@@ -26,7 +27,7 @@ namespace Wgine
 
 	protected:
 		virtual void UpdateEntityMatrix() override;
-		virtual void UpdateProjectionMatrix() {};
+		virtual void UpdateProjectionMatrix() {}
 
 	protected:
 		glm::mat4 m_ProjectionMatrix;
@@ -51,11 +52,12 @@ namespace Wgine
 			UpdateEntityMatrix();
 		}
 
+	public:
 		// Projection params
-		void SetFOV(const float &fovVert) { m_FOV = fovVert; UpdateProjectionMatrix(); };
-		void SetNearClip(const float &nearClip) { m_NearClip = nearClip; UpdateProjectionMatrix(); };
+		void SetFOV(const float &fovVert) { m_FOV = fovVert; UpdateProjectionMatrix(); }
+		void SetNearClip(const float &nearClip) { m_NearClip = nearClip; UpdateProjectionMatrix(); }
 		void SetFarClip(const float &farClip) { m_FarClip = farClip; UpdateProjectionMatrix(); }
-		void SetWindowSize(const float &width, const float &height) { m_Width = width; m_Height = height; UpdateProjectionMatrix(); };
+		void SetWindowSize(const float &width, const float &height) { m_Width = width; m_Height = height; UpdateProjectionMatrix(); }
 
 	protected:
 		virtual void UpdateProjectionMatrix() override;
@@ -81,6 +83,7 @@ namespace Wgine
 			UpdateEntityMatrix();
 		}
 
+	public:
 		// Projection params
 		void SetLeft(const float &left) { m_Left = left; UpdateProjectionMatrix(); };
 		void SetRight(const float &right) { m_Right = right; UpdateProjectionMatrix(); };

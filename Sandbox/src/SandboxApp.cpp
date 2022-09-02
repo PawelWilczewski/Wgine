@@ -5,16 +5,18 @@
 
 using namespace Wgine;
 
-class ExampleLayer : public Wgine::Layer
+class ExampleLayer : public Layer
 {
 public:
 	ExampleLayer()
 		: Layer("Example")
 	{
-		m_Camera = PerspectiveCamera(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
+		m_Scene = std::make_shared<Scene>();
+		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
+		//m_Camera = PerspectiveCamera(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
 
-		m_Triangle = std::make_unique<SceneEntity>();
+		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
 		// triangle data
 		{
 			m_Triangle->MeshData.reset(VertexArray::Create());
@@ -78,7 +80,7 @@ public:
 			m_Triangle->ShaderData = Shader::Create("VertexPosition", vertexSource, fragmentSource);
 		}
 
-		m_Square = std::make_unique<SceneEntity>();
+		m_Square = m_Scene->ConstructEntity<SceneEntity>();
 		m_Square->SetRotation({ 0.f, 45.f, 180.f });
 		// square data
 		{
@@ -142,8 +144,8 @@ public:
 			m_Square->ShaderData = Shader::Create("SquareColor", squareVertexSource, squareFragmentSource);
 		}
 
-		m_Axis = std::make_unique<SceneEntity>();
-		m_AxisCamera = std::make_unique<SceneEntity>();
+		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
+		m_AxisCamera = m_Scene->ConstructEntity<SceneEntity>();
 		m_AxisCamera->SetLocation({ 1.f, 2.f, 2.f });
 		// axis data
 		{
@@ -256,32 +258,43 @@ public:
 		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
 	}
 
-	void OnUpdate(const float &deltaSeconds) override
+	virtual void OnAttach() override
 	{
+		m_Scene->OnStart();
+	}
+
+	virtual void OnDetach() override
+	{
+		m_Scene->OnEnd();
+	}
+
+	virtual void OnUpdate(const float &deltaSeconds) override
+	{
+		m_Scene->OnTick(deltaSeconds);
 		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
 		RenderCommand::Clear();
 
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
 		auto speed = 5.f;
 		if (Input::IsKeyPressed(WGINE_KEY_W))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * speed * deltaSeconds);
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetForwardVector() * speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_S))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetForwardVector() * -speed * deltaSeconds);
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetForwardVector() * -speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_D))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * speed * deltaSeconds);
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * speed * deltaSeconds);
 		if (Input::IsKeyPressed(WGINE_KEY_A))
-			m_Camera.SetLocation(m_Camera.GetLocation() + m_Camera.GetRightVector() * -speed * deltaSeconds);
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * -speed * deltaSeconds);
 
 		m_AxisCamera->SetTransform({
-			m_Camera.GetLocation() + m_Camera.GetForwardVector() * 0.2f + m_Camera.GetUpVector() * 0.04f + m_Camera.GetRightVector() * 0.10f,
+			m_Camera->GetLocation() + m_Camera->GetForwardVector() * 0.2f + m_Camera->GetUpVector() * 0.04f + m_Camera->GetRightVector() * 0.10f,
 			{ 0.f, 0.f, 0.f },
 			{ 0.03f, 0.03f, 0.03f }
 			});
 
-		Renderer::BeginScene(m_Camera); {
+		Renderer::BeginScene(*m_Camera); {
 
-			//Renderer::Submit(*m_Square);
-			//Renderer::Submit(*m_Triangle);
+			Renderer::Submit(*m_Square);
+			Renderer::Submit(*m_Triangle);
 			Renderer::Submit(*m_Axis);
 			Renderer::Submit(*m_AxisCamera);
 
@@ -311,6 +324,7 @@ public:
 
 	void OnEvent(Wgine::Event &event) override
 	{
+		m_Scene->OnEvent(event);
 		EventDispatcher e = { event };
 		e.Dispatch<MouseMovedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnMouseMoved));
 		e.Dispatch<MouseButtonPressedEvent>(WGINE_BIND_EVENT_FN(ExampleLayer::OnMouseButtonPressed));
@@ -337,7 +351,7 @@ public:
 		// TODO: should we do something like this to ensure the same rotation always if the same physical movement was performed? regardless of the current res
 		//auto deltaNormalized = delta / glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
-		m_Camera.SetRotation(m_Camera.GetRotation() + glm::vec3(0.f, delta.y, delta.x) * 0.05f);
+		m_Camera->SetRotation(m_Camera->GetRotation() + glm::vec3(0.f, delta.y, delta.x) * 0.05f);
 
 		return false;
 	}
@@ -351,10 +365,12 @@ public:
 	}
 
 private:
-	Ref<SceneEntity> m_Triangle;
-	Ref<SceneEntity> m_Square;
-	Ref<SceneEntity> m_Axis;
-	Ref<SceneEntity> m_AxisCamera;
+	Ref<Scene> m_Scene;
+	SceneEntity *m_Triangle;
+	SceneEntity *m_Square;
+	SceneEntity *m_Axis;
+	SceneEntity *m_AxisCamera;
+	Camera *m_Camera;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 
@@ -364,8 +380,6 @@ private:
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
 
 	glm::vec2 m_LastMousePosition = glm::vec2(0.f);
-
-	Camera m_Camera;
 };
 
 class Sandbox : public Wgine::Application
