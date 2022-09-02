@@ -42,8 +42,11 @@ namespace Wgine {
 		{
 			Time::FrameBegin();
 
-			for (auto layer : m_LayerStack)
-				layer->OnUpdate(Time::GetDeltaSeconds());
+			if (!m_Minimized)
+			{
+				for (auto layer : m_LayerStack)
+					layer->OnUpdate(Time::GetDeltaSeconds());
+			}
 
 			// ImGui rendering
 			m_ImGuiLayer->Begin();
@@ -59,6 +62,7 @@ namespace Wgine {
 	{
 		EventDispatcher d(e);
 		d.Dispatch<WindowCloseEvent>(WGINE_BIND_EVENT_FN(Application::OnWindowClosed));
+		d.Dispatch<WindowResizeEvent>(WGINE_BIND_EVENT_FN(Application::OnWindowResized));
 
 		for (auto i = m_LayerStack.end(); i != m_LayerStack.begin(); )
 		{
@@ -83,5 +87,19 @@ namespace Wgine {
 		m_Running = false;
 
 		return true;
+	}
+
+	bool Application::OnWindowResized(WindowResizeEvent &e)
+	{
+		if (e.GetWidth() <= 0 || e.GetHeight() <= 0)
+		{
+			m_Minimized = true;
+			return false;
+		}
+
+		m_Minimized = false;
+
+
+		return false;
 	}
 }

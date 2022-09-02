@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Wgine/ECS/Entity.h"
+#include "Wgine/Event/ApplicationEvent.h"
 
 namespace Wgine
 {
@@ -26,8 +27,13 @@ namespace Wgine
 		const glm::mat4 &GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
 	protected:
+		virtual void OnStart() override;
+		virtual void OnEvent(Event &e) override;
+
 		virtual void UpdateEntityMatrix() override;
 		virtual void UpdateProjectionMatrix() {}
+		virtual bool OnWindowResized(WindowResizeEvent &e);
+		virtual void UpdateWindowSize(float width, float height) = 0;
 
 	protected:
 		glm::mat4 m_ProjectionMatrix;
@@ -45,7 +51,7 @@ namespace Wgine
 			UpdateEntityMatrix();
 		}
 
-		PerspectiveCamera(Transform transform, float fovVert = 45.f, float width = 1600.f, float height = 900.f, float nearClip = 0.1f, float farClip = 100000.f)
+		PerspectiveCamera(Transform transform, float fovVert = 45.f, float nearClip = -100000.f, float farClip = 100000.f, float width = 1600.f, float height = 900.f)
 			: Camera(transform), m_FOV(fovVert), m_Width(width), m_Height(height), m_NearClip(nearClip), m_FarClip(farClip)
 		{
 			UpdateProjectionMatrix();
@@ -60,6 +66,7 @@ namespace Wgine
 		void SetWindowSize(const float &width, const float &height) { m_Width = width; m_Height = height; UpdateProjectionMatrix(); }
 
 	protected:
+		virtual void UpdateWindowSize(float width, float height) override;
 		virtual void UpdateProjectionMatrix() override;
 
 	private:
@@ -76,8 +83,9 @@ namespace Wgine
 			UpdateEntityMatrix();
 		}
 
-		OrthographicCamera(Transform transform, float left = -1.f, float right = 1.f, float bottom = -1.f, float top = 1.f)
-			: Camera(transform), m_Left(left), m_Right(right), m_Bottom(bottom), m_Top(top)
+		OrthographicCamera(Transform transform, float nearClip = -0.1f, float farClip = 10000.f,
+			float left = -1.f, float right = 1.f, float bottom = -1.f, float top = 1.f)
+			: Camera(transform), m_NearClip(nearClip), m_FarClip(farClip), m_Left(left), m_Right(right), m_Bottom(bottom), m_Top(top)
 		{
 			UpdateProjectionMatrix();
 			UpdateEntityMatrix();
@@ -89,11 +97,14 @@ namespace Wgine
 		void SetRight(const float &right) { m_Right = right; UpdateProjectionMatrix(); };
 		void SetBottom(const float &bottom) { m_Bottom = bottom; UpdateProjectionMatrix(); };
 		void SetUp(const float &top) { m_Top = top; UpdateProjectionMatrix(); };
+		void SetNearClip(const float &nearClip) { m_NearClip = nearClip; UpdateProjectionMatrix(); }
+		void SetFarClip(const float &farClip) { m_FarClip = farClip; UpdateProjectionMatrix(); }
 
 	protected:
+		virtual void UpdateWindowSize(float width, float height) override;
 		virtual void UpdateProjectionMatrix() override;
 
 	private:
-		float m_Left, m_Right, m_Bottom, m_Top;
+		float m_Left, m_Right, m_Bottom, m_Top, m_NearClip, m_FarClip;
 	};
 }

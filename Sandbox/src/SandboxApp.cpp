@@ -12,8 +12,8 @@ public:
 		: Layer("Example")
 	{
 		m_Scene = std::make_shared<Scene>();
-		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
-		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
+		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 0.1f, 100000.f);
+		//m_Camera = m_Scene->ConstructEntity<OrthographicCamera>(Transform());
 		m_Scene->SetActiveCamera(m_Camera);
 
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
@@ -295,7 +295,7 @@ public:
 			{
 				for (int x = 0; x < 10; x++)
 				{
-					auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, 0.f)).ToModelMatrix();
+					auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix();
 					m_FlatShader->UploadUniformFloat4("u_Color", y % 2 == 1 ? m_PickedColor : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
 					Renderer::Submit(m_FlatShader, m_VertexArray, modelMatrix);
 				}
