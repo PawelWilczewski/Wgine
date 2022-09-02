@@ -3,7 +3,7 @@
 #include "Wgine/Core/Transform.h"
 #include "Wgine/Renderer/VertexArray.h"
 #include "Wgine/Renderer/Shader.h"
-#include "Wgine/Core.h"
+#include "Wgine/Core/Core.h"
 #include "Wgine/Event/Event.h"
 
 namespace Wgine

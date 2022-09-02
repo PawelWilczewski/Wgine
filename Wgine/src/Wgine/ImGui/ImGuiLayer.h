@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Layer.h"
+#include "Wgine/Core/Layer.h"
 #include "Wgine/Event/KeyEvent.h"
 #include "Wgine/Event/MouseEvent.h"
 #include "Wgine/Event/ApplicationEvent.h"

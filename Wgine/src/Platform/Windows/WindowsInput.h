@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Input.h"
+#include "Wgine/Core/Input.h"
 
 namespace Wgine
 {

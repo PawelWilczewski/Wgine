@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Wgine/Log.h"
+#include "Wgine/Core/Log.h"
 
 #ifdef WGINE_PLATFORM_WINDOWS
 	#include <Windows.h>

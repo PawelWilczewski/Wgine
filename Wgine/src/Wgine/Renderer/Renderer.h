@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderCommand.h"
-#include "Wgine/Camera.h"
+#include "Wgine/Camera/Camera.h"
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/ECS/Scene.h"
 

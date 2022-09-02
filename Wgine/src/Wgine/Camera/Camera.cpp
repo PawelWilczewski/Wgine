@@ -1,6 +1,6 @@
 #include "WginePCH.h"
 #include "Camera.h"
-#include "Application.h"
+#include "Wgine/Core/Application.h"
 
 #include <glm/gtx/euler_angles.hpp>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Core.h"
+#include "Wgine/Core/Core.h"
 #include <string>
 
 namespace Wgine

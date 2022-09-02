@@ -3,7 +3,7 @@
 #include <vector>
 #include "Wgine/ECS/Entity.h"
 #include "Wgine/Event/Event.h"
-#include "Wgine/Camera.h"
+#include "Wgine/Camera/Camera.h"
 #include <glm/glm.hpp>
 
 namespace Wgine

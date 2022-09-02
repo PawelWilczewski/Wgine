@@ -1,7 +1,7 @@
 #include "WginePCH.h"
 #include "CameraController.h"
-#include "Wgine/Input.h"
-#include "Application.h"
+#include "Wgine/Core/Input.h"
+#include "Wgine/Core/Application.h"
 
 namespace Wgine
 {

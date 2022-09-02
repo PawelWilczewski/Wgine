@@ -1,7 +1,7 @@
 #include "WginePCH.h"
 #include "WindowsInput.h"
 
-#include "Wgine/Application.h"
+#include "Wgine/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Wgine

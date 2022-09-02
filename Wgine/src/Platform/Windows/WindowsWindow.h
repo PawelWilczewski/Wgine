@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Window.h"
+#include "Wgine/Core/Window.h"
 #include "Wgine/Renderer/RenderingContext.h"
 
 #include <GLFW/glfw3.h>

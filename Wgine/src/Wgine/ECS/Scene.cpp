@@ -1,6 +1,6 @@
 #include "WginePCH.h"
 #include "Scene.h"
-#include "Wgine/Camera.h"
+#include "Wgine/Camera/Camera.h"
 #include "Wgine/ECS/Entity.h"
 
 

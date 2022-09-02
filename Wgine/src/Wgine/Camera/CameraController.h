@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Camera.h"
-#include "Event/Event.h"
-#include "Event/MouseEvent.h"
-#include "Event/ApplicationEvent.h"
+#include "Wgine/Event/Event.h"
+#include "Wgine/Event/MouseEvent.h"
+#include "Wgine/Event/ApplicationEvent.h"
 
 #include "glm/glm.hpp"
 

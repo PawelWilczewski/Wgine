@@ -2,7 +2,7 @@
 
 #include "WginePCH.h"
 
-#include "Wgine/Core.h"
+#include "Wgine/Core/Core.h"
 #include "Wgine/Event/Event.h"
 
 namespace Wgine

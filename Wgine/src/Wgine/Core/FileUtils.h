@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/Log.h"
+#include "Wgine/Core/Log.h"
 #include <fstream>
 #include <string>
 

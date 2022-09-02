@@ -1,13 +1,13 @@
 #include "WginePCH.h"
 #include "Application.h"
 
-#include "Input.h"
-#include "Renderer/Buffer.h"
+#include "Wgine/Core/Input.h"
+#include "Wgine/Renderer/Buffer.h"
 
 #include "Wgine/Renderer/Renderer.h"
 #include "Wgine/Renderer/RenderCommand.h"
 
-#include "Wgine/Camera.h"
+#include "Wgine/Camera/Camera.h"
 
 #include "Wgine/Core/Time.h"
 

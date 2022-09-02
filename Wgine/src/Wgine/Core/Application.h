@@ -3,14 +3,14 @@
 #include "Core.h"
 
 #include "Window.h"
-#include "Wgine/LayerStack.h"
-#include "Event/ApplicationEvent.h"
+#include "Wgine/Core/LayerStack.h"
+#include "Wgine/Event/ApplicationEvent.h"
 
 #include "Wgine/ImGui/ImGuiLayer.h"
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/Renderer/Buffer.h"
 #include "Wgine/Renderer/VertexArray.h"
-#include "Wgine/Camera.h"
+#include "Wgine/Camera/Camera.h"
 
 // TODO: application should be able to have multiple windows
 namespace Wgine {
