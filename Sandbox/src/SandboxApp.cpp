@@ -275,15 +275,6 @@ public:
 		RenderCommand::Clear();
 
 		//WGINE_CORE_TRACE("Delta time: {0} s, FPS: {1}", deltaSeconds, 1.f / deltaSeconds);
-		auto speed = 5.f;
-		if (Input::IsKeyPressed(WGINE_KEY_W))
-			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetForwardVector() * speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_S))
-			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetForwardVector() * -speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_D))
-			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * speed * deltaSeconds);
-		if (Input::IsKeyPressed(WGINE_KEY_A))
-			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * -speed * deltaSeconds);
 
 		m_AxisCamera->SetTransform({
 			m_Camera->GetLocation() + m_Camera->GetForwardVector() * 0.2f + m_Camera->GetUpVector() * 0.04f + m_Camera->GetRightVector() * 0.10f,

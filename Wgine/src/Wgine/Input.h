@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Wgine/Core.h"
+#include "Wgine/InputKeyCodes.h"
 #include <glm/glm.hpp>
 
 namespace Wgine

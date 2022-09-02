@@ -9,7 +9,6 @@
 
 #include "Wgine/Camera.h"
 
-#include "Wgine/KeyCodes.h"
 #include "Wgine/Core/Time.h"
 
 namespace Wgine {

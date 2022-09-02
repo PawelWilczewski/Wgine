@@ -8,8 +8,7 @@
 #include "Wgine/Core/Transform.h"
 
 #include "Wgine/Input.h"
-#include "Wgine/KeyCodes.h"
-#include "Wgine/MouseButtonCodes.h"
+#include "Wgine/InputKeyCodes.h"
 
 #include "Wgine/Renderer/RenderCommand.h"
 #include "Wgine/Renderer/Renderer.h"
