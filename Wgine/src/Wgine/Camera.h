@@ -77,7 +77,7 @@ namespace Wgine
 	{
 	public:
 		OrthographicCamera()
-			: Camera(), m_Left(-1.f), m_Right(1.f), m_Bottom(-1.f), m_Top(1.f)
+			: Camera(), m_Left(-1.f), m_Right(1.f), m_Bottom(-1.f), m_Top(1.f), m_NearClip(-0.1f), m_FarClip(10000.f)
 		{
 			UpdateProjectionMatrix();
 			UpdateEntityMatrix();

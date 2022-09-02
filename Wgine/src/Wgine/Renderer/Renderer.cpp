@@ -47,4 +47,9 @@ namespace Wgine
 			RenderCommand::DrawIndexed(vertexArray);
 		}
 	}
+
+	void Renderer::OnWindowResized(float width, float height)
+	{
+		RenderCommand::SetViewport(0, 0, width, height);
+	}
 }

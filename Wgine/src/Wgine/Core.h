@@ -19,6 +19,8 @@
 // TODO: ifdef using opengl
 // using openglleft handed system
 #define GLM_FORCE_LEFT_HANDED
+// using clip space from 0 to 1 (like in directx?) instead of -1 to 1
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 // CONFIGS
 #ifdef WGINE_DEBUG
