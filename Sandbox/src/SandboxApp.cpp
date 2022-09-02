@@ -13,8 +13,8 @@ public:
 	{
 		m_Scene = std::make_shared<Scene>();
 		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
-		//m_Camera = PerspectiveCamera(Transform({ -3.f, -5.f, 2.f }), 45.f, 1600, 900, 0.1f, 100000.f);
 		//m_Camera = OrthographicCamera(Transform(), -1.6f, 1.6f, -0.9f, 0.9f);
+		m_Scene->SetActiveCamera(m_Camera);
 
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
@@ -284,12 +284,12 @@ public:
 			{ 0.03f, 0.03f, 0.03f }
 			});
 
-		Renderer::BeginScene(*m_Camera); {
+		Renderer::BeginScene(m_Scene.get()); {
 
-			//Renderer::Submit(*m_Square);
-			//Renderer::Submit(*m_Triangle);
-			Renderer::Submit(*m_Axis);
-			Renderer::Submit(*m_AxisCamera);
+			////Renderer::Submit(*m_Square);
+			////Renderer::Submit(*m_Triangle);
+			//Renderer::Submit(*m_Axis);
+			//Renderer::Submit(*m_AxisCamera);
 
 			for (int y = 0; y < 10; y++)
 			{
@@ -303,6 +303,7 @@ public:
 
 			m_Texture->Bind();
 			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
+			
 			m_TransparentTexture->Bind();
 			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
 		} Renderer::EndScene();

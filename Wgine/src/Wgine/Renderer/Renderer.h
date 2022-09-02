@@ -3,6 +3,7 @@
 #include "RenderCommand.h"
 #include "Wgine/Camera.h"
 #include "Wgine/Renderer/Shader.h"
+#include "Wgine/ECS/Scene.h"
 
 namespace Wgine
 {
@@ -18,7 +19,7 @@ namespace Wgine
 	public:
 		static void Init();
 
-		static void BeginScene(Camera &camera);
+		static void BeginScene(Scene *scene);
 		static void EndScene();
 
 		static void Submit(const SceneEntity &entity);
@@ -30,11 +31,6 @@ namespace Wgine
 		static API s_API;
 
 	private:
-		struct SceneData
-		{
-			glm::mat4 ViewProjectionMatrix;
-		};
-
-		static SceneData *m_SceneData;
+		static Scene *m_ActiveScene;
 	};
 }

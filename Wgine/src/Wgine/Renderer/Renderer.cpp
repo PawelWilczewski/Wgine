@@ -4,17 +4,20 @@
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
-
-	Renderer::SceneData *Renderer::m_SceneData = new SceneData();
+	Scene *Renderer::m_ActiveScene = nullptr;
 
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
 	}
 
-	void Renderer::BeginScene(Camera &camera)
+	void Renderer::BeginScene(Scene *scene)
 	{
-		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		m_ActiveScene = scene;
+		WGINE_ASSERT(m_ActiveScene, "Invalid scene for renderer!");
+
+		for (auto entity : scene->m_SceneEntities) // should we acc do this here?
+			Submit(*entity);
 	}
 
 	void Renderer::EndScene()
@@ -29,11 +32,19 @@ namespace Wgine
 
 	void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform)
 	{
-		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		shader->UploadUniformMat4("u_Transform", transform);
+		WGINE_ASSERT(m_ActiveScene, "No active scene for renderer!");
 
-		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		if (shader)
+		{
+			shader->Bind();
+			shader->UploadUniformMat4("u_ViewProjection", m_ActiveScene->GetViewProjectionMatrix());
+			shader->UploadUniformMat4("u_Transform", transform);
+		}
+
+		if (vertexArray)
+		{
+			vertexArray->Bind();
+			RenderCommand::DrawIndexed(vertexArray);
+		}
 	}
 }

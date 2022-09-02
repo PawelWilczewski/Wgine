@@ -10,11 +10,6 @@ namespace Wgine
 	{
 	}
 
-	void CameraController::OnStart()
-	{
-		WGINE_CORE_TRACE("Test from controller");
-	}
-
 	void CameraController::OnTick(float deltaSeconds)
 	{
 		if (Input::IsKeyPressed(WGINE_KEY_W))
