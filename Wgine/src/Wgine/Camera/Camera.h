@@ -48,11 +48,11 @@ namespace Wgine
 	{
 	public:
 		PerspectiveCamera()
-			: m_FOV(45.f), m_NearClip(0.1f), m_FarClip(100000.f), m_Width(1600.f), m_Height(900.f)
+			: m_FOV(45.f), m_NearClip(0.1f), m_FarClip(10000.f), m_Width(1600.f), m_Height(900.f)
 		{
 		}
 
-		PerspectiveCamera(Transform transform, float fovVert = 45.f, float nearClip = -100000.f, float farClip = 100000.f, float width = 1600.f, float height = 900.f)
+		PerspectiveCamera(Transform transform, float fovVert = 45.f, float nearClip = 0.1f, float farClip = 10000.f, float width = 1600.f, float height = 900.f)
 			: Camera(transform), m_FOV(fovVert), m_Width(width), m_Height(height), m_NearClip(nearClip), m_FarClip(farClip)
 		{
 		}
