@@ -24,7 +24,7 @@ namespace Wgine
 		bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
 		bool OnMouseScrolled(MouseScrolledEvent &e);
 
-	private:
+	protected:
 		Camera *m_Camera;
 		float m_MoveSpeed;
 		float m_MoveSpeedMultiplier = 1.f;
@@ -32,5 +32,18 @@ namespace Wgine
 		float m_MaxSpeed = 10000.f;
 		float m_MinSpeed = 0.1f;
 		glm::vec2 m_LastMousePosition = glm::vec2(0.f);
+	};
+
+	class OrthographicCameraController2D : public CameraController
+	{
+	public:
+		OrthographicCameraController2D(Camera *camera, float moveSpeed = 5.f, float speedMultiplierDelta = 0.2f, float minSpeed = 0.1f, float maxSpeed = 10000.f)
+			: CameraController(camera, moveSpeed, speedMultiplierDelta, minSpeed, maxSpeed)
+		{
+		}
+
+	protected:
+		virtual void OnTick(float deltaSeconds) override;
+		virtual void OnEvent(Event &e) override {};
 	};
 }

@@ -67,4 +67,15 @@ namespace Wgine
 		m_MoveSpeedMultiplier = glm::clamp(m_MoveSpeedMultiplier, m_MinSpeed, m_MaxSpeed);
 		return false;
 	}
+	void OrthographicCameraController2D::OnTick(float deltaSeconds)
+	{
+		if (Input::IsKeyPressed(WGINE_KEY_I))
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetUpVector() * GetMoveSpeed() * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_K))
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetUpVector() * -GetMoveSpeed() * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_L))
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * GetMoveSpeed() * deltaSeconds);
+		if (Input::IsKeyPressed(WGINE_KEY_J))
+			m_Camera->SetLocation(m_Camera->GetLocation() + m_Camera->GetRightVector() * -GetMoveSpeed() * deltaSeconds);
+	}
 }

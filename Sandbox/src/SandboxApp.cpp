@@ -13,7 +13,7 @@ public:
 	{
 		m_Scene = std::make_shared<Scene>();
 		m_Camera = m_Scene->ConstructEntity<OrthographicCamera>(Transform());
-		//auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
+		auto controller = m_Scene->ConstructEntity<OrthographicCameraController2D>(m_Camera);
 		m_Scene->SetActiveCamera(m_Camera);
 		
 		m_FlatShader = Shader::Create("assets/shaders/VertexColor.glsl");
@@ -67,7 +67,7 @@ public:
 			{
 				for (int x = 0; x < 10; x++)
 				{
-					auto modelMatrix = Transform(glm::vec3(0.f, 2.5f * x, 2.5f * y)).ToModelMatrix();
+					auto modelMatrix = Transform(glm::vec3(0.f, 2.5f * x, 2.5f * y), glm::vec3(0.f, -90.f, 0.f)).ToModelMatrix();
 					m_FlatShader->UploadUniformFloat4("u_Color", y % 2 == 1 ? glm::vec4(.2f, 0.5f, 0.8f, 1.f) : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
 					Renderer::Submit(m_FlatShader, m_VertexArray, modelMatrix);
 				}
