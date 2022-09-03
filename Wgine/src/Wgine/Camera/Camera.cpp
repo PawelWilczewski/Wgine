@@ -59,22 +59,10 @@ namespace Wgine
 	void OrthographicCamera::UpdateWindowSize(float width, float height)
 	{
 		auto aspectRatio = width / height;
-		SetBottom(-1.f * 10.f);
-		SetLeft(-aspectRatio * 10.f);
-		SetUp(1.f * 10.f);
-		SetRight(aspectRatio * 10.f);
-
-		//auto aspectRatio = width / height;
-		//SetBottom(-height / 2);
-		//SetLeft(-width / 2);
-		//SetUp(height / 2);
-		//SetRight(width / 2);
-
-		//auto aspectRatio = width / height;
-		//SetBottom(-20.f);
-		//SetLeft(-20.f);
-		//SetUp(20.f);
-		//SetRight(20.f);
+		SetBottom(-m_HalfSize);
+		SetLeft(-aspectRatio * m_HalfSize);
+		SetUp(m_HalfSize);
+		SetRight(aspectRatio * m_HalfSize);
 	}
 
 	void OrthographicCamera::UpdateProjectionMatrix()

@@ -76,13 +76,13 @@ namespace Wgine
 	{
 	public:
 		OrthographicCamera()
-			: m_Left(-1.f), m_Right(1.f), m_Bottom(-1.f), m_Top(1.f), m_NearClip(-0.1f), m_FarClip(10000.f)
+			: m_Left(-1.f), m_Right(1.f), m_Bottom(-1.f), m_Top(1.f), m_NearClip(-0.1f), m_FarClip(10000.f), m_HalfSize(20.f/2)
 		{
 		}
 
-		OrthographicCamera(Transform transform, float nearClip = -0.1f, float farClip = 10000.f,
+		OrthographicCamera(Transform transform, float verticalSize = 20.f,  float nearClip = -0.1f, float farClip = 10000.f,
 			float left = -1.f, float right = 1.f, float bottom = -1.f, float top = 1.f)
-			: Camera(transform), m_NearClip(nearClip), m_FarClip(farClip), m_Left(left), m_Right(right), m_Bottom(bottom), m_Top(top)
+			: Camera(transform), m_HalfSize(verticalSize / 2), m_NearClip(nearClip), m_FarClip(farClip), m_Left(left), m_Right(right), m_Bottom(bottom), m_Top(top)
 		{
 		}
 
@@ -100,6 +100,6 @@ namespace Wgine
 		virtual void UpdateProjectionMatrix() override;
 
 	private:
-		float m_Left, m_Right, m_Bottom, m_Top, m_NearClip, m_FarClip;
+		float m_Left, m_Right, m_Bottom, m_Top, m_NearClip, m_FarClip, m_HalfSize;
 	};
 }
