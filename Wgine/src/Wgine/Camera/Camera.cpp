@@ -19,12 +19,14 @@ namespace Wgine
 		m = glm::scale(m, m_Transform.Scale);
 
 		m_ViewMatrix = glm::inverse(m);
-		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
+		RecalculateViewProjectionMatrix();
 	}
 
 	void Camera::OnStart()
 	{
 		UpdateWindowSize(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		UpdateProjectionMatrix();
 	}
 
 	void Camera::OnEvent(Event &e)
@@ -50,15 +52,29 @@ namespace Wgine
 		// we want the camera to face +x:
 		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorUp);
 		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
+
+		RecalculateViewProjectionMatrix();
 	}
 
 	void OrthographicCamera::UpdateWindowSize(float width, float height)
 	{
 		auto aspectRatio = width / height;
-		SetBottom(-1.f);
-		SetLeft(-aspectRatio);
-		SetUp(1.f);
-		SetRight(aspectRatio);
+		SetBottom(-1.f * 10.f);
+		SetLeft(-aspectRatio * 10.f);
+		SetUp(1.f * 10.f);
+		SetRight(aspectRatio * 10.f);
+
+		//auto aspectRatio = width / height;
+		//SetBottom(-height / 2);
+		//SetLeft(-width / 2);
+		//SetUp(height / 2);
+		//SetRight(width / 2);
+
+		//auto aspectRatio = width / height;
+		//SetBottom(-20.f);
+		//SetLeft(-20.f);
+		//SetUp(20.f);
+		//SetRight(20.f);
 	}
 
 	void OrthographicCamera::UpdateProjectionMatrix()
@@ -67,5 +83,7 @@ namespace Wgine
 		// we want the camera to face +x:
 		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(-90.f), Transform::VectorUp);
 		m_ProjectionMatrix = glm::rotate(m_ProjectionMatrix, glm::radians(90.f), Transform::VectorRight);
+
+		RecalculateViewProjectionMatrix();
 	}
 }

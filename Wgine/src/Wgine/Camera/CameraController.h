@@ -16,7 +16,6 @@ namespace Wgine
 
 		inline float GetMoveSpeed() const { return m_MoveSpeed * m_MoveSpeedMultiplier; }
 
-
 	protected:
 		virtual void OnTick(float deltaSeconds) override;
 		virtual void OnEvent(Event &e) override;

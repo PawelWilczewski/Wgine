@@ -36,13 +36,13 @@ namespace Wgine
 	{
 	public:
 		SceneEntity()
-			: Entity(), m_Transform(Transform())
+			: m_Transform(Transform())
 		{
 			UpdateEntityMatrix();
 		}
 
 		SceneEntity(Transform transform)
-			: Entity(), m_Transform(transform)
+			: m_Transform(transform)
 		{
 			UpdateEntityMatrix();
 		}

@@ -7,7 +7,6 @@
 
 namespace Wgine
 {
-	// TODO: this looks much like a singelton which it shouldn't be: why can we only have one renderer?
 	class Renderer
 	{
 	public:

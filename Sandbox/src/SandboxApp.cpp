@@ -5,10 +5,105 @@
 
 using namespace Wgine;
 
-class ExampleLayer : public Layer
+class UserInterfaceLayer : public Layer
 {
 public:
-	ExampleLayer()
+	UserInterfaceLayer()
+		: Layer("Example")
+	{
+		m_Scene = std::make_shared<Scene>();
+		m_Camera = m_Scene->ConstructEntity<OrthographicCamera>(Transform());
+		//auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
+		m_Scene->SetActiveCamera(m_Camera);
+		
+		m_FlatShader = Shader::Create("assets/shaders/VertexColor.glsl");
+
+		m_VertexArray.reset(VertexArray::Create());
+		// vertex buffer
+		float verticesSquare[5 * 4] = {
+			-1.0f,  1.0f, 0.f, 1.f, 1.f,
+			-1.0f, -1.0f, 0.f, 0.f, 1.f,
+			1.0f,  -1.0f, 0.f, 0.f, 0.f,
+			1.0f,   1.0f, 0.f, 1.f, 0.f,
+		};
+		Ref<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(VertexBuffer::Create(verticesSquare, sizeof(verticesSquare)));
+		vertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float2, "a_TexCoord" },
+			});
+		m_VertexArray->AddVertexBuffer(vertexBuffer);
+		// index buffer
+		unsigned int indices[12] = { 0, 1, 2, 2, 3, 0 };
+		Ref<IndexBuffer> indexBuffer;
+		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(indexBuffer);
+
+		m_TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		m_TextureShader->Bind();
+		m_TextureShader->UploadUniformInt("u_Texture", 0);
+
+		m_Texture = Texture2D::Create("assets/textures/coords.png");
+		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
+	}
+
+	virtual void OnAttach() override
+	{
+		m_Scene->OnStart();
+	}
+
+	virtual void OnDetach() override
+	{
+		m_Scene->OnEnd();
+	}
+
+	virtual void OnUpdate(const float &deltaSeconds) override
+	{
+		m_Scene->OnTick(deltaSeconds);
+		
+		Renderer::BeginScene(m_Scene.get()); {
+
+			for (int y = 0; y < 10; y++)
+			{
+				for (int x = 0; x < 10; x++)
+				{
+					auto modelMatrix = Transform(glm::vec3(0.f, 2.5f * x, 2.5f * y)).ToModelMatrix();
+					m_FlatShader->UploadUniformFloat4("u_Color", y % 2 == 1 ? glm::vec4(.2f, 0.5f, 0.8f, 1.f) : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
+					Renderer::Submit(m_FlatShader, m_VertexArray, modelMatrix);
+				}
+			}
+
+			m_Texture->Bind();
+			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
+
+			m_TransparentTexture->Bind();
+			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
+		} Renderer::EndScene();
+	}
+
+	virtual void OnImGuiRender() override
+	{
+	}
+
+	void OnEvent(Event &event) override
+	{
+		m_Scene->OnEvent(event);
+	}
+
+private:
+	Ref<Scene> m_Scene;
+	Camera *m_Camera;
+
+	Ref<Texture2D> m_Texture, m_TransparentTexture;
+
+	Ref<VertexArray> m_VertexArray;
+	Ref<Shader> m_FlatShader, m_TextureShader;
+};
+
+class GameplayLayer : public Layer
+{
+public:
+	GameplayLayer()
 		: Layer("Example")
 	{
 		m_Scene = std::make_shared<Scene>();
@@ -321,14 +416,13 @@ public:
 		m_Scene->OnEvent(event);
 	}
 
-
 private:
 	Ref<Scene> m_Scene;
+	Camera *m_Camera;
 	SceneEntity *m_Triangle;
 	SceneEntity *m_Square;
 	SceneEntity *m_Axis;
 	SceneEntity *m_AxisCamera;
-	Camera *m_Camera;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 
@@ -343,7 +437,8 @@ class Sandbox : public Wgine::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer());
+		PushLayer(new GameplayLayer());
+		PushOverlay(new UserInterfaceLayer());
 	}
 
 	~Sandbox()
