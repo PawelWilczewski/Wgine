@@ -57,6 +57,6 @@ namespace Wgine
 
 	void Renderer::OnWindowResized(float width, float height)
 	{
-		RenderCommand::SetViewport(0, 0, width, height);
+		RenderCommand::SetViewport(0, 0, (uint32_t)width, (uint32_t)height);
 	}
 }

@@ -54,9 +54,9 @@ namespace Wgine
 		const glm::vec3 &GetLocation() const { return m_Transform.Location; }
 		const glm::vec3 &GetRotation() const { return m_Transform.Rotation; }
 		const glm::vec3 &GetScale() const { return m_Transform.Scale; }
-		const glm::vec3 &GetForwardVector() const { return m_Transform.GetForwardVector(); }
-		const glm::vec3 &GetRightVector() const { return m_Transform.GetRightVector(); }
-		const glm::vec3 &GetUpVector() const { return m_Transform.GetUpVector(); }
+		const glm::vec3 GetForwardVector() const { return m_Transform.GetForwardVector(); }
+		const glm::vec3 GetRightVector() const { return m_Transform.GetRightVector(); }
+		const glm::vec3 GetUpVector() const { return m_Transform.GetUpVector(); }
 
 		void SetTransform(Transform t) { m_Transform = t; UpdateEntityMatrix(); }
 		void SetLocation(glm::vec3 location) { m_Transform.Location = location; UpdateEntityMatrix(); }

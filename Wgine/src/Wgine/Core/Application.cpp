@@ -39,7 +39,7 @@ namespace Wgine {
 	{
 		Renderer::Init();
 		Time::Init();
-		Renderer::OnWindowResized(GetWindow().GetWidth(), GetWindow().GetHeight());
+		Renderer::OnWindowResized((float)GetWindow().GetWidth(), (float)GetWindow().GetHeight());
 		while (m_Running)
 		{
 			Time::FrameBegin();
@@ -101,7 +101,7 @@ namespace Wgine {
 		}
 
 		m_Minimized = false;
-		Renderer::OnWindowResized(e.GetWidth(), e.GetHeight());
+		Renderer::OnWindowResized((float)e.GetWidth(), (float)e.GetHeight());
 
 		return false;
 	}

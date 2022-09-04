@@ -20,9 +20,9 @@ namespace Wgine
 			: Location(location), Rotation(rotation), Scale(scale)
 		{}
 
-		const glm::vec3 &GetForwardVector() const { return glm::quat(glm::radians(Rotation)) * VectorForward; }
-		const glm::vec3 &GetRightVector() const { return glm::quat(glm::radians(Rotation)) * VectorRight; }
-		const glm::vec3 &GetUpVector() const { return glm::quat(glm::radians(Rotation)) * VectorUp; }
+		const glm::vec3 GetForwardVector() const { return glm::quat(glm::radians(Rotation)) * VectorForward; }
+		const glm::vec3 GetRightVector() const { return glm::quat(glm::radians(Rotation)) * VectorRight; }
+		const glm::vec3 GetUpVector() const { return glm::quat(glm::radians(Rotation)) * VectorUp; }
 
 		// TODO: what kind of reference should this be? we can't copy it yet just a reference is too weak
 		glm::mat4 ToModelMatrix() const

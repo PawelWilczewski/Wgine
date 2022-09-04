@@ -25,7 +25,7 @@ namespace Wgine
 
 	void Camera::OnStart()
 	{
-		UpdateWindowSize(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		UpdateWindowSize((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
 		UpdateProjectionMatrix();
 	}
 
@@ -37,7 +37,7 @@ namespace Wgine
 
 	bool Camera::OnWindowResized(WindowResizeEvent &e)
 	{
-		UpdateWindowSize(e.GetWidth(), e.GetHeight());
+		UpdateWindowSize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}
 
