@@ -39,7 +39,7 @@ namespace Wgine
 			return entity;
 		}
 
-	private:
+	public:
 		std::vector<Entity *> m_Entities;
 		std::vector<SceneEntity *> m_SceneEntities; // subset of entities which are sceneentities
 		//std::vector<Entity *> m_EventPropagateEntities; // TODO: implement this if performance is bad for looping through all entities

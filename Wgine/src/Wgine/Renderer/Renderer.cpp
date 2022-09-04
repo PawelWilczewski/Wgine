@@ -1,5 +1,6 @@
 #include "WginePCH.h"
 #include "Renderer.h"
+#include "Renderer2D.h"
 
 namespace Wgine
 {
@@ -9,20 +10,25 @@ namespace Wgine
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		Renderer2D::Init();
+	}
+
+	void Renderer::Shutdown()
+	{
+		Renderer2D::Shutdown();
 	}
 
 	void Renderer::BeginScene(Scene *scene)
 	{
+		WGINE_ASSERT(scene, "Invalid scene for renderer!");
 		m_ActiveScene = scene;
-		WGINE_ASSERT(m_ActiveScene, "Invalid scene for renderer!");
 
-		for (auto entity : scene->m_SceneEntities) // should we acc do this here?
+		for (auto entity : m_ActiveScene->m_SceneEntities) // should we acc do this here?
 			Submit(*entity);
 	}
 
 	void Renderer::EndScene()
 	{
-
 	}
 
 	void Renderer::Submit(const SceneEntity &entity)
@@ -30,7 +36,7 @@ namespace Wgine
 		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
 	}
 
-	void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform)
+	void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms)
 	{
 		WGINE_ASSERT(m_ActiveScene, "No active scene for renderer!");
 
@@ -39,6 +45,7 @@ namespace Wgine
 			shader->Bind();
 			shader->UploadUniformMat4("u_ViewProjection", m_ActiveScene->GetViewProjectionMatrix());
 			shader->UploadUniformMat4("u_Transform", transform);
+			submitExtraUniforms(shader);
 		}
 
 		if (vertexArray)

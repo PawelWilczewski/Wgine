@@ -17,12 +17,13 @@ namespace Wgine
 
 	public:
 		static void Init();
+		static void Shutdown();
 
 		static void BeginScene(Scene *scene);
 		static void EndScene();
 
 		static void Submit(const SceneEntity &entity);
-		static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform);
+		static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms = [](Ref<Shader> s) {});
 
 		inline static API GetAPI() { return s_API; }
 

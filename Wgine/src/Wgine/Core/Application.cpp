@@ -5,6 +5,7 @@
 #include "Wgine/Renderer/Buffer.h"
 
 #include "Wgine/Renderer/Renderer.h"
+#include "Wgine/Renderer/Renderer2D.h"
 #include "Wgine/Renderer/RenderCommand.h"
 
 #include "Wgine/Camera/Camera.h"
@@ -57,6 +58,7 @@ namespace Wgine {
 
 			m_Window->OnUpdate();
 		}
+		Renderer::Shutdown();
 	}
 
 	void Application::OnEvent(Event &e)
