@@ -300,7 +300,7 @@ public:
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
-		m_TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		m_TextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
 
 		m_Texture = Texture2D::Create("assets/textures/coords.png");
 		m_TextureShader->Bind();
@@ -346,10 +346,14 @@ public:
 			}
 
 			m_Texture->Bind();
-			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
+			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [](Ref<Shader> s) {
+				s->UploadUniformFloat4("u_Color", glm::vec4(1.f, 1.f, 1.f, 0.2f));
+				});
 			
 			m_TransparentTexture->Bind();
-			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
+			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [](Ref<Shader> s) {
+				s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
+				});
 		} Renderer::EndScene();
 	}
 

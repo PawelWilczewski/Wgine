@@ -12,8 +12,8 @@ namespace Wgine
 	struct PrimitiveData
 	{
 		Ref<VertexArray> QuadVA;
-		Ref<Shader> UnlitShader;
-		Ref<Shader> TextureShader;
+		Ref<Shader> UnlitTextureShader;
+		Ref<Texture2D> WhiteTexture;
 		Scene *ActiveScene = nullptr;
 	};
 
@@ -46,8 +46,8 @@ namespace Wgine
 		indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		data->QuadVA->SetIndexBuffer(indexBuffer);
 
-		data->UnlitShader = Shader::Create("assets/shaders/Unlit.glsl");
-		data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		data->UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
+		data->WhiteTexture = Texture2D::Create("assets/textures/white.png");
 	}
 
 	void Renderer2D::Shutdown()
@@ -98,7 +98,8 @@ namespace Wgine
 	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
-		Submit(data->UnlitShader, data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		data->WhiteTexture->Bind();
+		Submit(data->UnlitTextureShader, data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", color);
 			});
 	}
@@ -107,6 +108,8 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(data->TextureShader, data->QuadVA, transform.ToModelMatrix());
+		Submit(data->UnlitTextureShader, data->QuadVA, transform.ToModelMatrix(), [](Ref<Shader> s) {
+			s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
+			});
 	}
 }
