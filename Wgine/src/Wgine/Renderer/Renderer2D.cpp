@@ -27,9 +27,9 @@ namespace Wgine
 		// vertex buffer
 		data->QuadVA = VertexArray::Create();
 		float quadVertices[5 * 4] = {
-			0.f,  -0.5f,  0.5f,  1.f, 1.f,
+			0.f,  -0.5f,  0.5f,  0.f, 0.f,
 			0.f,  -0.5f, -0.5f,  0.f, 1.f,
-			0.f,   0.5f, -0.5f,  0.f, 0.f,
+			0.f,   0.5f, -0.5f,  1.f, 1.f,
 			0.f,   0.5f,  0.5f,  1.f, 0.f,
 		};
 		Ref<VertexBuffer> vertexBuffer;
@@ -64,7 +64,7 @@ namespace Wgine
 	{
 	}
 
-	static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms)
+	static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms = [](Ref<Shader>) {})
 	{
 		WGINE_ASSERT(data->ActiveScene, "No active scene for renderer!");
 
@@ -86,35 +86,27 @@ namespace Wgine
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
-
-		Ref<Transform> t = std::make_shared<Transform>(glm::vec3(1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y));
-		//data->UnlitShader->UploadUniformFloat4("u_Color", /*glm::mod(Time::GetTimeSeconds(), 1.f) **/ color);
-		//Submit(data->UnlitShader, data->QuadVA, t->ToModelMatrix());
-
-		Submit(data->UnlitShader, data->QuadVA, t->ToModelMatrix(), [&](Ref<Shader> s) {
-			s->UploadUniformFloat4("u_Color", glm::mod(Time::GetTimeSeconds(), 1.f) * color);
-			});
-		//data->UnlitShader->Bind();
-		//data->UnlitShader->UploadUniformMat4("u_ViewProjection", data->ActiveScene->GetViewProjectionMatrix());
-		//data->UnlitShader->UploadUniformMat4("u_Transform", t->ToModelMatrix());
-		//data->UnlitShader->UploadUniformFloat4("u_Color", /*glm::mod(Time::GetTimeSeconds(), 1.f) **/ color);
-
-		//data->QuadVA->Bind();
-		//RenderCommand::DrawIndexed(data->QuadVA);
+		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
+		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture);
 	}
 
 	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
+		Submit(data->UnlitShader, data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+			s->UploadUniformFloat4("u_Color", color);
+			});
 	}
 
 	void Renderer2D::DrawQuad(const Transform &transform, const Texture2D &texture)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
+		texture.Bind();
+		Submit(data->TextureShader, data->QuadVA, transform.ToModelMatrix());
 	}
 }

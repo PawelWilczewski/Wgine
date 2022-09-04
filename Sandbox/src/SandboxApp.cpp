@@ -15,6 +15,8 @@ public:
 		m_Camera = m_Scene->ConstructEntity<OrthographicCamera>(Transform());
 		m_Scene->SetActiveCamera(m_Camera);
 		auto controller = m_Scene->ConstructEntity<OrthographicCameraController2D>(m_Camera);
+
+		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
 	}
 
 	virtual void OnAttach() override
@@ -34,6 +36,8 @@ public:
 		Renderer2D::BeginScene(m_Scene.get()); {
 			Renderer2D::DrawQuad({ 1.f, 1.f }, 30.f, { 10.f, 10.f }, { 0.8f, 0.2f, 0.3f, 1.f });
 			Renderer2D::DrawQuad({ -2.f, -1.f }, 45.f, { 4.f, 4.f }, { 0.1f, 0.9f, 0.3f, 1.f });
+			Renderer2D::DrawQuad(Transform({ -20.f, 15.f, 10.f }, { 15.f, 0.f, 0.f }, {10.f, 10.f, 10.f}), {0.1f, 0.9f, 0.3f, 1.f});
+			Renderer2D::DrawQuad(Transform({ -20.f, -15.f, 5.f }, { 0.f, 0.f, 0.f }, { 10.f, 10.f, 10.f }), *m_TransparentTexture);
 		} Renderer2D::EndScene();
 	}
 	
@@ -48,6 +52,8 @@ public:
 
 private:
 	Ref<Scene> m_Scene;
+	Ref<Texture2D> m_TransparentTexture;
+
 	Camera *m_Camera;
 };
 
