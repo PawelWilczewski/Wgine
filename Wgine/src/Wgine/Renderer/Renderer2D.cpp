@@ -47,7 +47,8 @@ namespace Wgine
 		data->QuadVA->SetIndexBuffer(indexBuffer);
 
 		data->UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
-		data->WhiteTexture = Texture2D::Create("assets/textures/white.png");
+		uint32_t whiteData = 0xffffffff;
+		data->WhiteTexture = Texture2D::Create(1, 1, &whiteData);
 	}
 
 	void Renderer2D::Shutdown()

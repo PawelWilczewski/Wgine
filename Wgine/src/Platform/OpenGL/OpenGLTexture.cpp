@@ -5,6 +5,23 @@
 
 namespace Wgine
 {
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, void *data)
+		: m_Width(width), m_Height(height)
+	{
+		GLenum internalFormat = GL_RGBA8, dataFormat = GL_RGBA;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+	}
+
 	OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
 		: m_Path(path)
 	{

@@ -17,6 +17,7 @@ namespace Wgine
 	class Texture2D : public Texture
 	{
 	public:
+		static Ref<Texture2D> Create(uint32_t width, uint32_t height, void *data);
 		static Ref<Texture2D> Create(const std::string &path);
 	};
 }
