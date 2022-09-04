@@ -47,6 +47,8 @@ namespace Wgine
 		data->QuadVA->SetIndexBuffer(indexBuffer);
 
 		data->UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
+		data->UnlitTextureShader->Bind();
+
 		uint32_t whiteData = 0xffffffff;
 		data->WhiteTexture = Texture2D::Create(1, 1, &whiteData);
 	}
@@ -65,17 +67,13 @@ namespace Wgine
 	{
 	}
 
-	static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms = [](Ref<Shader>) {})
+	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms = [](Ref<Shader>) {})
 	{
 		WGINE_ASSERT(data->ActiveScene, "No active scene for renderer!");
 
-		if (shader)
-		{
-			shader->Bind();
-			shader->UploadUniformMat4("u_ViewProjection", data->ActiveScene->GetViewProjectionMatrix());
-			shader->UploadUniformMat4("u_Transform", transform);
-			submitExtraUniforms(shader);
-		}
+		data->UnlitTextureShader->UploadUniformMat4("u_ViewProjection", data->ActiveScene->GetViewProjectionMatrix());
+		data->UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
+		submitExtraUniforms(data->UnlitTextureShader);
 
 		if (vertexArray)
 		{
@@ -100,7 +98,7 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		data->WhiteTexture->Bind();
-		Submit(data->UnlitTextureShader, data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		Submit(data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", color);
 			});
 	}
@@ -109,7 +107,7 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(data->UnlitTextureShader, data->QuadVA, transform.ToModelMatrix(), [](Ref<Shader> s) {
+		Submit(data->QuadVA, transform.ToModelMatrix(), [](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
 			});
 	}
