@@ -67,7 +67,7 @@ namespace Wgine
 	{
 	}
 
-	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms = [](Ref<Shader>) {})
+	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [](const Ref<Shader> &) {})
 	{
 		WGINE_ASSERT(data->ActiveScene, "No active scene for renderer!");
 

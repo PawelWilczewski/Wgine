@@ -36,7 +36,7 @@ namespace Wgine
 		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
 	}
 
-	void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(Ref<Shader>)> submitExtraUniforms)
+	void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader>&)> submitExtraUniforms)
 	{
 		WGINE_ASSERT(m_ActiveScene, "No active scene for renderer!");
 
