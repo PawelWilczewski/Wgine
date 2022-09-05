@@ -67,12 +67,13 @@ namespace Wgine
 	{
 	}
 
-	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [](const Ref<Shader> &) {})
+	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &) {})
 	{
 		WGINE_ASSERT(data->ActiveScene, "No active scene for renderer!");
 
 		data->UnlitTextureShader->UploadUniformMat4("u_ViewProjection", data->ActiveScene->GetViewProjectionMatrix());
 		data->UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
+		data->UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
 		submitExtraUniforms(data->UnlitTextureShader);
 
 		if (vertexArray)
@@ -88,10 +89,10 @@ namespace Wgine
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture)
+	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
-		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture);
+		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture, tiling, tint);
 	}
 
 	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
@@ -103,12 +104,13 @@ namespace Wgine
 			});
 	}
 
-	void Renderer2D::DrawQuad(const Transform &transform, const Texture2D &texture)
+	void Renderer2D::DrawQuad(const Transform &transform, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
 		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(data->QuadVA, transform.ToModelMatrix(), [](Ref<Shader> s) {
-			s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
+		Submit(data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+			s->UploadUniformFloat4("u_Color", tint);
+			s->UploadUniformFloat2("u_Tiling", tiling);
 			});
 	}
 }

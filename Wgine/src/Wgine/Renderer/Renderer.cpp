@@ -45,6 +45,7 @@ namespace Wgine
 			shader->Bind();
 			shader->UploadUniformMat4("u_ViewProjection", m_ActiveScene->GetViewProjectionMatrix());
 			shader->UploadUniformMat4("u_Transform", transform);
+			shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
 			submitExtraUniforms(shader);
 		}
 
