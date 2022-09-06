@@ -35,9 +35,9 @@ namespace Wgine
 
 		struct WindowData
 		{
-			std::string Title;
-			unsigned int Width, Height;
-			bool VSync;
+			std::string Title = "Window";
+			unsigned int Width = 1600, Height = 900;
+			bool VSync = false;
 
 			EventCallbackFn EventCallback;
 		};

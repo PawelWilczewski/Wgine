@@ -6,7 +6,7 @@
 
 namespace Wgine
 {
-	// TODO: maybe merge with renderer?
+	// TODO: maybe merge with renderer? probs not because of Renderer2D?
 	class RenderCommand
 	{
 	public:

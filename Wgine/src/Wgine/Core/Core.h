@@ -53,3 +53,17 @@ namespace Wgine
 	template<typename T, typename ...Args>
 	constexpr Ref<T> MakeRef(Args &&...args) { return std::make_shared<T>(std::forward<Args>(args)...); }
 }
+
+// switches on the Renderer::API to create a desired Ref (buffers/shaders/textures etc.)
+// i.e type = VertexBuffer/Shader/Texture2D etc.
+// args are the ones that the desired constructor uses
+// NOTE: need to include Wgine/Renderer/Renderer.h to compile (as well as any of the returned types files)
+#define SWITCH_RENDERAPI_MAKEREF(type, ...) {\
+		switch(Renderer::GetAPI())\
+		{\
+			case Renderer::API::None: WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;\
+			case Renderer::API::OpenGL: return MakeRef<OpenGL ## type>(__VA_ARGS__);\
+		}\
+		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");\
+		return nullptr;\
+	}

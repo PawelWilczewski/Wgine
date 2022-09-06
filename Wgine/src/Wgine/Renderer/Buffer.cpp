@@ -8,23 +8,11 @@ namespace Wgine
 {
 	Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
-		{
-			case Renderer::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-			case Renderer::API::OpenGL:	return std::make_shared<OpenGLVertexBuffer>(vertices, size);
-		}
-		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
+		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, vertices, size);
 	}
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
-		{
-			case Renderer::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-			case Renderer::API::OpenGL:	return std::make_shared<OpenGLIndexBuffer>(indices, size);
-		}
-		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
+		SWITCH_RENDERAPI_MAKEREF(IndexBuffer, indices, size);
 	}
 }

@@ -9,22 +9,10 @@ namespace Wgine
 {
 	Ref<Shader> Shader::Create(const std::string &sourceFilePath)
 	{
-		switch (Renderer::GetAPI())
-		{
-		case Renderer::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-		case Renderer::API::OpenGL:	return std::make_shared<OpenGLShader>(sourceFilePath);
-		}
-		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
+		SWITCH_RENDERAPI_MAKEREF(Shader, sourceFilePath);
 	}
 	Ref<Shader> Shader::Create(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource)
 	{
-		switch (Renderer::GetAPI())
-		{
-		case Renderer::API::None:	WGINE_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-		case Renderer::API::OpenGL:	return std::make_shared<OpenGLShader>(shaderName, vertexSource, fragmentSource);
-		}
-		WGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
+		SWITCH_RENDERAPI_MAKEREF(Shader, shaderName, vertexSource, fragmentSource);
 	}
 }
