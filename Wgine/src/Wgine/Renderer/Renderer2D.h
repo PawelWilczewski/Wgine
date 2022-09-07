@@ -16,6 +16,8 @@ namespace Wgine
 		static void BeginScene(Scene *scene);
 		static void EndScene();
 
+		static void Flush();
+
 		// +x to the right (+y in 3d space)
 		// +y upwards (+z in 3d space)
 		static void DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color);

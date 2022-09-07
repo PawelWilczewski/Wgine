@@ -44,7 +44,7 @@
 namespace Wgine
 {
 	template<typename T>
-	using Scope = std::unique_ptr<T>;
+	using Scope = std::unique_ptr<T>; // TODO: rename to Unique
 	template<typename T, typename ...Args>
 	constexpr Scope<T> MakeScope(Args &&...args) { return std::make_unique<T>(std::forward<Args>(args)...); }
 

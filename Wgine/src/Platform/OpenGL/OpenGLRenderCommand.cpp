@@ -42,8 +42,8 @@ namespace Wgine
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderCommand::DrawIndexedImpl(const Ref<VertexArray> &vertexArray)
+	void OpenGLRenderCommand::DrawIndexedImpl(const Ref<VertexArray> &vertexArray, uint32_t count)
 	{
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, count == 0 ? vertexArray->GetIndexBuffer()->GetCount() : count, GL_UNSIGNED_INT, nullptr);
 	}
 }

@@ -9,72 +9,98 @@
 
 namespace Wgine
 {
+	struct TriVertex
+	{
+		glm::vec4 Position;
+		glm::vec4 Color;
+		glm::vec2 TexCoord;
+		// TODO: texture id...
+	};
+
 	struct PrimitiveData
 	{
-		Ref<VertexArray> QuadVA;
+		const uint32_t MaxTrisPerCall = 20000;
+		const uint32_t MaxVertsPerCall = MaxTrisPerCall * 3;
+		const uint32_t MaxIndicesPerCall = MaxTrisPerCall * 3;
+
+		Ref<VertexArray> TriVA;
+		Ref<VertexBuffer> TriVB;
 		Ref<Shader> UnlitTextureShader;
 		Ref<Texture2D> WhiteTexture;
+
+		uint32_t TriIndexCount = 0;
+		Scope<TriVertex[]> TriVertexBufferStart = nullptr;
+		TriVertex *TriVertexBuffer = nullptr;
+
 		Scene *ActiveScene = nullptr;
 	};
 
-	static PrimitiveData *data;
+	static PrimitiveData s_Data;
 
 	void Renderer2D::Init()
 	{
-		data = new PrimitiveData();
-
 		// Quad Vertex Array
 		// vertex buffer
-		data->QuadVA = VertexArray::Create();
-		float quadVertices[5 * 4] = {
-			0.f,  -0.5f,  0.5f,  0.f, 0.f,
-			0.f,  -0.5f, -0.5f,  0.f, 1.f,
-			0.f,   0.5f, -0.5f,  1.f, 1.f,
-			0.f,   0.5f,  0.5f,  1.f, 0.f,
-		};
-		Ref<VertexBuffer> vertexBuffer;
-		vertexBuffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
-		vertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
+		s_Data.TriVA = VertexArray::Create();
+		s_Data.TriVB = VertexBuffer::Create(s_Data.MaxVertsPerCall * sizeof(TriVertex));
+		s_Data.TriVB->SetLayout({
+			{ ShaderDataType::Float4, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			});
-		data->QuadVA->AddVertexBuffer(vertexBuffer);
+		s_Data.TriVA->AddVertexBuffer(s_Data.TriVB);
+		
+		s_Data.TriVertexBufferStart = MakeScope<TriVertex[]>(s_Data.MaxVertsPerCall);
 
+		auto triIndices = MakeScope<uint32_t[]>(s_Data.MaxIndicesPerCall);
 		// index buffer
-		unsigned int indices[6] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> indexBuffer;
-		indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-		data->QuadVA->SetIndexBuffer(indexBuffer);
+		//unsigned int quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		for (uint32_t i = 0; i < s_Data.MaxIndicesPerCall; i++)
+			triIndices[i] = i;
+		auto triIB = IndexBuffer::Create(triIndices.get(), s_Data.MaxIndicesPerCall);
+		s_Data.TriVA->SetIndexBuffer(triIB);
 
-		data->UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
-		data->UnlitTextureShader->Bind();
+		s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
+		s_Data.UnlitTextureShader->Bind();
+		s_Data.UnlitTextureShader->UploadUniformInt("u_Texture", 0);
 
 		uint32_t whiteData = 0xffffffff;
-		data->WhiteTexture = Texture2D::Create(1, 1, &whiteData);
+		s_Data.WhiteTexture = Texture2D::Create(1, 1, &whiteData);
 	}
 
 	void Renderer2D::Shutdown()
 	{
-		delete data;
+		
 	}
 
 	void Renderer2D::BeginScene(Scene *scene)
 	{
-		data->ActiveScene = scene;
+		s_Data.ActiveScene = scene;
+		s_Data.TriIndexCount = 0;
+		s_Data.TriVertexBuffer = s_Data.TriVertexBufferStart.get();
 	}
 
 	void Renderer2D::EndScene()
 	{
+		uint32_t dataSize = (uint8_t *)s_Data.TriVertexBuffer - (uint8_t *)s_Data.TriVertexBufferStart.get();
+		s_Data.TriVB->SetData(s_Data.TriVertexBufferStart.get(), dataSize);
+
+		Flush();
+	}
+
+	void Renderer2D::Flush()
+	{
+		RenderCommand::DrawIndexed(s_Data.TriVA, s_Data.TriIndexCount);
 	}
 
 	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &) {})
 	{
-		WGINE_ASSERT(data->ActiveScene, "No active scene for renderer!");
+		WGINE_ASSERT(s_Data->ActiveScene, "No active scene for renderer!");
 
-		data->UnlitTextureShader->UploadUniformMat4("u_ViewProjection", data->ActiveScene->GetViewProjectionMatrix());
-		data->UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
-		data->UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
-		submitExtraUniforms(data->UnlitTextureShader);
+		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
+		s_Data.UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
+		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
+		submitExtraUniforms(s_Data.UnlitTextureShader);
 
 		if (vertexArray)
 		{
@@ -85,30 +111,68 @@ namespace Wgine
 
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color)
 	{
-		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
-		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture, tiling, tint);
 	}
 
 	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
 	{
-		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
-		data->WhiteTexture->Bind();
-		Submit(data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		WGINE_CORE_ASSERT(s_Data->ActiveScene, "Invalid active scene when creating quad!");
+
+		float quadVertices[5 * 4] = {
+			0.f,  -0.5f,  0.5f,  0.f, 0.f,
+			0.f,  -0.5f, -0.5f,  0.f, 1.f,
+			0.f,   0.5f, -0.5f,  1.f, 1.f,
+			0.f,   0.5f,  0.5f,  1.f, 0.f,
+		};
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 0.f, 0.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f, -0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 0.f, 1.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 1.f, 1.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 0.f, 0.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 1.f, 1.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f,  0.5f, 1.f);
+		s_Data.TriVertexBuffer->Color = color;
+		s_Data.TriVertexBuffer->TexCoord = { 1.f, 0.f };
+		s_Data.TriVertexBuffer++;
+
+		s_Data.TriIndexCount += 6;
+
+		/*s_Data.WhiteTexture->Bind();
+		Submit(s_Data.TriVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", color);
-			});
+			});*/
 	}
 
 	void Renderer2D::DrawQuad(const Transform &transform, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
-		WGINE_CORE_ASSERT(data->ActiveScene, "Invalid active scene when creating quad!");
+		WGINE_CORE_ASSERT(s_Data->ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(data->QuadVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		Submit(s_Data.TriVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", tint);
 			s->UploadUniformFloat2("u_Tiling", tiling);
 			});
