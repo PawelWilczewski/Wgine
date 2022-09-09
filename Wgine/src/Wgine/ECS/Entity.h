@@ -5,6 +5,7 @@
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/Core/Core.h"
 #include "Wgine/Event/Event.h"
+#include "Wgine/Renderer/Mesh.h"
 
 namespace Wgine
 {
@@ -64,7 +65,7 @@ namespace Wgine
 		void SetScale(glm::vec3 scale) { m_Transform.Scale = scale; UpdateEntityMatrix(); }
 
 		// TEMP
-		Ref<VertexArray> MeshData;
+		Ref<Mesh> MeshData;
 		Ref<Shader> ShaderData;
 
 	protected:

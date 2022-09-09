@@ -27,17 +27,17 @@ namespace Wgine
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
-		glCreateVertexArrays(1, &m_RendererID);
+		glCreateVertexArrays(1, &m_Ptr);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
-		glDeleteVertexArrays(1, &m_RendererID);
+		glDeleteVertexArrays(1, &m_Ptr);
 	}
 
 	void OpenGLVertexArray::Bind() const
 	{
-		glBindVertexArray(m_RendererID);
+		glBindVertexArray(m_Ptr);
 	}
 
 	void OpenGLVertexArray::Unbind() const
@@ -47,7 +47,7 @@ namespace Wgine
 
 	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer> &vertexBuffer)
 	{
-		glBindVertexArray(m_RendererID);
+		glBindVertexArray(m_Ptr);
 		vertexBuffer->Bind();
 
 		WGINE_CORE_ASSERT(vertexBuffer->GetBufferLayout().GetElements().size(), "Vertex buffer lacks layout!");
@@ -68,9 +68,34 @@ namespace Wgine
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
+	void OpenGLVertexArray::InsertVertexBuffer(const Ref<VertexBuffer> &vertexBuffer, uint32_t where)
+	{
+		glBindVertexArray(m_Ptr);
+		vertexBuffer->Bind();
+
+		WGINE_CORE_ASSERT(vertexBuffer->GetBufferLayout().GetElements().size(), "Vertex buffer lacks layout!");
+
+		uint32_t index = 0;
+		for (const auto &element : vertexBuffer->GetBufferLayout())
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index,
+				element.GetComponentCount(),
+				ShaderDataTypeToOpenGLBaseType(element.Type),
+				element.Normalized ? GL_TRUE : GL_FALSE,
+				vertexBuffer->GetBufferLayout().GetStride(),
+				(const void *)element.Offset);
+			index++;
+		}
+
+		if (where >= m_VertexBuffers.size())
+			m_VertexBuffers.resize(where + 1);
+		m_VertexBuffers[where] = vertexBuffer;
+	}
+
 	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer> &indexBuffer)
 	{
-		glBindVertexArray(m_RendererID);
+		glBindVertexArray(m_Ptr);
 		indexBuffer->Bind();
 
 		m_IndexBuffer = indexBuffer;

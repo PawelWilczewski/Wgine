@@ -54,15 +54,15 @@ namespace Wgine
 		{
 			auto &[type, source] = s;
 
-			// Create an empty vertex shader handle
+			// Create an empty vertex Shader handle
 			GLuint shader = glCreateShader(type);
 
-			// Send the vertex shader source code to GL
+			// Send the vertex Shader source code to GL
 			// Note that std::string's .c_str is NULL character terminated.
 			const GLchar *s = (const GLchar *)source.c_str();
 			glShaderSource(shader, 1, &s, 0);
 
-			// Compile the vertex shader
+			// Compile the vertex Shader
 			glCompileShader(shader);
 
 			GLint isCompiled = 0;
@@ -76,7 +76,7 @@ namespace Wgine
 				std::vector<GLchar> infoLog(maxLength);
 				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-				// We don't need the shader anymore.
+				// We don't need the Shader anymore.
 				glDeleteShader(shader);
 
 				WGINE_CORE_ERROR("Error during vertex shader compilation: {0}", infoLog.data());

@@ -14,13 +14,22 @@ namespace Wgine
 		virtual void Unbind() const override;
 
 		virtual void AddVertexBuffer(const Ref<VertexBuffer> &vertexBuffer) override;
+		virtual void InsertVertexBuffer(const Ref<VertexBuffer> &vertexBuffer, uint32_t index) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer> &indexBuffer) override;
+
+		virtual void PrintDebug(int indent = 0) override
+		{
+			WGINE_CORE_TRACE("{0}{1}", std::string(indent, '\t'), "Vertex array:");
+			for (const auto &buffer : m_VertexBuffers)
+				buffer->PrintDebug(indent + 1);
+			m_IndexBuffer->PrintDebug(indent + 1);
+		}
 
 		virtual const std::vector<Ref<VertexBuffer>> &GetVertexBuffers() const override { return m_VertexBuffers; };
 		virtual const Ref<IndexBuffer> &GetIndexBuffer() const override { return m_IndexBuffer; };
 
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_Ptr;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 	};

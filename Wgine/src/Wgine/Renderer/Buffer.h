@@ -105,13 +105,17 @@ namespace Wgine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void SetData(const void *data, uint32_t size) = 0;
+		// offset in count, not byte size
+		// the data must fit wihtin the constructed count
+		virtual void SetData(/*const*/ void *data, uint32_t typeSize, uint32_t count, uint32_t offset = 0) = 0;
 
 		virtual void SetLayout(const BufferLayout &layout) = 0;
 		virtual const BufferLayout &GetBufferLayout() const = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(float *vertices, uint32_t size);
+		virtual void PrintDebug(int indent) const {}
+
+		static Ref<VertexBuffer> Create(uint32_t typeSize, uint32_t count);
+		static Ref<VertexBuffer> Create(float *vertices, uint32_t typeSize, uint32_t count);
 	};
 
 	class IndexBuffer
@@ -122,8 +126,15 @@ namespace Wgine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		// offset in count, not byte size
+		// the data must fit wihtin the constructed count
+		virtual void SetData(/*const*/ uint32_t *data, uint32_t count, uint32_t offset = 0) = 0;
+
+		virtual void PrintDebug(int indent) const {}
+
 		virtual uint32_t GetCount() const = 0;
 
+		static Ref<IndexBuffer> Create(uint32_t count);
 		static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
 	};
 }

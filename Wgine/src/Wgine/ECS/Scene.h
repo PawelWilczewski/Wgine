@@ -30,7 +30,7 @@ namespace Wgine
 		template <typename T, typename ...Args>
 		inline T *ConstructEntity(Args &&...args)
 		{
-			static_assert(std::is_base_of<Entity, T>::value, "Cannot construct class not deriving from Entity!");
+			static_assert(std::is_base_of<Entity, T>::value, "Cannot construct class not deriving from Entity!"); // TODO: when switched c++ 20 use constraints and concepts? https://en.cppreference.com/w/cpp/language/constraints
 			T *entity = new T(std::forward<Args>(args)...);
 			entity->m_Scene = this;
 			m_Entities.push_back(entity); // TODO: system where resizing entities happens in increments of 10/20/100 or so?

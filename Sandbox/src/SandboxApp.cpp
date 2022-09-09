@@ -69,28 +69,13 @@ public:
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
 		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
-		// triangle data
 		{
-			m_Triangle->MeshData = VertexArray::Create();
-			// triangle vertex buffer
-			float vertices[3 * 7] = {
-				-0.5f, -0.5f, 0.0f, 0.8f, 0.1f, 0.2f, 1.0f,
-				 0.5f, -0.5f, 0.0f, 0.1f, 0.8f, 0.4f, 1.0f,
-				 0.0f,  0.5f, 0.0f, 0.2f, 0.5f, 0.9f, 1.0f,
-			};
-			Ref<VertexBuffer> vertexBuffer;
-			vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
-			vertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-				});
-			m_Triangle->MeshData->AddVertexBuffer(vertexBuffer);
-
-			// triangle index buffer
-			unsigned int indices[3] = { 0, 1, 2 };
-			Ref<IndexBuffer> indexBuffer;
-			indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-			m_Triangle->MeshData->SetIndexBuffer(indexBuffer);
+			// triangle data
+			m_Triangle->MeshData = MakeRef<Mesh>();// VertexArray::Create();
+			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f, 1.0f }, { 0.f, 1.f } });
+			m_Triangle->MeshData->AddVertex({ { 0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f, 1.0f }, { 1.f, 1.f } });
+			m_Triangle->MeshData->AddVertex({ { 0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.5f, 0.f } });
+			m_Triangle->MeshData->AddIndices({ 0, 1, 2 });
 
 			// triangle shaders
 			std::string vertexSource = R"(
@@ -136,31 +121,18 @@ public:
 		m_Square->SetRotation({ 0.f, 45.f, 180.f });
 		// square data
 		{
-			m_Square->MeshData = VertexArray::Create();
-
-			// square vertex buffer
-			float verticesSquare[3 * 8] = {
-				-1.0f,  1.0f, -0.5f,
-				-1.0f, -1.0f, -0.5f,
-				 1.0f, -1.0f, -0.5f,
-				 1.0f,  1.0f, -0.5f,
-				 1.0f, -1.0f,  0.2f,
-				 1.0f, -1.0f,  0.8f,
-				 1.0f,  1.0f,  0.8f,
-				 1.0f,  1.0f,  0.2f,
-			};
-			Ref<VertexBuffer> squareVertexBuffer;
-			squareVertexBuffer = VertexBuffer::Create(verticesSquare, sizeof(verticesSquare));
-			squareVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				});
-			m_Square->MeshData->AddVertexBuffer(squareVertexBuffer);
-
-			// square indices
-			unsigned int squareIndices[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
-			Ref<IndexBuffer> squareIndexBuffer;
-			squareIndexBuffer = IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-			m_Square->MeshData->SetIndexBuffer(squareIndexBuffer);
+			m_Square->MeshData = MakeRef<Mesh>();
+			m_Square->MeshData->AddVertices({
+				{ {-1.0f,  1.0f, -0.5f} },
+				{ {-1.0f, -1.0f, -0.5f} },
+				{ { 1.0f, -1.0f, -0.5f} },
+				{ { 1.0f,  1.0f, -0.5f} },
+				{ { 1.0f, -1.0f,  0.2f} },
+				{ { 1.0f, -1.0f,  0.8f} },
+				{ { 1.0f,  1.0f,  0.8f} },
+				{ { 1.0f,  1.0f,  0.2f} },
+			});
+			m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
 
 			// square shaders
 			std::string squareVertexSource = R"(
@@ -201,41 +173,27 @@ public:
 		m_AxisCamera->SetLocation({ 1.f, 2.f, 2.f });
 		// axis data
 		{
-			m_Axis->MeshData = VertexArray::Create();
-			m_AxisCamera->MeshData = VertexArray::Create();
+			auto axisMesh = MakeRef<Mesh>();
+			m_Axis->MeshData = axisMesh;
+			m_AxisCamera->MeshData = axisMesh;
 			// triangle vertex buffer
-			float vertices[10 * 7] = {
-				 0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-				 0.0f,  0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-				 1.0f,  0.1f, 0.0f, 0.9f, 0.2f, 0.3f, 1.0f, // red
-				 1.0f,  0.0f, 0.0f, 0.9f, 0.2f, 0.3f, 1.0f, // red
-
-				 0.0f,  1.0f, 0.0f, 0.5f, 0.8f, 0.2f, 1.0f, // green
-				 0.0f,  1.0f, 0.1f, 0.5f, 0.8f, 0.2f, 1.0f, // green
-
-				 0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-				 0.0f,  0.0f, 1.0f, 0.2f, 0.5f, 0.9f, 1.0f, // blue
-				 0.1f,  0.0f, 1.0f, 0.2f, 0.5f, 0.9f, 1.0f, // blue
-
-				 0.0f,  0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 1.0f,
-			};
-			Ref<VertexBuffer> vertexBuffer;
-			vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
-			vertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-				});
-			m_Axis->MeshData->AddVertexBuffer(vertexBuffer);
-			m_AxisCamera->MeshData->AddVertexBuffer(vertexBuffer);
-
-			// triangle index buffer
-			unsigned int indices[18] = { 0, 1, 2, 0, 2, 3,
-										0, 4, 5, 5, 9, 0,
-										0, 6, 7, 7, 8, 6 };
-			Ref<IndexBuffer> indexBuffer;
-			indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-			m_Axis->MeshData->SetIndexBuffer(indexBuffer);
-			m_AxisCamera->MeshData->SetIndexBuffer(indexBuffer);
+			axisMesh->AddVertices({
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } },
+				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } }, 
+				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f, 1.0f }, { 0.f, 0.f } }, // red
+				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f, 1.0f }, { 0.f, 0.f } }, // red
+				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { 0.f, 0.f } }, // green
+				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { 0.f, 0.f } }, // green
+				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } }, 
+				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.f, 0.f } }, // blue
+				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.f, 0.f } }, // blue
+				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } },
+			});
+			axisMesh->AddIndices({
+				0, 1, 2, 0, 2, 3,
+				0, 4, 5, 5, 9, 0,
+				0, 6, 7, 7, 8, 6
+			});
 
 			// triangle shaders
 			std::string vertexSource = R"(
@@ -279,25 +237,13 @@ public:
 		}
 
 		m_VertexArray = VertexArray::Create();
-		// vertex buffer
-		float verticesSquare[5 * 4] = {
-			-1.0f,  1.0f, 0.f, 1.f, 1.f,
-			-1.0f, -1.0f, 0.f, 0.f, 1.f,
-			1.0f,  -1.0f, 0.f, 0.f, 0.f,
-			1.0f,   1.0f, 0.f, 1.f, 0.f,
-		};
-		Ref<VertexBuffer> vertexBuffer;
-		vertexBuffer = VertexBuffer::Create(verticesSquare, sizeof(verticesSquare));
-		vertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			});
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-		// index buffer
-		unsigned int indices[12] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> indexBuffer;
-		indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-		m_VertexArray->SetIndexBuffer(indexBuffer);
+		m_QuadMesh = MakeRef<Mesh>();
+		m_QuadMesh->AddQuad(
+			{ { -1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
+			{ { -1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
+			{ {  1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } }
+		);
 
 		m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
 		m_TextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
@@ -339,19 +285,20 @@ public:
 				for (int x = 0; x < 10; x++)
 				{
 					auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix();
-					Renderer::Submit(m_FlatShader, m_VertexArray, modelMatrix, [&](Ref<Shader> s) {
+					//Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix);
+					Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix, [&](Ref<Shader> s) {
 						s->UploadUniformFloat4("u_Color", y % 2 == 1 ? m_PickedColor : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
 						});
 				}
 			}
 
 			m_Texture->Bind();
-			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
+			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
 				s->UploadUniformFloat4("u_Color", glm::vec4(1.f, 1.f, 1.f, 0.2f));
 				});
 			
 			m_TransparentTexture->Bind();
-			Renderer::Submit(m_TextureShader, m_VertexArray, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
+			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
 				s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
 				});
 		} Renderer::EndScene();
@@ -376,6 +323,7 @@ private:
 	SceneEntity *m_Square;
 	SceneEntity *m_Axis;
 	SceneEntity *m_AxisCamera;
+	Ref<Mesh> m_QuadMesh;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 

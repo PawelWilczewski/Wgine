@@ -11,13 +11,13 @@ namespace Wgine
 {
 	struct TriVertex
 	{
-		glm::vec4 Position;
+		glm::vec3 Position;
 		glm::vec4 Color;
 		glm::vec2 TexCoord;
 		// TODO: texture id...
 	};
 
-	struct PrimitiveData
+	struct RendererData
 	{
 		const uint32_t MaxTrisPerCall = 20000;
 		const uint32_t MaxVertsPerCall = MaxTrisPerCall * 3;
@@ -32,19 +32,21 @@ namespace Wgine
 		Scope<TriVertex[]> TriVertexBufferStart = nullptr;
 		TriVertex *TriVertexBuffer = nullptr;
 
+		//Scope<glm::mat4[]> Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
+
 		Scene *ActiveScene = nullptr;
 	};
 
-	static PrimitiveData s_Data;
+	static RendererData s_Data;
 
 	void Renderer2D::Init()
 	{
 		// Quad Vertex Array
 		// vertex buffer
 		s_Data.TriVA = VertexArray::Create();
-		s_Data.TriVB = VertexBuffer::Create(s_Data.MaxVertsPerCall * sizeof(TriVertex));
+		s_Data.TriVB = VertexBuffer::Create(sizeof(TriVertex), s_Data.MaxVertsPerCall);
 		s_Data.TriVB->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" },
+			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			});
@@ -59,6 +61,8 @@ namespace Wgine
 			triIndices[i] = i;
 		auto triIB = IndexBuffer::Create(triIndices.get(), s_Data.MaxIndicesPerCall);
 		s_Data.TriVA->SetIndexBuffer(triIB);
+
+		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
 		s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
 		s_Data.UnlitTextureShader->Bind();
@@ -82,8 +86,8 @@ namespace Wgine
 
 	void Renderer2D::EndScene()
 	{
-		uint32_t dataSize = (uint8_t *)s_Data.TriVertexBuffer - (uint8_t *)s_Data.TriVertexBufferStart.get();
-		s_Data.TriVB->SetData(s_Data.TriVertexBufferStart.get(), dataSize);
+		uint32_t dataSize = s_Data.TriVertexBuffer - s_Data.TriVertexBufferStart.get();
+		s_Data.TriVB->SetData(s_Data.TriVertexBufferStart.get(), sizeof(TriVertex), dataSize);
 
 		Flush();
 	}
@@ -122,13 +126,6 @@ namespace Wgine
 	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
 	{
 		WGINE_CORE_ASSERT(s_Data->ActiveScene, "Invalid active scene when creating quad!");
-
-		float quadVertices[5 * 4] = {
-			0.f,  -0.5f,  0.5f,  0.f, 0.f,
-			0.f,  -0.5f, -0.5f,  0.f, 1.f,
-			0.f,   0.5f, -0.5f,  1.f, 1.f,
-			0.f,   0.5f,  0.5f,  1.f, 0.f,
-		};
 
 		s_Data.TriVertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
 		s_Data.TriVertexBuffer->Color = color;
