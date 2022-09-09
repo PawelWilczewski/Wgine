@@ -2,6 +2,7 @@
 #include "OpenGLRenderCommand.h"
 
 #include "glad/glad.h"
+#include "Wgine/Renderer/Mesh.h"
 
 namespace Wgine
 {

@@ -3,6 +3,7 @@
 #include "Renderer2D.h"
 
 #include "Wgine/Renderer/Mesh.h"
+#include "Wgine/Core/Core.h"
 
 namespace Wgine
 {
@@ -152,13 +153,15 @@ namespace Wgine
 
 	void Renderer::Flush()
 	{
+		//auto &shaderData = s_ShaderData["VertexColor"];
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			//Shader->UploadUniformMat4("u_Transform", transform);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
-			RenderCommand::DrawIndexed(shaderData.VAO);
+			shaderData.VAO->Bind();
+			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
 		}
 	}
 
@@ -169,7 +172,7 @@ namespace Wgine
 
 	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform, std::function<void(const Ref<Shader>&)> submitExtraUniforms)
 	{
-		WGINE_ASSERT(m_ActiveScene, "No active scene for renderer!");
+		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
 		if (!mesh)
 			return;
