@@ -88,6 +88,7 @@ namespace Wgine
 
 	void Renderer2D::Flush()
 	{
+		s_Data.TriVA->Bind();
 		RenderCommand::DrawIndexed(s_Data.TriVA, s_Data.TriIndexCount);
 	}
 
