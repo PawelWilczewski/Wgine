@@ -17,14 +17,14 @@ namespace Wgine
 		const uint32_t MaxVertsPerCall = MaxTrisPerCall * 3;
 		const uint32_t MaxIndicesPerCall = MaxTrisPerCall * 3;
 
-		Ref<VertexArray> TriVA;
-		Ref<VertexBuffer> TriVB;
+		Ref<VertexArray> VAO;
+		Ref<VertexBuffer> VBO;
 		Ref<Shader> UnlitTextureShader;
 		Ref<Texture2D> WhiteTexture;
 
-		uint32_t TriIndexCount = 0;
-		Scope<Vertex[]> VertexBufferStart = nullptr;
-		Vertex *VertexBuffer = nullptr;
+		uint32_t IndexCount = 0;
+		Scope<Vertex[]> VBBase = nullptr;
+		Vertex *VB = nullptr;
 
 		//Scope<glm::mat4[]> Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
@@ -37,24 +37,24 @@ namespace Wgine
 	{
 		// Quad Vertex Array
 		// vertex buffer
-		s_Data.TriVA = VertexArray::Create();
-		s_Data.TriVB = VertexBuffer::Create(sizeof(Vertex), s_Data.MaxVertsPerCall);
-		s_Data.TriVB->SetLayout({
+		s_Data.VAO = VertexArray::Create();
+		s_Data.VBO = VertexBuffer::Create(sizeof(Vertex), s_Data.MaxVertsPerCall);
+		s_Data.VBO->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			});
-		s_Data.TriVA->AddVertexBuffer(s_Data.TriVB);
+		s_Data.VAO->AddVertexBuffer(s_Data.VBO);
 		
-		s_Data.VertexBufferStart = MakeScope<Vertex[]>(s_Data.MaxVertsPerCall);
+		s_Data.VBBase = MakeScope<Vertex[]>(s_Data.MaxVertsPerCall);
 
-		auto triIndices = MakeScope<uint32_t[]>(s_Data.MaxIndicesPerCall);
+		auto indices = MakeScope<uint32_t[]>(s_Data.MaxIndicesPerCall);
 		// index buffer
 		//unsigned int quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		for (uint32_t i = 0; i < s_Data.MaxIndicesPerCall; i++)
-			triIndices[i] = i;
-		auto triIB = IndexBuffer::Create(triIndices.get(), s_Data.MaxIndicesPerCall);
-		s_Data.TriVA->SetIndexBuffer(triIB);
+			indices[i] = i;
+		auto ibo = IndexBuffer::Create(indices.get(), s_Data.MaxIndicesPerCall);
+		s_Data.VAO->SetIndexBuffer(ibo);
 
 		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
@@ -74,22 +74,22 @@ namespace Wgine
 	void Renderer2D::BeginScene(Scene *scene)
 	{
 		s_Data.ActiveScene = scene;
-		s_Data.TriIndexCount = 0;
-		s_Data.VertexBuffer = s_Data.VertexBufferStart.get();
+		s_Data.IndexCount = 0;
+		s_Data.VB = s_Data.VBBase.get();
 	}
 
 	void Renderer2D::EndScene()
 	{
-		uint32_t dataSize = s_Data.VertexBuffer - s_Data.VertexBufferStart.get();
-		s_Data.TriVB->SetData(s_Data.VertexBufferStart.get(), sizeof(Vertex), dataSize);
+		uint32_t dataSize = s_Data.VB - s_Data.VBBase.get();
+		s_Data.VBO->SetData(s_Data.VBBase.get(), sizeof(Vertex), dataSize);
 
 		Flush();
 	}
 
 	void Renderer2D::Flush()
 	{
-		s_Data.TriVA->Bind();
-		RenderCommand::DrawIndexed(s_Data.TriVA, s_Data.TriIndexCount);
+		s_Data.VAO->Bind();
+		RenderCommand::DrawIndexed(s_Data.VAO, s_Data.IndexCount);
 	}
 
 	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &) {})
@@ -100,12 +100,6 @@ namespace Wgine
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
 		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
 		submitExtraUniforms(s_Data.UnlitTextureShader);
-
-		/*if (vertexArray)
-		{
-			vertexArray->Bind();
-			RenderCommand::DrawIndexed(vertexArray);
-		}*/
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color)
@@ -122,40 +116,40 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(s_Data.ActiveScene, "Invalid active scene when creating quad!");
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 0.f, 0.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 0.f, 0.f };
+		s_Data.VB++;
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f, -0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 0.f, 1.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f, -0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 0.f, 1.f };
+		s_Data.VB++;
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 1.f, 1.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 1.f, 1.f };
+		s_Data.VB++;
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 0.f, 0.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,  -0.5f,  0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 0.f, 0.f };
+		s_Data.VB++;
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 1.f, 1.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f, -0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 1.f, 1.f };
+		s_Data.VB++;
 
-		s_Data.VertexBuffer->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f,  0.5f, 1.f);
-		s_Data.VertexBuffer->Color = color;
-		s_Data.VertexBuffer->TexCoord = { 1.f, 0.f };
-		s_Data.VertexBuffer++;
+		s_Data.VB->Position = transform.ToModelMatrix() * glm::vec4(0.f,   0.5f,  0.5f, 1.f);
+		s_Data.VB->Color = color;
+		s_Data.VB->TexCoord = { 1.f, 0.f };
+		s_Data.VB++;
 
-		s_Data.TriIndexCount += 6;
+		s_Data.IndexCount += 6;
 
 		/*s_Data.WhiteTexture->Bind();
-		Submit(s_Data.TriVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		Submit(s_Data.VAO, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", color);
 			});*/
 	}
@@ -164,7 +158,7 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(s_Data.ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(s_Data.TriVA, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		Submit(s_Data.VAO, transform.ToModelMatrix(), [&](Ref<Shader> s) {
 			s->UploadUniformFloat4("u_Color", tint);
 			s->UploadUniformFloat2("u_Tiling", tiling);
 			});
