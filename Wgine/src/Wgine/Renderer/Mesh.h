@@ -5,6 +5,7 @@
 
 namespace Wgine
 {
+	// TODO: put it in one file with s_VERTEX_LAYOUT
 	struct Vertex
 	{
 		Vertex()

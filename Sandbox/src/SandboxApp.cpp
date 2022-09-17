@@ -280,27 +280,27 @@ public:
 			});
 
 		Renderer::BeginScene(m_Scene.get()); {
-			for (int y = 0; y < 10; y++)
-			{
-				for (int x = 0; x < 10; x++)
-				{
-					auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix();
-					Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix);
-					//Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix, [&](Ref<Shader> s) {
-					//	s->UploadUniformFloat4("u_Color", y % 2 == 1 ? m_PickedColor : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
-					//	});
-				}
-			}
+			//for (int y = 0; y < 10; y++)
+			//{
+			//	for (int x = 0; x < 10; x++)
+			//	{
+			//		auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix();
+			//		Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix);
+			//		//Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix, [&](Ref<Shader> s) {
+			//		//	s->UploadUniformFloat4("u_Color", y % 2 == 1 ? m_PickedColor : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
+			//		//	});
+			//	}
+			//}
 
-			m_Texture->Bind();
-			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
-				s->UploadUniformFloat4("u_Color", glm::vec4(1.f, 1.f, 1.f, 0.2f));
-				});
-			
-			m_TransparentTexture->Bind();
-			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
-				s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
-				});
+			//m_Texture->Bind();
+			//Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
+			//	s->UploadUniformFloat4("u_Color", glm::vec4(1.f, 1.f, 1.f, 0.2f));
+			//	});
+			//
+			//m_TransparentTexture->Bind();
+			//Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
+			//	s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
+			//	});
 		} Renderer::EndScene();
 	}
 

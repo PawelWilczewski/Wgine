@@ -8,19 +8,13 @@
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
-	
-	//struct TriVertex
-	//{
-	//	glm::vec3 Position;
-	//	glm::vec4 Color;
-	//	glm::vec2 TexCoord;
-	//	// TODO: texture id...
-	//};
 
-	static const BufferLayout s_VertexLayout = {
+	// TODO: put it in one file with vertex class
+	static const BufferLayout s_VERTEX_LAYOUT = {
 		{ ShaderDataType::Float3, "a_Position" },
 		{ ShaderDataType::Float4, "a_Color" },
 		{ ShaderDataType::Float2, "a_TexCoord" },
+		// TODO: texture id...
 	};
 
 	struct MeshInfo
@@ -87,7 +81,7 @@ namespace Wgine
 
 	void Renderer::BeginScene(Scene *scene)
 	{
-		WGINE_ASSERT(scene, "Invalid scene for renderer!");
+		WGINE_CORE_ASSERT(scene, "Invalid scene for renderer!");
 
 		s_RendererData.ActiveScene = scene;
 
@@ -113,7 +107,7 @@ namespace Wgine
 			{
 				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex), shaderData.VertexCount);
-				shaderData.VBO->SetLayout(s_VertexLayout);
+				shaderData.VBO->SetLayout(s_VERTEX_LAYOUT);
 			}
 
 			// resize index buffer
@@ -134,7 +128,7 @@ namespace Wgine
 				);
 
 				// offset the indices appropriately
-				auto indices = meshData.Mesh->GetIndicesOffset(meshData.IndexOffset);
+				auto indices = meshData.Mesh->GetIndicesOffset(meshData.VertexOffset);
 				shaderData.IBO->SetData(
 					indices.data(),
 					meshData.Mesh->GetIndices().size(),
@@ -145,7 +139,7 @@ namespace Wgine
 			shaderData.VAO->InsertVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
 
-			shaderData.VAO->PrintDebug(1);
+			//shaderData.VAO->PrintDebug(1);
 		}
 
 		Flush();
