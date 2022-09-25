@@ -19,9 +19,9 @@ namespace Wgine
 
 		virtual void PrintDebug(int indent) const
 		{
-			WGINE_CORE_TRACE("{0}VertexBuffer of size {1}:", std::string(indent, '\t'), DEBUGcount);
-			for (int i = 0; i < DEBUGcount; i++)
-				WGINE_CORE_TRACE("{0}{1}: {2}", std::string(indent + 1, '\t'), i, std::string(DEBUGdata[i]));
+			//WGINE_CORE_TRACE("{0}VertexBuffer of size {1}:", std::string(indent, '\t'), DEBUGcount);
+			//for (int i = 0; i < DEBUGcount; i++)
+			//	WGINE_CORE_TRACE("{0}{1}: {2}", std::string(indent + 1, '\t'), i, std::string(DEBUGdata[i]));
 		}
 
 		virtual void SetData(/*const*/ void *data, uint32_t typeSize, uint32_t count, uint32_t offset = 0) override;
@@ -33,8 +33,8 @@ namespace Wgine
 		GLuint m_Ptr;
 		BufferLayout m_Layout;
 
-		std::vector <Vertex> DEBUGdata;
-		uint32_t DEBUGcount;
+		//std::vector <Vertex> DEBUGdata;
+		//uint32_t DEBUGcount;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer
@@ -49,9 +49,9 @@ namespace Wgine
 
 		virtual void PrintDebug(int indent) const override
 		{
-			WGINE_CORE_TRACE("{0}IndexBuffer of size {1}:", std::string(indent, '\t'), DEBUGcount);
-			for (int i = 0; i < DEBUGcount; i++)
-				WGINE_CORE_TRACE("{0}{1}: {2}", std::string(indent + 1, '\t'), i, DEBUGdata[i]);
+			//WGINE_CORE_TRACE("{0}IndexBuffer of size {1}:", std::string(indent, '\t'), DEBUGcount);
+			//for (int i = 0; i < DEBUGcount; i++)
+			//	WGINE_CORE_TRACE("{0}{1}: {2}", std::string(indent + 1, '\t'), i, DEBUGdata[i]);
 		}
 
 		virtual void SetData(/*const*/ uint32_t *data, uint32_t count, uint32_t offset = 0) override;
@@ -62,7 +62,7 @@ namespace Wgine
 		GLuint m_Ptr;
 		uint32_t m_Count;
 
-		std::vector<uint32_t> DEBUGdata;
-		uint32_t DEBUGcount;
+		//std::vector<uint32_t> DEBUGdata;
+		//uint32_t DEBUGcount;
 	};
 }

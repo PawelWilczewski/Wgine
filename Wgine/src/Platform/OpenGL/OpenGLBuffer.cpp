@@ -43,8 +43,8 @@ namespace Wgine
 		glBindBuffer(GL_ARRAY_BUFFER, m_Ptr);
 		glBufferSubData(GL_ARRAY_BUFFER, typeSize * offset, typeSize * count, data);
 
-		DEBUGdata.insert(DEBUGdata.end(), (Vertex *)data, (Vertex *)data + count);
-		DEBUGcount = offset + count;
+		//DEBUGdata.insert(DEBUGdata.end(), (Vertex *)data, (Vertex *)data + count);
+		//DEBUGcount = offset + count;
 	}
 
 	// IndexBuffer implementation ------------------------------------------------
@@ -87,7 +87,7 @@ namespace Wgine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * offset, sizeof(uint32_t) * count, data);
 
-		DEBUGdata.insert(DEBUGdata.end(), data, data + count);
-		DEBUGcount = offset + count;
+		//DEBUGdata.insert(DEBUGdata.end(), data, data + count);
+		//DEBUGcount = offset + count;
 	}
 }

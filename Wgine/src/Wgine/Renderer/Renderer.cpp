@@ -19,14 +19,12 @@ namespace Wgine
 
 	struct MeshInfo
 	{
-		MeshInfo(Ref<Mesh> mesh, const glm::mat4 &transform, uint32_t vertexOffset, uint32_t indexOffset)
-			: Mesh(mesh), Transform(transform), VertexOffset(vertexOffset), IndexOffset(indexOffset)
+		MeshInfo(Ref<Mesh> mesh, const glm::mat4 &transform)
+			: Mesh(mesh), Transform(transform)
 		{}
 
 		Ref<Mesh> Mesh;
 		const glm::mat4 &Transform;
-		uint32_t VertexOffset = 0;
-		uint32_t IndexOffset = 0;
 	};
 
 	struct PerShaderData
@@ -45,7 +43,8 @@ namespace Wgine
 		uint32_t CurrentMaxVertexCount = 0;
 
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
-
+		std::vector<Vertex> Vertices;
+		std::vector<uint32_t> Indices;
 		//std::vector<Ref<Mesh>> Meshes = std::vector<Ref<Mesh>>();
 
 		//Scope<Vertex[]> VertexBufferStart = nullptr;
@@ -106,6 +105,11 @@ namespace Wgine
 			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
 			{
 				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
+
+				shaderData.Vertices.resize(shaderData.VertexCount);
+
+				if (shaderData.VBO)
+					shaderData.VBO->Unbind(); // TODO: necessary?
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex), shaderData.VertexCount);
 				shaderData.VBO->SetLayout(s_VERTEX_LAYOUT);
 			}
@@ -114,27 +118,48 @@ namespace Wgine
 			if (shaderData.IndexCount > shaderData.CurrentMaxIndexCount)
 			{
 				shaderData.CurrentMaxIndexCount = shaderData.IndexCount;
+
+				shaderData.Indices.resize(shaderData.IndexCount);
+
+				if (shaderData.IBO)
+					shaderData.IBO->Unbind(); // TODO: necessary?
 				shaderData.IBO = IndexBuffer::Create(shaderData.IndexCount);
 			}
 
+			uint32_t vertexOffset = 0;
+			uint32_t indexOffset = 0;
 			for (const auto &meshData : shaderData.Meshes)
 			{
-				// transform the positions
-				shaderData.VBO->SetData(
-					meshData.Mesh->GetVerticesTransformed(meshData.Transform).data(),
-					sizeof(Vertex),
-					meshData.Mesh->GetVertices().size(),
-					meshData.VertexOffset
-				);
+				// TODO: avoid copying twice by copying directly to the vertices/indices buffer
+				for (int i = vertexOffset; i < meshData.Mesh->GetVertices().size(); i++)
+				{
+					auto &vertex = meshData.Mesh->GetVertices()[i - vertexOffset];
+					shaderData.Vertices[i] = Vertex(
+						glm::vec3(meshData.Transform * glm::vec4(vertex.Position, 1.f)),
+						vertex.Color,
+						vertex.TexCoord);
+				}
 
-				// offset the indices appropriately
-				auto indices = meshData.Mesh->GetIndicesOffset(meshData.VertexOffset);
-				shaderData.IBO->SetData(
-					indices.data(),
-					meshData.Mesh->GetIndices().size(),
-					meshData.IndexOffset
-				);
+				for (int i = indexOffset; i < meshData.Mesh->GetIndices().size(); i++)
+				{
+					auto &index = meshData.Mesh->GetIndices()[i - indexOffset];
+					shaderData.Indices[i] = index + vertexOffset;
+				}
+
+				vertexOffset += meshData.Mesh->GetVertices().size();
+				indexOffset += meshData.Mesh->GetIndices().size();
 			}
+
+			shaderData.VBO->SetData(
+				shaderData.Vertices.data(),
+				sizeof(Vertex),
+				shaderData.Vertices.size()
+			);
+
+			shaderData.IBO->SetData(
+				shaderData.Indices.data(),
+				shaderData.Indices.size()
+			);
 
 			shaderData.VAO->InsertVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
@@ -180,7 +205,7 @@ namespace Wgine
 
 		auto &shaderData = s_ShaderData[shader->GetName()];
 
-		shaderData.Meshes.push_back(MeshInfo(mesh, transform, shaderData.VertexCount, shaderData.IndexCount));
+		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
 		shaderData.VertexCount += mesh->GetVertices().size();
 		shaderData.IndexCount += mesh->GetIndices().size();
 	}
