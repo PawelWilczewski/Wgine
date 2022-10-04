@@ -6,21 +6,18 @@
 namespace Wgine
 {
 	// VertexBuffer implementation -----------------------------------------------
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t typeSize, uint32_t count)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
 	{
 		glCreateBuffers(1, &m_Ptr);
 		glBindBuffer(GL_ARRAY_BUFFER, m_Ptr);
-		glBufferData(GL_ARRAY_BUFFER, typeSize * count, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t typeSize, uint32_t count)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
 	{
 		glCreateBuffers(1, &m_Ptr);
 		glBindBuffer(GL_ARRAY_BUFFER, m_Ptr);
-		glBufferData(GL_ARRAY_BUFFER, typeSize * count, nullptr, GL_DYNAMIC_DRAW);
-		SetData(vertices, typeSize, count);
-		//glBindBuffer(GL_ARRAY_BUFFER, m_Ptr);
-		//glBufferData(GL_ARRAY_BUFFER, typeSize * count, vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -38,33 +35,27 @@ namespace Wgine
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLVertexBuffer::SetData(/*const*/ void *data, uint32_t typeSize, uint32_t count, uint32_t offset)
+	void OpenGLVertexBuffer::SetData(const void *data, uint32_t size, uint32_t offsetBytes)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_Ptr);
-		glBufferSubData(GL_ARRAY_BUFFER, typeSize * offset, typeSize * count, data);
-
-		//DEBUGdata.insert(DEBUGdata.end(), (Vertex *)data, (Vertex *)data + count);
-		//DEBUGcount = offset + count;
+		glBufferSubData(GL_ARRAY_BUFFER, offsetBytes, size, data);
 	}
 
-	// IndexBuffer implementation ------------------------------------------------
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count)
 		: m_Count(count)
 	{
 		glCreateBuffers(1, &m_Ptr);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 10000, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, nullptr, GL_DYNAMIC_DRAW);
 	}
 
+	// IndexBuffer implementation ------------------------------------------------
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t *indices, uint32_t count)
 		: m_Count(count)
 	{
 		glCreateBuffers(1, &m_Ptr);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, nullptr, GL_DYNAMIC_DRAW);
-		SetData(indices, count);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
@@ -82,12 +73,9 @@ namespace Wgine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLIndexBuffer::SetData(/*const*/ uint32_t *data, uint32_t count, uint32_t offset)
+	void OpenGLIndexBuffer::SetData(const void *data, uint32_t count, uint32_t offsetCount)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * offset, sizeof(uint32_t) * count, data);
-
-		//DEBUGdata.insert(DEBUGdata.end(), data, data + count);
-		//DEBUGcount = offset + count;
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * offsetCount, sizeof(uint32_t) * count, data);
 	}
 }

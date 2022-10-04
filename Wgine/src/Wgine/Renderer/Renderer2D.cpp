@@ -38,7 +38,7 @@ namespace Wgine
 		// Quad Vertex Array
 		// vertex buffer
 		s_Data.VAO = VertexArray::Create();
-		s_Data.VBO = VertexBuffer::Create(sizeof(Vertex), s_Data.MaxVertsPerCall);
+		s_Data.VBO = VertexBuffer::Create(sizeof(Vertex) * s_Data.MaxVertsPerCall);
 		s_Data.VBO->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color" },

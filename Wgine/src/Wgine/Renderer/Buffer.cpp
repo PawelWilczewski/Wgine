@@ -6,13 +6,13 @@
 
 namespace Wgine
 {
-	Ref<VertexBuffer> VertexBuffer::Create(uint32_t typeSize, uint32_t count)
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
 	{
-		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, typeSize, count);
+		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, size);
 	}
-	Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t typeSize, uint32_t count)
+	Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
 	{
-		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, vertices, typeSize, count);
+		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, vertices, size);
 	}
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t count)

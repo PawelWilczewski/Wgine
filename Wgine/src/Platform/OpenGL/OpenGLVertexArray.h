@@ -14,7 +14,7 @@ namespace Wgine
 		virtual void Unbind() const override;
 
 		virtual void AddVertexBuffer(const Ref<VertexBuffer> &vertexBuffer) override;
-		virtual void InsertVertexBuffer(const Ref<VertexBuffer> &vertexBuffer, uint32_t index) override;
+		virtual void SetVertexBuffer(const Ref<VertexBuffer> &vertexBuffer, uint32_t index) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer> &indexBuffer) override;
 
 		virtual void PrintDebug(int indent = 0) override

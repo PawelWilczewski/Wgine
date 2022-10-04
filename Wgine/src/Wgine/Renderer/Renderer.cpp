@@ -110,7 +110,7 @@ namespace Wgine
 
 				if (shaderData.VBO)
 					shaderData.VBO->Unbind(); // TODO: necessary?
-				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex), shaderData.VertexCount);
+				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
 				shaderData.VBO->SetLayout(s_VERTEX_LAYOUT);
 			}
 
@@ -161,7 +161,7 @@ namespace Wgine
 				shaderData.Indices.size()
 			);
 
-			shaderData.VAO->InsertVertexBuffer(shaderData.VBO, 0);
+			shaderData.VAO->SetVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
 
 			//shaderData.VAO->PrintDebug(1);
