@@ -24,6 +24,7 @@ namespace Wgine
 		{}
 
 		Ref<Mesh> Mesh;
+		// TODO: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
 		const glm::mat4 &Transform;
 	};
 
@@ -100,16 +101,13 @@ namespace Wgine
 	{
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
-			WGINE_CORE_TRACE("Shader {0}:", shaderName);
+			//WGINE_CORE_TRACE("Shader {0}:", shaderName);
 			// resize vertex buffer
 			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
 			{
 				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
-
 				shaderData.Vertices.resize(shaderData.VertexCount);
 
-				if (shaderData.VBO)
-					shaderData.VBO->Unbind(); // TODO: necessary?
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
 				shaderData.VBO->SetLayout(s_VERTEX_LAYOUT);
 			}
@@ -118,11 +116,8 @@ namespace Wgine
 			if (shaderData.IndexCount > shaderData.CurrentMaxIndexCount)
 			{
 				shaderData.CurrentMaxIndexCount = shaderData.IndexCount;
-
 				shaderData.Indices.resize(shaderData.IndexCount);
 
-				if (shaderData.IBO)
-					shaderData.IBO->Unbind(); // TODO: necessary?
 				shaderData.IBO = IndexBuffer::Create(shaderData.IndexCount);
 			}
 
@@ -152,8 +147,7 @@ namespace Wgine
 
 			shaderData.VBO->SetData(
 				shaderData.Vertices.data(),
-				sizeof(Vertex),
-				shaderData.Vertices.size()
+				sizeof(Vertex) * shaderData.Vertices.size()
 			);
 
 			shaderData.IBO->SetData(
@@ -180,6 +174,8 @@ namespace Wgine
 			//Shader->UploadUniformMat4("u_Transform", transform);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 			shaderData.VAO->Bind();
+			shaderData.VBO->Bind();
+			shaderData.IBO->Bind();
 			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
 		}
 	}

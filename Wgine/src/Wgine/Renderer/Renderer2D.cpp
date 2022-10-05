@@ -81,7 +81,7 @@ namespace Wgine
 	void Renderer2D::EndScene()
 	{
 		uint32_t dataSize = s_Data.VB - s_Data.VBBase.get();
-		s_Data.VBO->SetData(s_Data.VBBase.get(), sizeof(Vertex), dataSize);
+		s_Data.VBO->SetData(s_Data.VBBase.get(), sizeof(Vertex) * dataSize);
 
 		Flush();
 	}
