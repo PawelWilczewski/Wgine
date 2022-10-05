@@ -19,6 +19,7 @@ namespace Wgine
 
 		Ref<VertexArray> VAO;
 		Ref<VertexBuffer> VBO;
+		Ref<IndexBuffer> IBO;
 		Ref<Shader> UnlitTextureShader;
 		Ref<Texture2D> WhiteTexture;
 
@@ -53,8 +54,8 @@ namespace Wgine
 		//unsigned int quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		for (uint32_t i = 0; i < s_Data.MaxIndicesPerCall; i++)
 			indices[i] = i;
-		auto ibo = IndexBuffer::Create(indices.get(), s_Data.MaxIndicesPerCall);
-		s_Data.VAO->SetIndexBuffer(ibo);
+		s_Data.IBO = IndexBuffer::Create(indices.get(), s_Data.MaxIndicesPerCall);
+		s_Data.VAO->SetIndexBuffer(s_Data.IBO);
 
 		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
@@ -88,7 +89,10 @@ namespace Wgine
 
 	void Renderer2D::Flush()
 	{
+		s_Data.VBO->Bind();
+		s_Data.IBO->Bind();
 		s_Data.VAO->Bind();
+		
 		RenderCommand::DrawIndexed(s_Data.VAO, s_Data.IndexCount);
 	}
 
