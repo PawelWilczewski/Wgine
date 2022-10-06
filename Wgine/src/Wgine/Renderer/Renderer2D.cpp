@@ -94,6 +94,29 @@ namespace Wgine
 		s_Data.VAO->Bind();
 		
 		RenderCommand::DrawIndexed(s_Data.VAO, s_Data.IndexCount);
+
+		auto vao = VertexArray::Create();
+		uint32_t indices[] = { 0, 1, 2 };
+
+		auto ibo = IndexBuffer::Create(indices, 3);
+		vao->SetIndexBuffer(ibo);
+
+		auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
+		vbo->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" },
+			{ ShaderDataType::Float2, "a_TexCoord" },
+			});
+		Vertex verts[] = {
+			{ { 1.f, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+			{ { 1.f, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
+			{ { 1.f, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } }
+		};
+		vbo->SetData(verts, sizeof(Vertex) * 3);
+
+		vao->AddVertexBuffer(vbo);
+		vao->Bind();
+		RenderCommand::DrawIndexed(vao);
 	}
 
 	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &) {})
