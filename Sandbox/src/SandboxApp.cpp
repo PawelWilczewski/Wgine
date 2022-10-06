@@ -73,48 +73,10 @@ public:
 			// triangle data
 			m_Triangle->MeshData = MakeRef<Mesh>();// VertexArray::Create();
 			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f, 1.0f }, { 0.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ { 0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f, 1.0f }, { 1.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ { 0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.5f, 0.f } });
+			m_Triangle->MeshData->AddVertex({ {  0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f, 1.0f }, { 1.f, 1.f } });
+			m_Triangle->MeshData->AddVertex({ {  0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.5f, 0.f } });
 			m_Triangle->MeshData->AddIndices({ 0, 1, 2 });
-
-			// triangle shaders
-			std::string vertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-
-				v_Color = a_Color;
-			}
-			)";
-
-			std::string fragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 Color;
-			
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				// Color = vec4(0.5, 0.8, 0.2, 1.0);
-				Color = v_Color;
-			}
-			)";
-
-			m_Triangle->ShaderData = Shader::Create("VertexPosition", vertexSource, fragmentSource);
+			m_Triangle->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
 		m_Square = m_Scene->ConstructEntity<SceneEntity>();
@@ -133,39 +95,7 @@ public:
 				{ { 1.0f,  1.0f,  0.2f} },
 			});
 			m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
-
-			// square shaders
-			std::string squareVertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}
-			)";
-
-			std::string squareFragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 Color;
-			
-			in vec3 v_Position;
-
-			void main()
-			{
-				Color = vec4(0.5, 0.8, 0.2, 1.0);
-			}
-			)";
-
-			m_Square->ShaderData = Shader::Create("SquareColor", squareVertexSource, squareFragmentSource);
+			m_Square->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
@@ -195,45 +125,8 @@ public:
 				0, 6, 7, 7, 8, 6
 			});
 
-			// triangle shaders
-			std::string vertexSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-
-				v_Color = a_Color;
-			}
-			)";
-
-			std::string fragmentSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 Color;
-			
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				// Color = vec4(0.5, 0.8, 0.2, 1.0);
-				Color = v_Color;
-			}
-			)";
-
-			m_Axis->ShaderData = Shader::Create("VertexColor", vertexSource, fragmentSource);
-			m_AxisCamera->ShaderData = Shader::Create("VertexColor", vertexSource, fragmentSource);
+			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
 		m_VertexArray = VertexArray::Create();
@@ -245,12 +138,9 @@ public:
 			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } }
 		);
 
-		m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
-		m_TextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
+		//m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
 
 		m_Texture = Texture2D::Create("assets/textures/coords.png");
-		m_TextureShader->Bind();
-		m_TextureShader->UploadUniformInt("u_Texture", 0);
 
 		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
 	}
@@ -285,22 +175,15 @@ public:
 				for (int x = 0; x < 10; x++)
 				{
 					auto modelMatrix = Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix();
-					Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix);
-					//Renderer::Submit(m_FlatShader, m_QuadMesh, modelMatrix, [&](Ref<Shader> s) {
-					//	s->UploadUniformFloat4("u_Color", y % 2 == 1 ? m_PickedColor : glm::vec4(.4f, 0.8f, 0.3f, 1.f));
-					//	});
+					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_QuadMesh, modelMatrix);
 				}
 			}
 
 			m_Texture->Bind();
-			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
-				s->UploadUniformFloat4("u_Color", glm::vec4(1.f, 1.f, 1.f, 0.2f));
-				});
+			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
 			
 			m_TransparentTexture->Bind();
-			Renderer::Submit(m_TextureShader, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix(), [&](Ref<Shader> s) {
-				s->UploadUniformFloat4("u_Color", glm::vec4(1.f));
-				});
+			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix());
 		} Renderer::EndScene();
 	}
 
@@ -328,7 +211,7 @@ private:
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 
 	Ref<VertexArray> m_VertexArray;
-	Ref<Shader> m_FlatShader, m_TextureShader;
+	//Ref<Shader> m_FlatShader, m_TextureShader;
 
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
 };

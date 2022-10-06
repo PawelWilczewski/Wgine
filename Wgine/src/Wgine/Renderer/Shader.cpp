@@ -11,8 +11,8 @@ namespace Wgine
 	{
 		SWITCH_RENDERAPI_MAKEREF(Shader, sourceFilePath);
 	}
-	Ref<Shader> Shader::Create(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource)
+	Ref<Shader> Shader::Create(const std::string &displayedPath, const std::string &vertexSource, const std::string &fragmentSource)
 	{
-		SWITCH_RENDERAPI_MAKEREF(Shader, shaderName, vertexSource, fragmentSource);
+		SWITCH_RENDERAPI_MAKEREF(Shader, displayedPath, vertexSource, fragmentSource);
 	}
 }

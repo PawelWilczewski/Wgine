@@ -25,7 +25,7 @@ namespace Wgine
 		static void Flush();
 
 		static void Submit(const SceneEntity &entity);
-		static void Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &s) {});
+		static void Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform);
 
 		inline static API GetAPI() { return s_API; }
 

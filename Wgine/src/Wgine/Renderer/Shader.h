@@ -22,12 +22,12 @@ namespace Wgine
 		virtual void UploadUniformMat3(const std::string &name, const glm::mat3 &val) = 0;
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) = 0;
 
-		virtual const std::string &GetName() const { return m_Name; }
+		virtual const std::string &GetPath() const { return m_Path; }
 
 		static Ref<Shader>Create(const std::string &sourceFilePath);
-		static Ref<Shader>Create(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource);
+		static Ref<Shader>Create(const std::string &displayedPath, const std::string &vertexSource, const std::string &fragmentSource);
 
 	protected:
-		std::string m_Name;
+		std::string m_Path;
 	};
 }

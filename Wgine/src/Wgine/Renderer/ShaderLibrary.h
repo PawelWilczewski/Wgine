@@ -7,15 +7,19 @@ namespace Wgine
 	class ShaderLibrary
 	{
 	public:
-		void Add(const Ref<Shader> &shader);
-		void Add(const std::string &shaderName, const Ref<Shader> &shader);
-		Ref<Shader> Load(const std::string &filePath);
-		Ref<Shader> Load(const std::string &shaderName, const std::string &filePath);
-		Ref<Shader> Get(const std::string &shaderName);
+		//static void Add(const Ref<Shader> &shader);
+		//static void Add(const std::string &shaderName, const Ref<Shader> &shader);
 
-		bool Exists(const std::string &shaderName) const { return m_Shaders.find(shaderName) != m_Shaders.end(); };
+		//static Ref<Shader> Load(const std::string &filePath);
+		//static Ref<Shader> Load(const std::string &shaderName, const std::string &filePath);
+		// 
+		//static Ref<Shader> Get(const std::string &shaderName);
+		
+		// Loads/gets the shader at specified file path. If not loaded, it will proceed with that; otherwise just return
+		static Ref<Shader> Get(const std::string &filePath);
 
 	private:
-		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+		//static bool Exists(const std::string &shaderName);
+		static bool Exists(const std::string &filePath);
 	};
 }

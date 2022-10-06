@@ -33,7 +33,7 @@ namespace Wgine
 
 	class Mesh
 	{
-		// TODO: for performance: mark as dirty if something changed? only if dirty upload to vertex array
+		// TODO: for performance: mark as dirty if something changed? only if dirty update ibo and vbo
 	public:
 		Mesh()
 			: m_Vertices()

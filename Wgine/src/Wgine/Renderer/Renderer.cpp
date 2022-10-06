@@ -174,7 +174,7 @@ namespace Wgine
 			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			//Shader->UploadUniformMat4("u_Transform", transform);
+			shaderData.Shader->UploadUniformInt("u_Texture", 0);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 			shaderData.VAO->Bind();
 			shaderData.IBO->Bind();
@@ -213,7 +213,7 @@ namespace Wgine
 		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
 	}
 
-	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform, std::function<void(const Ref<Shader>&)> submitExtraUniforms)
+	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform)
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
@@ -221,13 +221,13 @@ namespace Wgine
 			return;
 
 		// new Shader
-		if (s_ShaderData.find(shader->GetName()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
+		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
 		{
-			s_ShaderData[shader->GetName()] = PerShaderData();
-			s_ShaderData[shader->GetName()].Shader = shader;
+			s_ShaderData[shader->GetPath()] = PerShaderData();
+			s_ShaderData[shader->GetPath()].Shader = shader;
 		}
 
-		auto &shaderData = s_ShaderData[shader->GetName()];
+		auto &shaderData = s_ShaderData[shader->GetPath()];
 
 		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
 		shaderData.VertexCount += mesh->GetVertices().size();

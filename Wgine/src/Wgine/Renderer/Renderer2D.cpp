@@ -11,6 +11,7 @@
 
 namespace Wgine
 {
+	std::unordered_map<std::string, Ref<Shader>> s_Shaders;
 	struct RendererData
 	{
 		const uint32_t MaxTrisPerCall = 20000;
@@ -59,9 +60,8 @@ namespace Wgine
 
 		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
-		s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
-		s_Data.UnlitTextureShader->Bind();
-		s_Data.UnlitTextureShader->UploadUniformInt("u_Texture", 0);
+		//s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
+		s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 
 		uint32_t whiteData = 0xffffffff;
 		s_Data.WhiteTexture = Texture2D::Create(1, 1, &whiteData);
@@ -91,8 +91,8 @@ namespace Wgine
 	{
 		s_Data.UnlitTextureShader->Bind();
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
-		//s_Data.UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
 		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
+		s_Data.UnlitTextureShader->UploadUniformInt("u_Texture", 0);
 
 		s_Data.VAO->Bind();
 		s_Data.VBO->Bind();

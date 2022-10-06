@@ -23,18 +23,19 @@ namespace Wgine
 	{
 		Compile(ExtractShadersSource(FileUtils::ReadFile(sourceFilePath)));
 
-		std::filesystem::path path = sourceFilePath;
-		m_Name = path.stem().string();
+		//std::filesystem::path path = sourceFilePath;
+		//m_Name = path.stem().string();
+		m_Path = sourceFilePath;
 	}
 
-	OpenGLShader::OpenGLShader(const std::string &shaderName, const std::string &vertexSource, const std::string &fragmentSource)
+	OpenGLShader::OpenGLShader(const std::string &displayedPath, const std::string &vertexSource, const std::string &fragmentSource)
 	{
 		std::unordered_map<GLenum, std::string> data;
 		data[GL_VERTEX_SHADER] = vertexSource;
 		data[GL_FRAGMENT_SHADER] = fragmentSource;
 		Compile(data);
 
-		m_Name = shaderName;
+		m_Path = displayedPath;
 	}
 
 	OpenGLShader::~OpenGLShader()
