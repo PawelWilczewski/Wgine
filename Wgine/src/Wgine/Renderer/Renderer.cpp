@@ -167,16 +167,44 @@ namespace Wgine
 	void Renderer::Flush()
 	{
 		//auto &shaderData = s_ShaderData["VertexColor"];
+		int i = 0;
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
+			i++;
+			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			//Shader->UploadUniformMat4("u_Transform", transform);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 			shaderData.VAO->Bind();
-			shaderData.VBO->Bind();
 			shaderData.IBO->Bind();
+			shaderData.VBO->Bind();
 			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
+
+			auto vao = VertexArray::Create();
+			uint32_t indices[] = { 0, 1, 2 };
+
+			auto ibo = IndexBuffer::Create(indices, 3);
+			vao->SetIndexBuffer(ibo);
+
+			auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
+			vbo->SetLayout({
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float4, "a_Color" },
+				{ ShaderDataType::Float2, "a_TexCoord" },
+				});
+			Vertex verts[] = {
+				{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+				{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
+				{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } }
+			};
+			vbo->SetData(verts, sizeof(Vertex) * 3);
+			//WGINE_CORE_INFO("Drew {0}", i);
+
+			vao->AddVertexBuffer(vbo);
+			vao->Bind();
+			shaderData.Shader->Bind(); // apparently only unlit texture works
+			RenderCommand::DrawIndexed(vao);
 		}
 	}
 
