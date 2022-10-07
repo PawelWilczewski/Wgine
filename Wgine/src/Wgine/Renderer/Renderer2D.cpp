@@ -8,6 +8,7 @@
 #include "Wgine/Core/Time.h"
 
 #include "Wgine/Renderer/Mesh.h"
+#include "Wgine/Renderer/Vertex.h"
 
 namespace Wgine
 {
@@ -41,11 +42,7 @@ namespace Wgine
 		// vertex buffer
 		s_Data.VAO = VertexArray::Create();
 		s_Data.VBO = VertexBuffer::Create(sizeof(Vertex) * s_Data.MaxVertsPerCall);
-		s_Data.VBO->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			});
+		s_Data.VBO->SetLayout(Vertex::GetLayout());
 		s_Data.VAO->AddVertexBuffer(s_Data.VBO);
 		
 		s_Data.VBBase = MakeScope<Vertex[]>(s_Data.MaxVertsPerCall);

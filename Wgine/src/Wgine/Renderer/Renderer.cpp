@@ -1,21 +1,15 @@
 #include "WginePCH.h"
 #include "Renderer.h"
 #include "Renderer2D.h"
+#include "Vertex.h"
 
 #include "Wgine/Renderer/Mesh.h"
+#include "Wgine/Renderer/Vertex.h"
 #include "Wgine/Core/Core.h"
 
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
-
-	// TODO: put it in one file with vertex class
-	static const BufferLayout s_VERTEX_LAYOUT = {
-		{ ShaderDataType::Float3, "a_Position" },
-		{ ShaderDataType::Float4, "a_Color" },
-		{ ShaderDataType::Float2, "a_TexCoord" },
-		// TODO: texture id...
-	};
 
 	struct MeshInfo
 	{
@@ -109,7 +103,7 @@ namespace Wgine
 				shaderData.Vertices.resize(shaderData.VertexCount);
 
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
-				shaderData.VBO->SetLayout(s_VERTEX_LAYOUT);
+				shaderData.VBO->SetLayout(Vertex::GetLayout());
 			}
 
 			// resize index buffer
@@ -171,11 +165,16 @@ namespace Wgine
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
 			i++;
+
+			uint32_t whiteData = 0xffffffff;
+			auto whiteTexture = Texture2D::Create(1, 1, &whiteData);
+			whiteTexture->Bind();
 			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			shaderData.Shader->UploadUniformInt("u_Texture", 0);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
+
 			shaderData.VAO->Bind();
 			shaderData.IBO->Bind();
 			shaderData.VBO->Bind();
