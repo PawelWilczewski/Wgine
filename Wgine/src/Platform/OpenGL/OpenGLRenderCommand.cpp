@@ -8,6 +8,66 @@ namespace Wgine
 {
 	RenderCommand *RenderCommand::s_Instance = new OpenGLRenderCommand();
 
+#ifdef WGINE_DEBUG
+	static void GLAPIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+	{
+		std::string errType;
+		switch (type) {
+		case GL_DEBUG_TYPE_ERROR:
+			errType = "ERROR";
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+			errType = "DEPRECATED_BEHAVIOR";
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+			errType = "UNDEFINED_BEHAVIOR";
+			break;
+		case GL_DEBUG_TYPE_PORTABILITY:
+			errType = "PORTABILITY";
+			break;
+		case GL_DEBUG_TYPE_PERFORMANCE:
+			errType = "PERFORMANCE";
+			break;
+		case GL_DEBUG_TYPE_OTHER:
+			errType = "OTHER";
+			break;
+		case GL_DEBUG_TYPE_MARKER:
+			errType = "MARKER";
+			break;
+		case GL_DEBUG_TYPE_PUSH_GROUP:
+			errType = "PUSH_GROUP";
+			break;
+		case GL_DEBUG_TYPE_POP_GROUP:
+			errType = "POP_GROUP";
+			break;
+		default:
+			errType = "UNKNOWN";
+			break;
+		}
+
+		std::string sev;
+		switch (severity) {
+		case GL_DEBUG_SEVERITY_LOW:
+			sev = "LOW";
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			sev = "MEDIUM";
+			break;
+		case GL_DEBUG_SEVERITY_HIGH:
+			sev = "HIGH";
+			break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			sev = "NOTIFICATION";
+			break;
+		default:
+			sev = "UNKNOWN";
+			break;
+		}
+
+		WGINE_CORE_ERROR("GL CALLBACK: severity = {0}, type = {1}, id = 0x{2:x}, message = {3}", sev, errType, id, message);
+	}
+#endif
+
 	void OpenGLRenderCommand::InitImpl()
 	{
 		// depth
@@ -26,6 +86,11 @@ namespace Wgine
 		// blending
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+#ifdef WGINE_DEBUG
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback(errorCallback, 0);
+#endif
 	}
 
 	void OpenGLRenderCommand::SetClearColorImpl(const glm::vec4 &color)
