@@ -64,7 +64,33 @@ namespace Wgine
 			break;
 		}
 
-		WGINE_CORE_ERROR("GL CALLBACK: severity = {0}, type = {1}, id = 0x{2:x}, message = {3}", sev, errType, id, message);
+		std::string_view src;
+		switch (source)
+		{
+		case GL_DEBUG_SOURCE_API:
+			src = "API";
+			break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+			src = "WINDOW_SYSTEM";
+			break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER:
+			src = "SHADER_COMPILER";
+			break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY:
+			src = "THIRD_PARTY";
+			break;
+		case GL_DEBUG_SOURCE_APPLICATION:
+			src = "APPLICATION";
+			break;
+		case GL_DEBUG_SOURCE_OTHER:
+			src = "OTHER";
+			break;
+		default:
+			src = "UNKNOWN";
+			break;
+		}
+		
+		WGINE_CORE_ERROR("GL CALLBACK: src = {0}, severity = {1}, type = {2}, id = 0x{3:x}, message = {4}", src, sev, errType, id, message);
 	}
 #endif
 
