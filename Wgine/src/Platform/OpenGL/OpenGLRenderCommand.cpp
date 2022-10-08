@@ -4,6 +4,8 @@
 #include "glad/glad.h"
 #include "Wgine/Renderer/Mesh.h"
 
+#define MIN_SEVERITY_LEVEL GL_DEBUG_SEVERITY_LOW
+
 namespace Wgine
 {
 	RenderCommand *RenderCommand::s_Instance = new OpenGLRenderCommand();
@@ -11,7 +13,35 @@ namespace Wgine
 #ifdef WGINE_DEBUG
 	static void GLAPIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 	{
-		std::string errType;
+		std::string_view sev;
+		switch (severity) {
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+#if MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_LOW || MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_MEDIUM || MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_HIGH
+			return;
+#endif
+			sev = "NOTIFICATION";
+			break;
+		case GL_DEBUG_SEVERITY_LOW:
+#if MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_MEDIUM || MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_HIGH
+			return;
+#endif
+			sev = "LOW";
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+#if MIN_SEVERITY_LEVEL == GL_DEBUG_SEVERITY_HIGH
+			return;
+#endif
+			sev = "MEDIUM";
+			break;
+		case GL_DEBUG_SEVERITY_HIGH:
+			sev = "HIGH";
+			break;
+		default:
+			sev = "UNKNOWN";
+			break;
+		}
+
+		std::string_view errType;
 		switch (type) {
 		case GL_DEBUG_TYPE_ERROR:
 			errType = "ERROR";
@@ -42,25 +72,6 @@ namespace Wgine
 			break;
 		default:
 			errType = "UNKNOWN";
-			break;
-		}
-
-		std::string sev;
-		switch (severity) {
-		case GL_DEBUG_SEVERITY_LOW:
-			sev = "LOW";
-			break;
-		case GL_DEBUG_SEVERITY_MEDIUM:
-			sev = "MEDIUM";
-			break;
-		case GL_DEBUG_SEVERITY_HIGH:
-			sev = "HIGH";
-			break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION:
-			sev = "NOTIFICATION";
-			break;
-		default:
-			sev = "UNKNOWN";
 			break;
 		}
 
