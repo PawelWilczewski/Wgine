@@ -9,6 +9,7 @@
 
 #include "Wgine/Renderer/Mesh.h"
 #include "Wgine/Renderer/Vertex.h"
+#include "Wgine/Renderer/TextureLibrary.h"
 
 namespace Wgine
 {
@@ -23,7 +24,6 @@ namespace Wgine
 		Ref<VertexBuffer> VBO;
 		Ref<IndexBuffer> IBO;
 		Ref<Shader> UnlitTextureShader;
-		Ref<Texture2D> WhiteTexture;
 
 		uint32_t IndexCount = 0;
 		Scope<Vertex[]> VBBase = nullptr;
@@ -59,9 +59,6 @@ namespace Wgine
 
 		//s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
 		s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-
-		uint32_t whiteData = 0xffffffff;
-		s_Data.WhiteTexture = Texture2D::Create(1, 1, &whiteData);
 	}
 
 	void Renderer2D::Shutdown()
@@ -86,6 +83,7 @@ namespace Wgine
 
 	void Renderer2D::Flush()
 	{
+		TextureLibrary::GetTransparent()->Bind(0);
 		s_Data.UnlitTextureShader->Bind();
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
 		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff

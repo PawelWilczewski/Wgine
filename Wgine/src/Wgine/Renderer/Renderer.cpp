@@ -55,6 +55,8 @@ namespace Wgine
 		//const uint32_t MaxTrisPerCall = 20000;
 		//const uint32_t MaxVertsPerCall = MaxTrisPerCall * 3;
 		//const uint32_t MaxIndicesPerCall = MaxTrisPerCall * 3;
+
+
 		Scene *ActiveScene = nullptr;
 	};
 
@@ -165,10 +167,6 @@ namespace Wgine
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
 			i++;
-
-			uint32_t whiteData = 0xffffffff;
-			auto whiteTexture = Texture2D::Create(1, 1, &whiteData);
-			whiteTexture->Bind();
 			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
@@ -187,15 +185,11 @@ namespace Wgine
 			vao->SetIndexBuffer(ibo);
 
 			auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
-			vbo->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-				{ ShaderDataType::Float2, "a_TexCoord" },
-				});
+			vbo->SetLayout(Vertex::GetLayout());
 			Vertex verts[] = {
-				{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
-				{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
-				{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } }
+				{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f }, { 0.f, 0.f, 0.f } },
+				{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f }, { 0.f, 0.f, 0.f } },
+				{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f }, { 0.f, 0.f, 0.f } },
 			};
 			vbo->SetData(verts, sizeof(Vertex) * 3);
 			//WGINE_CORE_INFO("Drew {0}", i);

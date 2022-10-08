@@ -16,7 +16,7 @@ public:
 		m_Scene->SetActiveCamera(m_Camera);
 		auto controller = m_Scene->ConstructEntity<OrthographicCameraController2D>(m_Camera);
 
-		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
+		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 	}
 
 	virtual void OnAttach() override
@@ -140,9 +140,9 @@ public:
 
 		//m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
 
-		m_Texture = Texture2D::Create("assets/textures/coords.png");
+		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
 
-		m_TransparentTexture = Texture2D::Create("assets/textures/transparent.png");
+		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 	}
 
 	virtual void OnAttach() override

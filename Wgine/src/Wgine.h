@@ -14,6 +14,7 @@
 #include "Wgine/Renderer/Renderer.h"
 #include "Wgine/Renderer/Renderer2D.h"
 #include "Wgine/Renderer/Texture.h"
+#include "Wgine/Renderer/TextureLibrary.h"
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/Renderer/ShaderLibrary.h"
 
