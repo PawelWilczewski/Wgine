@@ -15,7 +15,7 @@ namespace Wgine
 		Vertex()
 		{}
 
-		Vertex(glm::vec3 position, glm::vec4 color = glm::vec4(1.f), glm::vec2 texCoord = glm::vec2(0.f), glm::vec3 normal = glm::vec3(0.f))
+		Vertex(const glm::vec3 &position, const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f), const glm::vec3 &normal = glm::vec3(0.f))
 			: Position(position), Color(color), TexCoord(texCoord), Normal(normal)
 		{}
 

@@ -40,23 +40,12 @@ namespace Wgine
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
-		//std::vector<Ref<Mesh>> Meshes = std::vector<Ref<Mesh>>();
-
-		//Scope<Vertex[]> VertexBufferStart = nullptr;
-		//Vertex *VertexBufferTop = nullptr;
-
-		//Scope<glm::mat4[]> Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
 
 	struct RendererData
 	{
-		//const uint32_t MaxTrisPerCall = 20000;
-		//const uint32_t MaxVertsPerCall = MaxTrisPerCall * 3;
-		//const uint32_t MaxIndicesPerCall = MaxTrisPerCall * 3;
-
-
 		Scene *ActiveScene = nullptr;
 	};
 
@@ -86,11 +75,37 @@ namespace Wgine
 		{
 			shaderData.IndexCount = 0;
 			shaderData.VertexCount = 0;
-			shaderData.Meshes.clear();
+			shaderData.Meshes.clear(); // instead maybe just use count so no need to resize every time added
 		}
 
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
 			Submit(*entity);
+	}
+
+	void Renderer::Submit(const SceneEntity &entity)
+	{
+		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
+	}
+
+	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform)
+	{
+		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
+
+		if (!mesh)
+			return;
+
+		// new Shader
+		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
+		{
+			s_ShaderData[shader->GetPath()] = PerShaderData();
+			s_ShaderData[shader->GetPath()].Shader = shader;
+		}
+
+		auto &shaderData = s_ShaderData[shader->GetPath()];
+
+		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
+		shaderData.VertexCount += mesh->GetVertices().size();
+		shaderData.IndexCount += mesh->GetIndices().size();
 	}
 
 	void Renderer::EndScene()
@@ -124,7 +139,7 @@ namespace Wgine
 				// TODO: avoid copying twice by copying directly to the vertices/indices buffer
 				for (int i = vertexOffset; i < meshData.Mesh->GetVertices().size(); i++)
 				{
-					auto &vertex = meshData.Mesh->GetVertices()[i - vertexOffset];
+					auto &vertex = meshData.Mesh->GetVertices()[i - vertexOffset]; // TODO: <- this does not copy correctly/data is invalid at this point already??
 					shaderData.Vertices[i] = Vertex(
 						glm::vec3(meshData.Transform * glm::vec4(vertex.Position, 1.f)),
 						vertex.Color,
@@ -133,8 +148,7 @@ namespace Wgine
 
 				for (int i = indexOffset; i < meshData.Mesh->GetIndices().size(); i++)
 				{
-					auto &index = meshData.Mesh->GetIndices()[i - indexOffset];
-					shaderData.Indices[i] = index + vertexOffset;
+					shaderData.Indices[i] = meshData.Mesh->GetIndices()[i - indexOffset] + vertexOffset;
 				}
 
 				vertexOffset += meshData.Mesh->GetVertices().size();
@@ -162,7 +176,6 @@ namespace Wgine
 
 	void Renderer::Flush()
 	{
-		//auto &shaderData = s_ShaderData["VertexColor"];
 		int i = 0;
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
@@ -178,53 +191,27 @@ namespace Wgine
 			shaderData.VBO->Bind();
 			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
 
-			auto vao = VertexArray::Create();
-			uint32_t indices[] = { 0, 1, 2 };
+			//auto vao = VertexArray::Create();
+			//uint32_t indices[] = { 0, 1, 2 };
 
-			auto ibo = IndexBuffer::Create(indices, 3);
-			vao->SetIndexBuffer(ibo);
+			//auto ibo = IndexBuffer::Create(indices, 3);
+			//vao->SetIndexBuffer(ibo);
 
-			auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
-			vbo->SetLayout(Vertex::GetLayout());
-			Vertex verts[] = {
-				{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f }, { 0.f, 0.f, 0.f } },
-				{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f }, { 0.f, 0.f, 0.f } },
-				{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f }, { 0.f, 0.f, 0.f } },
-			};
-			vbo->SetData(verts, sizeof(Vertex) * 3);
-			//WGINE_CORE_INFO("Drew {0}", i);
+			//auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
+			//vbo->SetLayout(Vertex::GetLayout());
+			//Vertex verts[] = {
+			//	{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f }, { 0.f, 0.f, 0.f } },
+			//	{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f }, { 0.f, 0.f, 0.f } },
+			//	{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f }, { 0.f, 0.f, 0.f } },
+			//};
+			//vbo->SetData(verts, sizeof(Vertex) * 3);
+			////WGINE_CORE_INFO("Drew {0}", i);
 
-			vao->AddVertexBuffer(vbo);
-			vao->Bind();
-			shaderData.Shader->Bind(); // apparently only unlit texture works
-			RenderCommand::DrawIndexed(vao);
+			//vao->AddVertexBuffer(vbo);
+			//vao->Bind();
+			//shaderData.Shader->Bind(); // apparently only unlit texture works
+			//RenderCommand::DrawIndexed(vao);
 		}
-	}
-
-	void Renderer::Submit(const SceneEntity &entity)
-	{
-		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
-	}
-
-	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform)
-	{
-		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
-
-		if (!mesh)
-			return;
-
-		// new Shader
-		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
-		{
-			s_ShaderData[shader->GetPath()] = PerShaderData();
-			s_ShaderData[shader->GetPath()].Shader = shader;
-		}
-
-		auto &shaderData = s_ShaderData[shader->GetPath()];
-
-		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
-		shaderData.VertexCount += mesh->GetVertices().size();
-		shaderData.IndexCount += mesh->GetIndices().size();
 	}
 
 	void Renderer::OnWindowResized(float width, float height)

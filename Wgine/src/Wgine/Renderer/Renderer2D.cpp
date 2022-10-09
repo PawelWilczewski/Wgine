@@ -57,7 +57,6 @@ namespace Wgine
 
 		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
-		//s_Data.UnlitTextureShader = Shader::Create("assets/shaders/UnlitTexture.glsl");
 		s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 	}
 
@@ -98,12 +97,12 @@ namespace Wgine
 
 	static void Submit(const Ref<VertexArray> &vertexArray, const glm::mat4 &transform, std::function<void(const Ref<Shader> &)> submitExtraUniforms = [&](const Ref<Shader> &) {})
 	{
-		WGINE_ASSERT(s_Data.ActiveScene, "No active scene for renderer!");
+		//WGINE_ASSERT(s_Data.ActiveScene, "No active scene for renderer!");
 
-		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
-		s_Data.UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
-		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
-		submitExtraUniforms(s_Data.UnlitTextureShader);
+		//s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
+		//s_Data.UnlitTextureShader->UploadUniformMat4("u_Transform", transform);
+		//s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f });
+		//submitExtraUniforms(s_Data.UnlitTextureShader);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color)
@@ -162,9 +161,9 @@ namespace Wgine
 	{
 		WGINE_CORE_ASSERT(s_Data.ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();
-		Submit(s_Data.VAO, transform.ToModelMatrix(), [&](Ref<Shader> s) {
-			s->UploadUniformFloat4("u_Color", tint);
-			s->UploadUniformFloat2("u_Tiling", tiling);
-			});
+		//Submit(s_Data.VAO, transform.ToModelMatrix(), [&](Ref<Shader> s) {
+		//	s->UploadUniformFloat4("u_Color", tint);
+		//	s->UploadUniformFloat2("u_Tiling", tiling);
+		//	});
 	}
 }

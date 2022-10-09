@@ -138,7 +138,7 @@ public:
 			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } }
 		);
 
-		//m_FlatShader = Shader::Create("assets/shaders/Unlit.glsl");
+		//m_FlatShader = ShaderLibrary::Get("assets/shaders/Unlit.glsl");
 
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
 
