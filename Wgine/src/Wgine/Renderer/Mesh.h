@@ -30,6 +30,12 @@ namespace Wgine
 			return result;
 		}
 
+		void PasteVerticesTransformed(Vertex *dst, const glm::mat4 &t) const
+		{
+			for (int i = 0; i < m_Vertices.size(); i++)
+				*(dst + i) = { glm::vec3(t * glm::vec4(m_Vertices[i].Position, 1.f)), m_Vertices[i].Color, m_Vertices[i].TexCoord };
+		}
+
 		std::vector<uint32_t> GetIndicesOffset(uint32_t offset) const
 		{
 			auto result = std::vector<uint32_t>();
@@ -42,6 +48,13 @@ namespace Wgine
 			}
 			return result;
 		}
+
+		void PasteIndicesOffset(uint32_t *dst, uint32_t offset) const
+		{
+			for (int i = 0; i < m_Indices.size(); i++)
+				*(dst + i) = m_Indices[i] + offset;
+		}
+
 	public:
 		void AddVertex(Vertex v) { m_Vertices.push_back(v); }
 		void AddVertices(std::vector<Vertex> v)

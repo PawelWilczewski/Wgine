@@ -137,7 +137,8 @@ namespace Wgine
 			for (const auto &meshData : shaderData.Meshes)
 			{
 				// TODO: avoid copying twice by copying directly to the vertices/indices buffer
-				memcpy(&shaderData.Vertices[vertexOffset], meshData.Mesh->GetVerticesTransformed(meshData.Transform).data(), sizeof(Vertex) * meshData.Mesh->GetVertices().size());
+				//memcpy(&shaderData.Vertices[vertexOffset], meshData.Mesh->GetVerticesTransformed(meshData.Transform).data(), sizeof(Vertex) * meshData.Mesh->GetVertices().size());
+				meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], meshData.Transform);
 				//for (int i = vertexOffset; i < meshData.Mesh->GetVertices().size(); i++)
 				//{
 				//	auto &vertex = meshData.Mesh->GetVertices()[i - vertexOffset]; // TODO: <- this does not copy correctly/data is invalid at this point already??
@@ -147,8 +148,8 @@ namespace Wgine
 				//		vertex.Color,
 				//		vertex.TexCoord);
 				//}
-
-				memcpy(&shaderData.Indices[indexOffset], meshData.Mesh->GetIndicesOffset(vertexOffset).data(), sizeof(uint32_t) * meshData.Mesh->GetIndices().size());
+				meshData.Mesh->PasteIndicesOffset(&shaderData.Indices[indexOffset], vertexOffset);
+				//memcpy(&shaderData.Indices[indexOffset], meshData.Mesh->GetIndicesOffset(vertexOffset).data(), sizeof(uint32_t) * meshData.Mesh->GetIndices().size());
 				//for (int i = indexOffset; i < meshData.Mesh->GetIndices().size(); i++)
 				//{
 				//	shaderData.Indices[i] = meshData.Mesh->GetIndices()[i - indexOffset] + vertexOffset;
