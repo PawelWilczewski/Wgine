@@ -30,6 +30,9 @@ namespace Wgine
 
 		static void OnWindowResized(float width, float height);
 
+		static int s_TextureSlots[];
+		static const uint32_t s_TextureSlotsCount;
+
 	private:
 		static API s_API;
 	};

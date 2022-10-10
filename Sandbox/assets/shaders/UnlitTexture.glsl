@@ -32,12 +32,12 @@ in vec2 v_TexCoord;
 in vec4 v_Color;
 in vec3 v_Normal;
 
-uniform sampler2D u_Texture;
+uniform sampler2D u_Texture[32];
 uniform vec2 u_Tiling;
 
 void main()
 {
-	// Color = texture(u_Texture, v_TexCoord * u_Tiling) * v_Color;
+	 Color = texture(u_Texture[0], v_TexCoord * u_Tiling) * v_Color;
 	// Color = vec4(v_TexCoord, 0.0, 1.0);
-	Color = v_Color;
+//	Color = v_Color;
 }

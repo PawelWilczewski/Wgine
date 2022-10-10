@@ -22,6 +22,7 @@ namespace Wgine
 		virtual void UploadUniformMat3(const std::string &name, const glm::mat3 &val) = 0;
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) = 0;
 		virtual void UploadUniformMaterial(const std::string &name, Ref<Material> val) = 0;
+		virtual void UploadUniform1iv(const std::string &name, int *val, uint32_t count) = 0;
 
 		virtual const std::string &GetPath() const { return m_Path; }
 

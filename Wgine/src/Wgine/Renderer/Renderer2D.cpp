@@ -2,6 +2,8 @@
 #include "Renderer2D.h"
 #include "RenderCommand.h"
 
+#include "Renderer.h"
+
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/Renderer/ShaderLibrary.h"
 #include "Wgine/Core/Transform.h"
@@ -84,9 +86,10 @@ namespace Wgine
 	{
 		TextureLibrary::GetTransparent()->Bind(0);
 		s_Data.UnlitTextureShader->Bind();
+
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
 		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
-		s_Data.UnlitTextureShader->UploadUniformInt("u_Texture", 0);
+		s_Data.UnlitTextureShader->UploadUniform1iv("u_Texture", Renderer:: s_TextureSlots, Renderer::s_TextureSlotsCount);
 
 		s_Data.VAO->Bind();
 		s_Data.VBO->Bind();

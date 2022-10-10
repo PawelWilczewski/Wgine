@@ -104,7 +104,7 @@ namespace Wgine
 		WGINE_CORE_ERROR("GL CALLBACK: src = {0}, severity = {1}, type = {2}, id = 0x{3:x}, message = {4}", src, sev, errType, id, message);
 	}
 #endif
-
+	
 	void OpenGLRenderCommand::InitImpl()
 	{
 		// depth

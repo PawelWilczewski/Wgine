@@ -11,6 +11,9 @@ namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
 
+	const uint32_t Renderer::s_TextureSlotsCount = 32;
+	int Renderer::s_TextureSlots[s_TextureSlotsCount] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
+	
 	struct MeshInfo
 	{
 		MeshInfo(Ref<Mesh> mesh, Ref<glm::mat4> transform)
@@ -112,7 +115,6 @@ namespace Wgine
 	{
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
-			//WGINE_CORE_TRACE("Shader {0}:", shaderName);
 			// resize vertex buffer
 			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
 			{
@@ -155,8 +157,6 @@ namespace Wgine
 
 			shaderData.VAO->SetVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
-
-			//shaderData.VAO->PrintDebug(1);
 		}
 
 		Flush();
@@ -171,34 +171,14 @@ namespace Wgine
 			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			shaderData.Shader->UploadUniformInt("u_Texture", 0);
+			shaderData.Shader->UploadUniform1iv("u_Texture", s_TextureSlots, s_TextureSlotsCount);
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 
 			shaderData.VAO->Bind();
 			shaderData.IBO->Bind();
 			shaderData.VBO->Bind();
+
 			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
-
-			//auto vao = VertexArray::Create();
-			//uint32_t indices[] = { 0, 1, 2 };
-
-			//auto ibo = IndexBuffer::Create(indices, 3);
-			//vao->SetIndexBuffer(ibo);
-
-			//auto vbo = VertexBuffer::Create(sizeof(Vertex) * 3);
-			//vbo->SetLayout(Vertex::GetLayout());
-			//Vertex verts[] = {
-			//	{ { 1.f * i, 0.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f }, { 0.f, 0.f, 0.f } },
-			//	{ { 1.f * i, 1.f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f }, { 0.f, 0.f, 0.f } },
-			//	{ { 1.f * i, 0.f, 1.f} , { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f }, { 0.f, 0.f, 0.f } },
-			//};
-			//vbo->SetData(verts, sizeof(Vertex) * 3);
-			////WGINE_CORE_INFO("Drew {0}", i);
-
-			//vao->AddVertexBuffer(vbo);
-			//vao->Bind();
-			//shaderData.Shader->Bind(); // apparently only unlit texture works
-			//RenderCommand::DrawIndexed(vao);
 		}
 	}
 

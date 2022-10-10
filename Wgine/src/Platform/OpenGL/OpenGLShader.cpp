@@ -205,4 +205,9 @@ namespace Wgine
 	{
 		// TODO: upload material here
 	}
+
+	void OpenGLShader::UploadUniform1iv(const std::string &name, int *val, uint32_t count)
+	{
+		glUniform1iv(GetUniformLocation(name), count, val);
+	}
 }
