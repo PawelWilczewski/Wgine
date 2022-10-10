@@ -20,6 +20,11 @@ namespace Wgine
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - s_StartTime).count() / 1000000000.f;
 		}
 
+		static float GetFPS()
+		{
+			return 1.f / GetDeltaSeconds();
+		}
+
 		static float GetDeltaSeconds()
 		{
 			auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(s_CurrentFrameTime - s_LastFrameTime).count() / 1000000000.f;

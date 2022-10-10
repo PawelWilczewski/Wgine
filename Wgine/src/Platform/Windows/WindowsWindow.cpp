@@ -47,7 +47,7 @@ namespace Wgine
 		m_Context = new OpenGLContext(m_Window);
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
+		SetVSync(false);
 
 		// set callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)

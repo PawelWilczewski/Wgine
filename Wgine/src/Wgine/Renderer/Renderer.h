@@ -21,7 +21,7 @@ namespace Wgine
 
 		static void BeginScene(Scene *scene);
 		static void Submit(const SceneEntity &entity);
-		static void Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform);
+		static void Submit(Ref<Shader> shader, Ref<Mesh> mesh, Ref<glm::mat4> transform);
 		static void EndScene();
 
 		static void Flush();

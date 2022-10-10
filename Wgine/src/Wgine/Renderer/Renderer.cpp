@@ -13,13 +13,13 @@ namespace Wgine
 
 	struct MeshInfo
 	{
-		MeshInfo(Ref<Mesh> mesh, const glm::mat4 &transform)
+		MeshInfo(Ref<Mesh> mesh, Ref<glm::mat4> transform)
 			: Mesh(mesh), Transform(transform)
 		{}
 
 		Ref<Mesh> Mesh;
 		// TODO: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
-		const glm::mat4 &Transform;
+		Ref<glm::mat4> Transform;
 	};
 
 	struct PerShaderData
@@ -84,10 +84,10 @@ namespace Wgine
 
 	void Renderer::Submit(const SceneEntity &entity)
 	{
-		Renderer::Submit(entity.ShaderData, entity.MeshData, entity.GetEntityMatrix());
+		Renderer::Submit(entity.ShaderData, entity.MeshData, MakeRef<glm::mat4>(entity.GetEntityMatrix()));
 	}
 
-	void Renderer::Submit(const Ref<Shader> &shader, const Ref<Mesh> &mesh, const glm::mat4 &transform)
+	void Renderer::Submit(Ref<Shader> shader, Ref<Mesh> mesh, Ref<glm::mat4> transform)
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
@@ -136,24 +136,8 @@ namespace Wgine
 			uint32_t indexOffset = 0;
 			for (const auto &meshData : shaderData.Meshes)
 			{
-				// TODO: avoid copying twice by copying directly to the vertices/indices buffer
-				//memcpy(&shaderData.Vertices[vertexOffset], meshData.Mesh->GetVerticesTransformed(meshData.Transform).data(), sizeof(Vertex) * meshData.Mesh->GetVertices().size());
-				meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], meshData.Transform);
-				//for (int i = vertexOffset; i < meshData.Mesh->GetVertices().size(); i++)
-				//{
-				//	auto &vertex = meshData.Mesh->GetVertices()[i - vertexOffset]; // TODO: <- this does not copy correctly/data is invalid at this point already??
-				//	
-				//	shaderData.Vertices[i] = Vertex(
-				//		glm::vec3(meshData.Transform * glm::vec4(vertex.Position, 1.f)),
-				//		vertex.Color,
-				//		vertex.TexCoord);
-				//}
+				meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], *meshData.Transform.get());
 				meshData.Mesh->PasteIndicesOffset(&shaderData.Indices[indexOffset], vertexOffset);
-				//memcpy(&shaderData.Indices[indexOffset], meshData.Mesh->GetIndicesOffset(vertexOffset).data(), sizeof(uint32_t) * meshData.Mesh->GetIndices().size());
-				//for (int i = indexOffset; i < meshData.Mesh->GetIndices().size(); i++)
-				//{
-				//	shaderData.Indices[i] = meshData.Mesh->GetIndices()[i - indexOffset] + vertexOffset;
-				//}
 
 				vertexOffset += meshData.Mesh->GetVertices().size();
 				indexOffset += meshData.Mesh->GetIndices().size();
