@@ -23,8 +23,6 @@ namespace Wgine
 	{
 		Compile(ExtractShadersSource(FileUtils::ReadFile(sourceFilePath)));
 
-		//std::filesystem::path path = sourceFilePath;
-		//m_Name = path.stem().string();
 		m_Path = sourceFilePath;
 	}
 
@@ -201,5 +199,10 @@ namespace Wgine
 	void OpenGLShader::UploadUniformMat4(const std::string &name, const glm::mat4 &val)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(val));
+	}
+
+	void OpenGLShader::UploadUniformMaterial(const std::string &name, Ref<Material> val)
+	{
+		// TODO: upload material here
 	}
 }
