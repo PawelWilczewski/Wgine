@@ -18,8 +18,8 @@ namespace Wgine
 			: m_Vertices(triVertices, triVertices + verticesCount), m_Indices(indices, indices + indicesCount)
 		{}
 
-		const std::vector<Vertex> GetVertices() const { return m_Vertices; }
-		const std::vector<uint32_t> GetIndices() const { return m_Indices; }
+		const std::vector<Vertex> &GetVertices() const { return m_Vertices; }
+		const std::vector<uint32_t> &GetIndices() const { return m_Indices; }
 
 		std::vector<Vertex> GetVerticesTransformed(const glm::mat4 &t) const
 		{
