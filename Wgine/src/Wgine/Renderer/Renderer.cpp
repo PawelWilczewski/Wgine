@@ -7,6 +7,8 @@
 #include "Wgine/Renderer/Vertex.h"
 #include "Wgine/Core/Core.h"
 
+#include "Wgine/Renderer/Material.h"
+
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
@@ -43,6 +45,8 @@ namespace Wgine
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
+
+		std::vector<Ref<PhongMaterial>> Materials;
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
@@ -90,7 +94,7 @@ namespace Wgine
 		Renderer::Submit(entity.ShaderData, entity.MeshData, MakeRef<glm::mat4>(entity.GetEntityMatrix()));
 	}
 
-	void Renderer::Submit(Ref<Shader> shader, Ref<Mesh> mesh, Ref<glm::mat4> transform)
+	void Renderer::Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, Ref<glm::mat4> transform)
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
@@ -113,6 +117,7 @@ namespace Wgine
 
 	void Renderer::EndScene()
 	{
+		
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
 			// resize vertex buffer
@@ -164,11 +169,8 @@ namespace Wgine
 
 	void Renderer::Flush()
 	{
-		int i = 0;
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
-			i++;
-			
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			shaderData.Shader->UploadUniform1iv("u_Texture", s_TextureSlots, s_TextureSlotsCount);

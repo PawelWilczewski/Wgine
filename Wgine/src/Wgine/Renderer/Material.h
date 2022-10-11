@@ -6,6 +6,15 @@
 
 namespace Wgine
 {
+	struct PhongMaterial
+	{
+		glm::vec3 Diffuse;
+		glm::vec3 Specular;
+		glm::vec3 Ambient;
+		int DiffuseTex;
+		int SpecularTex;
+	};
+
 	class Material
 	{
 	public:

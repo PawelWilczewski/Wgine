@@ -42,7 +42,7 @@ in vec4 v_Color;
 in vec3 v_Normal;
 
 uniform sampler2D u_Texture[32];
-uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (how?) (int material?)
+uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (how?) (in material per texture?)
 uniform Material u_Material;
 
 void main()
