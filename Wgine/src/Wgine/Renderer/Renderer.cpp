@@ -47,7 +47,7 @@ namespace Wgine
 		std::vector<uint32_t> Indices;
 		std::vector<int> MaterialID;
 
-		std::vector<Ref<PhongMaterial>> Materials;
+		std::vector<Ref<PhongMaterial>> Materials; // TODO: in the future we can simplify the SSBO of materials to exclude duplicates and save assets (if ref is the same then no need to copy to ssbo; just adjust indices appropriately)
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
