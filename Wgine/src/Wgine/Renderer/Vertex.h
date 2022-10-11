@@ -29,7 +29,7 @@ namespace Wgine
 		}
 
 		glm::vec3 Position = glm::vec3(0.f);
-		glm::vec4 Color = glm::vec4(1.f);
+		glm::vec4 Color = glm::vec4(1.f); // TODO: maybe change to 3-component vertex color
 		glm::vec2 TexCoord = glm::vec2(0.f);
 		glm::vec3 Normal = glm::vec3(0.f);
 		//uint32_t transformID; // (set automatically later on)
