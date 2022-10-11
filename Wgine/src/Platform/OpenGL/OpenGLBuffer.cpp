@@ -78,4 +78,39 @@ namespace Wgine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ptr);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * offsetCount, sizeof(uint32_t) * count, data);
 	}
+
+	OpenGLStorageBuffer::OpenGLStorageBuffer(uint32_t size)
+	{
+		glCreateBuffers(1, &m_Ptr);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_COPY);
+	}
+
+	OpenGLStorageBuffer::OpenGLStorageBuffer(const void *data, uint32_t size)
+	{
+		glCreateBuffers(1, &m_Ptr);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_COPY);
+	}
+
+	OpenGLStorageBuffer::~OpenGLStorageBuffer()
+	{
+		glDeleteBuffers(1, &m_Ptr);
+	}
+
+	void OpenGLStorageBuffer::Bind() const
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
+	}
+
+	void OpenGLStorageBuffer::Unbind() const
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
+
+	void OpenGLStorageBuffer::SetData(const void *data, uint32_t size, uint32_t offsetBytes)
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, offsetBytes, size, data);
+	}
 }

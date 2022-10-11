@@ -6,6 +6,7 @@
 #include "Wgine/Core/Core.h"
 #include "Wgine/Event/Event.h"
 #include "Wgine/Renderer/Mesh.h"
+#include "Wgine/Renderer/Material.h"
 
 namespace Wgine
 {
@@ -67,6 +68,7 @@ namespace Wgine
 		// TEMP
 		Ref<Mesh> MeshData;
 		Ref<Shader> ShaderData;
+		Ref<PhongMaterial> MaterialData;
 
 	protected:
 		virtual void UpdateEntityMatrix() { m_EntityMatrix = m_Transform.ToModelMatrix(); }

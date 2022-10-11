@@ -17,14 +17,6 @@ namespace Wgine
 		virtual void SetVertexBuffer(const Ref<VertexBuffer> &vertexBuffer, uint32_t index) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer> &indexBuffer) override;
 
-		virtual void PrintDebug(int indent = 0) override
-		{
-			WGINE_CORE_TRACE("{0}{1}", std::string(indent, '\t'), "Vertex array:");
-			for (const auto &buffer : m_VertexBuffers)
-				buffer->PrintDebug(indent + 1);
-			m_IndexBuffer->PrintDebug(indent + 1);
-		}
-
 		virtual const std::vector<Ref<VertexBuffer>> &GetVertexBuffers() const override { return m_VertexBuffers; };
 		virtual const Ref<IndexBuffer> &GetIndexBuffer() const override { return m_IndexBuffer; };
 

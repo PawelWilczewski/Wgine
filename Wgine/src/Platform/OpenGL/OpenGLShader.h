@@ -24,8 +24,7 @@ namespace Wgine
 		virtual void UploadUniformFloat4(const std::string &name, const glm::vec4 &val) override;
 		virtual void UploadUniformMat3(const std::string &name, const glm::mat3 &val) override;
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) override;
-		virtual void UploadUniformMaterial(const std::string &name, Ref<Material> val) override;
-		virtual void UploadUniform1iv(const std::string &name, int *val, uint32_t count) override;
+		virtual void UploadUniformIntArray(const std::string &name, int *val, uint32_t count) override;
 
 	private:
 		void Compile(const std::unordered_map<GLenum, std::string> &source);

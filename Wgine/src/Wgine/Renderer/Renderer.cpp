@@ -45,6 +45,7 @@ namespace Wgine
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
+		std::vector<int> MaterialID;
 
 		std::vector<Ref<PhongMaterial>> Materials;
 	};
@@ -82,7 +83,8 @@ namespace Wgine
 		{
 			shaderData.IndexCount = 0;
 			shaderData.VertexCount = 0;
-			shaderData.Meshes.clear(); // instead maybe just use count so no need to resize every time added
+			shaderData.Meshes.clear(); // TODO: instead maybe just use count so no need to resize every time added
+			shaderData.Materials.clear(); // TODO: same here
 		}
 
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
@@ -91,7 +93,7 @@ namespace Wgine
 
 	void Renderer::Submit(const SceneEntity &entity)
 	{
-		Renderer::Submit(entity.ShaderData, entity.MeshData, MakeRef<glm::mat4>(entity.GetEntityMatrix()));
+		Renderer::Submit(entity.ShaderData, entity.MaterialData, entity.MeshData, MakeRef<glm::mat4>(entity.GetEntityMatrix()));
 	}
 
 	void Renderer::Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, Ref<glm::mat4> transform)
@@ -113,14 +115,15 @@ namespace Wgine
 		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
 		shaderData.VertexCount += mesh->GetVertices().size();
 		shaderData.IndexCount += mesh->GetIndices().size();
+
+		shaderData.Materials.push_back(material);
 	}
 
 	void Renderer::EndScene()
 	{
-		
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 		{
-			// resize vertex buffer
+			// resize vertex buffer and material ids buffer
 			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
 			{
 				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
@@ -128,6 +131,8 @@ namespace Wgine
 
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
 				shaderData.VBO->SetLayout(Vertex::GetLayout());
+
+				shaderData.MaterialID.resize(shaderData.VertexCount);
 			}
 
 			// resize index buffer
@@ -141,25 +146,37 @@ namespace Wgine
 
 			uint32_t vertexOffset = 0;
 			uint32_t indexOffset = 0;
+			int i = 0;
 			for (const auto &meshData : shaderData.Meshes)
 			{
+				// paste vertices and indices appropriately
 				meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], *meshData.Transform.get());
 				meshData.Mesh->PasteIndicesOffset(&shaderData.Indices[indexOffset], vertexOffset);
 
+				// set material ids
+				//memset(&shaderData.MaterialID[vertexOffset], i++, meshData.Mesh->GetVertices().size());
+				for (uint32_t j = 0; j < meshData.Mesh->GetVertices().size(); j++)
+					shaderData.MaterialID[vertexOffset + j] = i;
+				i++;
+
+				// update offsets
 				vertexOffset += meshData.Mesh->GetVertices().size();
 				indexOffset += meshData.Mesh->GetIndices().size();
 			}
 
+			// update vbo
 			shaderData.VBO->SetData(
 				shaderData.Vertices.data(),
 				sizeof(Vertex) * shaderData.Vertices.size()
 			);
 
+			// update ibo
 			shaderData.IBO->SetData(
 				shaderData.Indices.data(),
 				shaderData.Indices.size()
 			);
 
+			// update vao
 			shaderData.VAO->SetVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
 		}
@@ -173,7 +190,8 @@ namespace Wgine
 		{
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			shaderData.Shader->UploadUniform1iv("u_Texture", s_TextureSlots, s_TextureSlotsCount);
+			shaderData.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
+			shaderData.Shader->UploadUniformIntArray("u_MaterialID", shaderData.MaterialID.data(), shaderData.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 
 			shaderData.VAO->Bind();

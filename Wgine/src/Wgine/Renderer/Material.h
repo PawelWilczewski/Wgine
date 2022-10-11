@@ -8,6 +8,11 @@ namespace Wgine
 {
 	struct PhongMaterial
 	{
+		PhongMaterial(glm::vec3 diffuse, glm::vec3 specular, glm::vec3 ambient)
+			: Diffuse(diffuse), Specular(specular), Ambient(ambient), DiffuseTex(-1), SpecularTex(-1)
+		{
+		}
+
 		glm::vec3 Diffuse;
 		glm::vec3 Specular;
 		glm::vec3 Ambient;

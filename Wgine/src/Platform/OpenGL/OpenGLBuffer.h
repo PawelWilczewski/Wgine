@@ -42,4 +42,20 @@ namespace Wgine
 		uint32_t m_Ptr;
 		uint32_t m_Count;
 	};
+
+	class OpenGLStorageBuffer : public StorageBuffer
+	{
+	public:
+		OpenGLStorageBuffer(uint32_t size);
+		OpenGLStorageBuffer(const void *data, uint32_t size);
+		virtual ~OpenGLStorageBuffer();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) override;
+
+	private:
+		uint32_t m_Ptr;
+	};
 }
