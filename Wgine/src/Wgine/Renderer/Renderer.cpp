@@ -47,6 +47,7 @@ namespace Wgine
 		std::vector<uint32_t> Indices;
 		std::vector<int> MaterialID;
 
+		// TODO: we can probably include transforms in the "material/mesh info?" ssbo to see if it's faster to carry out transform * viewprojection multiplication on the gpu
 		std::vector<Ref<PhongMaterial>> Materials; // TODO: in the future we can simplify the SSBO of materials to exclude duplicates and save assets (if ref is the same then no need to copy to ssbo; just adjust indices appropriately)
 	};
 
