@@ -142,7 +142,7 @@ public:
 
 		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 
-		m_BaseMaterial = MakeRef<PhongMaterial>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f));
+		m_BaseMaterial = MakeRef<PhongMaterial>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), 0, 1);
 	}
 
 	virtual void OnAttach() override

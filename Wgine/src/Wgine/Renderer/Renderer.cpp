@@ -198,6 +198,7 @@ namespace Wgine
 			auto materialData = std::vector<PhongMaterial>();
 			materialData.resize(shaderData.Materials.size());
 			for (int i = 0; i < shaderData.Materials.size(); i++)
+				//memcpy_s(&materialData[i], sizeof(PhongMaterial), shaderData.Materials[i].get(), sizeof(PhongMaterial));
 				materialData[i] = *shaderData.Materials[i].get();
 
 			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)
@@ -222,7 +223,6 @@ namespace Wgine
 		data.Shader->Bind();
 		data.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 		data.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
-		//data.Shader->UploadUniformIntArray("u_MaterialID", data.MaterialID.data(), sizeof(uint32_t) * data.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
 		data.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 
 		data.VAO->Bind();
