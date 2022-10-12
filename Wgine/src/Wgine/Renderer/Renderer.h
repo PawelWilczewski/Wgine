@@ -7,6 +7,8 @@
 
 namespace Wgine
 {
+	struct PerShaderData;
+
 	class Renderer
 	{
 	public:
@@ -24,7 +26,7 @@ namespace Wgine
 		static void Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, Ref<glm::mat4> transform);
 		static void EndScene();
 
-		static void Flush();
+		static void Flush(const PerShaderData &data);
 
 		static API GetAPI() { return s_API; }
 

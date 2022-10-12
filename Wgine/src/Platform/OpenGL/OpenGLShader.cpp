@@ -201,7 +201,7 @@ namespace Wgine
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(val));
 	}
 
-	void OpenGLShader::UploadUniformIntArray(const std::string &name, int *val, uint32_t count)
+	void OpenGLShader::UploadUniformIntArray(const std::string &name, const int *val, uint32_t count)
 	{
 		glUniform1iv(GetUniformLocation(name), count, val);
 	}

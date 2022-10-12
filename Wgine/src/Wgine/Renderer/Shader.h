@@ -21,7 +21,7 @@ namespace Wgine
 		virtual void UploadUniformFloat4(const std::string &name, const glm::vec4 &val) = 0;
 		virtual void UploadUniformMat3(const std::string &name, const glm::mat3 &val) = 0;
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) = 0;
-		virtual void UploadUniformIntArray(const std::string &name, int *val, uint32_t count) = 0;
+		virtual void UploadUniformIntArray(const std::string &name, const int *val, uint32_t count) = 0;
 
 		virtual void SetupStorageBuffer(const std::string &name, int slot, uint32_t ssbo) = 0;
 

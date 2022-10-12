@@ -204,26 +204,23 @@ namespace Wgine
 			shaderData.Shader->Bind();
 			shaderData.Shader->SetupStorageBuffer("ss_Materials", 0, shaderData.MaterialSSBO->GetPtr());
 
-			Flush();
+			Flush(shaderData);
 		}
 	}
 
-	void Renderer::Flush()
+	void Renderer::Flush(const PerShaderData &data)
 	{
-		for (auto &[shaderName, shaderData] : s_ShaderData)
-		{
-			shaderData.Shader->Bind();
-			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			shaderData.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
-			shaderData.Shader->UploadUniformIntArray("u_MaterialID", shaderData.MaterialID.data(), sizeof(uint32_t) * shaderData.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
-			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
+		data.Shader->Bind();
+		data.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
+		data.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
+		data.Shader->UploadUniformIntArray("u_MaterialID", data.MaterialID.data(), sizeof(uint32_t) * data.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
+		data.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 
-			shaderData.VAO->Bind();
-			shaderData.IBO->Bind();
-			shaderData.VBO->Bind();
+		data.VAO->Bind();
+		data.IBO->Bind();
+		data.VBO->Bind();
 
-			RenderCommand::DrawIndexed(shaderData.VAO, shaderData.IndexCount);
-		}
+		RenderCommand::DrawIndexed(data.VAO, data.IndexCount);
 	}
 
 	void Renderer::OnWindowResized(float width, float height)
