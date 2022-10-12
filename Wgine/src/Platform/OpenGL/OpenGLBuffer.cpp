@@ -114,9 +114,5 @@ namespace Wgine
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, offsetBytes, size, data);
-
-		//GLuint block_index = glGetProgramResourceIndex(m_Ptr, GL_SHADER_STORAGE_BLOCK, "ss_Materials");
-		//GLuint ssbo_binding_point_index = 0;
-		//glShaderStorageBlockBinding(m_Ptr, block_index, ssbo_binding_point_index);
 	}
 }
