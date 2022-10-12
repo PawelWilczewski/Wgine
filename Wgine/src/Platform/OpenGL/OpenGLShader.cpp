@@ -205,4 +205,11 @@ namespace Wgine
 	{
 		glUniform1iv(GetUniformLocation(name), count, val);
 	}
+
+	void OpenGLShader::SetupStorageBuffer(const std::string &name, int slot, uint32_t ssbo)
+	{
+		GLuint block = glGetProgramResourceIndex(m_RendererID, GL_SHADER_STORAGE_BLOCK, name.c_str());
+		glShaderStorageBlockBinding(m_RendererID, block, slot);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, ssbo);
+	}
 }

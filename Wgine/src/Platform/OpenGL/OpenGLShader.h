@@ -26,6 +26,8 @@ namespace Wgine
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) override;
 		virtual void UploadUniformIntArray(const std::string &name, int *val, uint32_t count) override;
 
+		virtual void SetupStorageBuffer(const std::string &name, int slot, uint32_t ssbo) override;
+
 	private:
 		void Compile(const std::unordered_map<GLenum, std::string> &source);
 		std::unordered_map<GLenum, std::string> ExtractShadersSource(const std::string &fileSource);

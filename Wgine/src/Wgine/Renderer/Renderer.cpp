@@ -9,12 +9,15 @@
 
 #include "Wgine/Renderer/Material.h"
 
+
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
 
 	const uint32_t Renderer::s_TextureSlotsCount = 32;
 	int Renderer::s_TextureSlots[s_TextureSlotsCount] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
+
+	constexpr uint32_t MaterialsBindingSlot = 0;
 	
 	struct MeshInfo
 	{
@@ -45,10 +48,13 @@ namespace Wgine
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
-		std::vector<int> MaterialID;
 
+		Ref<StorageBuffer> MaterialSSBO;
+		// material index in the ssbo array for each according vertex index
+		std::vector<int> MaterialID;
 		// TODO: we can probably include transforms in the "material/mesh info?" ssbo to see if it's faster to carry out transform * viewprojection multiplication on the gpu
 		std::vector<Ref<PhongMaterial>> Materials; // TODO: in the future we can simplify the SSBO of materials to exclude duplicates and save assets (if ref is the same then no need to copy to ssbo; just adjust indices appropriately)
+		uint32_t CurrentMaxMaterialCount = 0;
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
@@ -128,7 +134,7 @@ namespace Wgine
 			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
 			{
 				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
-				shaderData.Vertices.resize(shaderData.VertexCount);
+				shaderData.Vertices.resize(shaderData.VertexCount); // TODO: maybe resize in some increments instead?? like 512 or so
 
 				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
 				shaderData.VBO->SetLayout(Vertex::GetLayout());
@@ -180,9 +186,26 @@ namespace Wgine
 			// update vao
 			shaderData.VAO->SetVertexBuffer(shaderData.VBO, 0);
 			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
-		}
 
-		Flush();
+
+			// upload materials ssbo
+			auto materialData = std::vector<PhongMaterial>();
+			materialData.resize(shaderData.Materials.size());
+			for (int i = 0; i < shaderData.Materials.size(); i++)
+				materialData[i] = *shaderData.Materials[i].get();
+
+			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)
+			{
+				shaderData.CurrentMaxMaterialCount = shaderData.Materials.size();
+				shaderData.MaterialSSBO = StorageBuffer::Create(materialData.data(), materialData.size());
+				shaderData.MaterialSSBO->Bind();
+			}
+
+			shaderData.Shader->Bind();
+			shaderData.Shader->SetupStorageBuffer("ss_Materials", 0, shaderData.MaterialSSBO->GetPtr());
+
+			Flush();
+		}
 	}
 
 	void Renderer::Flush()
@@ -192,7 +215,7 @@ namespace Wgine
 			shaderData.Shader->Bind();
 			shaderData.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			shaderData.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
-			shaderData.Shader->UploadUniformIntArray("u_MaterialID", shaderData.MaterialID.data(), shaderData.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
+			shaderData.Shader->UploadUniformIntArray("u_MaterialID", shaderData.MaterialID.data(), sizeof(uint32_t) * shaderData.MaterialID.size()); // TODO: utilize SSBOs instead for unlimited size (same for materials)
 			shaderData.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 
 			shaderData.VAO->Bind();

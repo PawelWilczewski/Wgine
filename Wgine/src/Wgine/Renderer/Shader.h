@@ -23,6 +23,8 @@ namespace Wgine
 		virtual void UploadUniformMat4(const std::string &name, const glm::mat4 &val) = 0;
 		virtual void UploadUniformIntArray(const std::string &name, int *val, uint32_t count) = 0;
 
+		virtual void SetupStorageBuffer(const std::string &name, int slot, uint32_t ssbo) = 0;
+
 		virtual const std::string &GetPath() const { return m_Path; }
 
 		static Ref<Shader>Create(const std::string &sourceFilePath);

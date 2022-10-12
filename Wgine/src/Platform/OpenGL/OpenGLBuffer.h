@@ -55,6 +55,8 @@ namespace Wgine
 
 		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) override;
 
+		virtual uint32_t GetPtr() const override { return m_Ptr; }
+
 	private:
 		uint32_t m_Ptr;
 	};
