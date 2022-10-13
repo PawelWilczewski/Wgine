@@ -168,9 +168,9 @@ public:
 			});
 
 		Renderer::BeginScene(m_Scene.get()); {
-			for (int y = 0; y < 10; y++)
+			for (int y = 0; y < 200; y++)
 			{
-				for (int x = 0; x < 10; x++)
+				for (int x = 0; x < 200; x++)
 				{
 					auto modelMatrix = MakeRef<glm::mat4>(Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix());
 					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, modelMatrix);

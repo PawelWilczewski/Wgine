@@ -69,7 +69,8 @@ void main()
 		out_Color = texture(u_Texture[mat.DiffuseTex], io_TexCoord * u_Tiling) * vec4(mat.Diffuse, 1.0);
 	else
 		out_Color = vec4(mat.Diffuse, 1.0);
-		
+	
+//	out_Color = io_Color;
 //	if (!bool(io_MaterialID))
 //		out_Color = vec4(1.0, 0.0, 1.0, 1.0);
 //	out_Color = vec4(vec3(Materials.length()), 1.0);
