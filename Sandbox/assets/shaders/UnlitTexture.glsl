@@ -41,8 +41,6 @@ struct Material
 	int SpecularTex;
 };
 
-
-
 layout (std430, binding = 1) buffer ss_Materials
 { 
 	Material Materials[];
@@ -66,8 +64,14 @@ void main()
 //		out_Color = vec4(1.f);
 //	else
 //		out_Color = vec4(0.f);
-//	out_Color = texture(u_Texture[Materials[io_MaterialID].DiffuseTex], io_TexCoord * u_Tiling);
-	out_Color = vec4(Materials[io_MaterialID].Diffuse, 1.0);
+	Material mat = Materials[io_MaterialID];
+	if (mat.DiffuseTex >= 0)
+		out_Color = texture(u_Texture[Materials[io_MaterialID].DiffuseTex], io_TexCoord * u_Tiling) * vec4(Materials[io_MaterialID].Diffuse, 1.0);
+	else
+		out_Color = vec4(Materials[io_MaterialID].Diffuse, 1.0);
+		
+//	if (!bool(io_MaterialID))
+//		out_Color = vec4(1.0, 0.0, 1.0, 1.0);
 //	out_Color = vec4(vec3(Materials.length()), 1.0);
 //	if (Materials.length() == 0)
 //	{

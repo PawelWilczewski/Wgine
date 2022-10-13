@@ -101,8 +101,6 @@ namespace Wgine
 	void OpenGLStorageBuffer::Bind() const
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Ptr);
-
-		
 	}
 
 	void OpenGLStorageBuffer::Unbind() const
