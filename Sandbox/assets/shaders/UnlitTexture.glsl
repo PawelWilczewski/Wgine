@@ -66,9 +66,9 @@ void main()
 //		out_Color = vec4(0.f);
 	Material mat = Materials[io_MaterialID];
 	if (mat.DiffuseTex >= 0)
-		out_Color = texture(u_Texture[Materials[io_MaterialID].DiffuseTex], io_TexCoord * u_Tiling) * vec4(Materials[io_MaterialID].Diffuse, 1.0);
+		out_Color = texture(u_Texture[mat.DiffuseTex], io_TexCoord * u_Tiling) * vec4(mat.Diffuse, 1.0);
 	else
-		out_Color = vec4(Materials[io_MaterialID].Diffuse, 1.0);
+		out_Color = vec4(mat.Diffuse, 1.0);
 		
 //	if (!bool(io_MaterialID))
 //		out_Color = vec4(1.0, 0.0, 1.0, 1.0);
