@@ -223,7 +223,7 @@ public:
 	Sandbox()
 	{
 		PushLayer(new GameplayLayer());
-		PushOverlay(new UserInterfaceLayer());
+		//PushOverlay(new UserInterfaceLayer());
 	}
 
 	~Sandbox()

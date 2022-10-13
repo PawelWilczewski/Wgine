@@ -204,8 +204,9 @@ namespace Wgine
 			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)
 			{
 				shaderData.CurrentMaxMaterialCount = shaderData.Materials.size();
-				shaderData.MaterialSSBO = StorageBuffer::Create(materialData.data(), materialData.size());
-				shaderData.MaterialSSBO->Bind();
+				shaderData.MaterialSSBO = StorageBuffer::Create(materialData.data(), sizeof(PhongMaterial) * materialData.size());
+				//shaderData.MaterialSSBO->SetData(materialData.data(), materialData.size())
+				//shaderData.MaterialSSBO->Bind();
 			}
 
 			shaderData.MaterialIDSSBO->SetData(shaderData.MaterialID.data(), sizeof(uint32_t) * shaderData.MaterialID.size());
