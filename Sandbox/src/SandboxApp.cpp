@@ -95,6 +95,9 @@ public:
 				{ { 1.0f,  1.0f,  0.2f} },
 			});
 			m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
+			for (int y = 0; y < 500; y++)
+				for (int x = 0; x < 50; x++)
+					m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
 			m_Square->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
