@@ -93,8 +93,11 @@ public:
 				{ { 1.0f, -1.0f,  0.8f} },
 				{ { 1.0f,  1.0f,  0.8f} },
 				{ { 1.0f,  1.0f,  0.2f} },
-			});
+				});
 			m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
+			for (int y = 0; y < 500; y++)
+				for (int x = 0; x < 50; x++)
+					m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
 			m_Square->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
@@ -191,6 +194,12 @@ public:
 		ImGui::Text("FPS:        %f", Time::GetFPS());
 		ImGui::Text("Frame time: %f ms", Time::GetDeltaSeconds() * 1000.f);
 		ImGui::ColorEdit4("Shader color", glm::value_ptr(m_PickedColor));
+
+		updates += 1.f;
+		frameTimes += Time::GetDeltaSeconds() * 1000.f;
+		ImGui::Text("Avg fps: %f", updates / Time::GetTimeSeconds());
+		ImGui::Text("Avg frame time: %f", frameTimes / updates);
+
 		ImGui::End();
 	}
 
@@ -200,6 +209,9 @@ public:
 	}
 
 private:
+	float frameTimes = 0.f;
+	float updates = 0.f;
+
 	Ref<Scene> m_Scene;
 	Camera *m_Camera;
 	SceneEntity *m_Triangle;
