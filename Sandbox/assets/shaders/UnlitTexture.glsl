@@ -11,6 +11,21 @@ layout (std430, binding = 0) buffer ss_MaterialIDs
 	int MaterialIDs[];
 };
 
+struct Material
+{
+	mat4 Transform;
+	vec3 Diffuse;
+	vec3 Specular;
+	vec3 Ambient;
+	int DiffuseTex;
+	int SpecularTex;
+};
+
+layout (std430, binding = 1) buffer ss_Materials
+{ 
+	Material Materials[];
+};
+
 uniform mat4 u_ViewProjection;
 
 out vec4 io_Color;
@@ -26,7 +41,7 @@ void main()
 	io_MaterialID = MaterialIDs[gl_VertexID];
 
 //	gl_Position = u_ViewProjection * a_Transform * vec4(a_Position, 1.0);
-	gl_Position = u_ViewProjection * vec4(in_Position, 1.0);
+	gl_Position = u_ViewProjection * Materials[io_MaterialID].Transform * vec4(in_Position, 1.0);
 }
 
 #type fragment
@@ -34,6 +49,7 @@ void main()
 
 struct Material
 {
+	mat4 Transform;
 	vec3 Diffuse;
 	vec3 Specular;
 	vec3 Ambient;

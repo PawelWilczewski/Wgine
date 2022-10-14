@@ -124,7 +124,7 @@ namespace Wgine
 		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
 		shaderData.VertexCount += mesh->GetVertices().size();
 		shaderData.IndexCount += mesh->GetIndices().size();
-
+		
 		shaderData.Materials.push_back(material);
 	}
 
@@ -163,7 +163,9 @@ namespace Wgine
 			for (const auto &meshData : shaderData.Meshes)
 			{
 				// paste vertices and indices appropriately
-				meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], *meshData.Transform.get());
+				//meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], *meshData.Transform.get());
+				for (int j = 0; j < meshData.Mesh->GetVertices().size(); j++)
+					shaderData.Vertices[vertexOffset + j] = meshData.Mesh->GetVertices()[j];
 				meshData.Mesh->PasteIndicesOffset(&shaderData.Indices[indexOffset], vertexOffset);
 
 				// set material ids
@@ -198,8 +200,11 @@ namespace Wgine
 			auto materialData = std::vector<PhongMaterial>();
 			materialData.resize(shaderData.Materials.size());
 			for (int i = 0; i < shaderData.Materials.size(); i++)
+			{
 				//memcpy_s(&materialData[i], sizeof(PhongMaterial), shaderData.Materials[i].get(), sizeof(PhongMaterial));
 				materialData[i] = *shaderData.Materials[i].get();
+				materialData[i].WorldTransform = *shaderData.Meshes[i].Transform.get();
+			}
 
 			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)
 			{
