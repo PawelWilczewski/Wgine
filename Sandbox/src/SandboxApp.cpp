@@ -174,17 +174,14 @@ public:
 			for (int y = 0; y < 200; y++)
 			{
 				for (int x = 0; x < 200; x++)
-				{
-					auto modelMatrix = MakeRef<glm::mat4>(Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)).ToModelMatrix());
-					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, modelMatrix);
-				}
+					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
 			}
 
 			m_Texture->Bind(0);
-			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, MakeRef<glm::mat4>(Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }).ToModelMatrix()));
+			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
 			
 			m_TransparentTexture->Bind(1);
-			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, MakeRef<glm::mat4>(Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }).ToModelMatrix()));
+			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
 		} Renderer::EndScene();
 	}
 

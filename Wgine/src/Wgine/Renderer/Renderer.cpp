@@ -21,13 +21,13 @@ namespace Wgine
 	
 	struct MeshInfo
 	{
-		MeshInfo(Ref<Mesh> mesh, Ref<glm::mat4> transform)
+		MeshInfo(Ref<Mesh> mesh, const Transform &transform)
 			: Mesh(mesh), Transform(transform)
 		{}
 
 		Ref<Mesh> Mesh;
 		// TODO: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
-		Ref<glm::mat4> Transform;
+		const Transform &Transform;
 	};
 
 	struct PerShaderData
@@ -46,7 +46,7 @@ namespace Wgine
 		uint32_t CurrentMaxVertexCount = 0;
 
 		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
-		std::vector<Vertex> Vertices;
+		std::vector<Vertex> Vertices; // TODO: probably use raw pointers like in renderer 2d
 		std::vector<uint32_t> Indices;
 
 		Ref<StorageBuffer> MaterialSSBO;
@@ -102,10 +102,11 @@ namespace Wgine
 
 	void Renderer::Submit(const SceneEntity &entity)
 	{
-		Renderer::Submit(entity.ShaderData, entity.MaterialData, entity.MeshData, MakeRef<glm::mat4>(entity.GetEntityMatrix()));
+		Renderer::Submit(entity.ShaderData, entity.MaterialData, entity.MeshData, entity.GetTransform());
 	}
 
-	void Renderer::Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, Ref<glm::mat4> transform)
+	// TODO: no need to keep references? just add to the resultant array that will be sent to the GPU (copying is necessary no matter what?)
+	void Renderer::Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, const Transform &transform)
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
@@ -203,7 +204,9 @@ namespace Wgine
 			{
 				//memcpy_s(&materialData[i], sizeof(PhongMaterial), shaderData.Materials[i].get(), sizeof(PhongMaterial));
 				materialData[i] = *shaderData.Materials[i].get();
-				materialData[i].WorldTransform = *shaderData.Meshes[i].Transform.get();
+				materialData[i].Location = shaderData.Meshes[i].Transform.Location;
+				materialData[i].Rotation = shaderData.Meshes[i].Transform.Rotation;
+				materialData[i].Scale = shaderData.Meshes[i].Transform.Scale;
 			}
 
 			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)

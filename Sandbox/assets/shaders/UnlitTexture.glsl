@@ -13,7 +13,9 @@ layout (std430, binding = 0) buffer ss_MaterialIDs
 
 struct Material
 {
-	mat4 Transform;
+	vec3 Location;
+	vec3 Rotation;
+	vec3 Scale;
 	vec3 Diffuse;
 	vec3 Specular;
 	vec3 Ambient;
@@ -25,6 +27,62 @@ layout (std430, binding = 1) buffer ss_Materials
 { 
 	Material Materials[];
 };
+
+mat4 rotation3dX(float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  return mat4(
+    1.0, 0.0, 0.0, 0.0,
+    0.0,   c,   s, 0.0,
+    0.0,  -s,   c, 0.0,
+	0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 rotation3dY(float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  return mat4(
+      c, 0.0,  -s, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+      s, 0.0,   c, 0.0,
+	0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 rotation3dZ(float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  return mat4(
+      c,   s, 0.0, 0.0,
+     -s,   c, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 translation(vec3 delta)
+{
+    return mat4(
+        vec4(1.0, 0.0, 0.0, 0.0),
+        vec4(0.0, 1.0, 0.0, 0.0),
+        vec4(0.0, 0.0, 1.0, 0.0),
+        vec4(delta, 1.0)
+	);
+}
+
+mat4 scale(vec3 s)
+{
+	return mat4(
+        vec4(s[0],  0.0,  0.0, 0.0),
+        vec4( 0.0, s[1],  0.0, 0.0),
+        vec4( 0.0,  0.0, s[2], 0.0),
+        vec4( 0.0,  0.0,  0.0, 1.0)
+	);
+}
 
 uniform mat4 u_ViewProjection;
 
@@ -41,7 +99,9 @@ void main()
 	io_MaterialID = MaterialIDs[gl_VertexID];
 
 //	gl_Position = u_ViewProjection * a_Transform * vec4(a_Position, 1.0);
-	gl_Position = u_ViewProjection * Materials[io_MaterialID].Transform * vec4(in_Position, 1.0);
+	Material mat = Materials[io_MaterialID];
+	mat4 transform = translation(mat.Location) * rotation3dZ(radians(mat.Rotation[2])) * rotation3dY(radians(mat.Rotation[1])) * rotation3dX(radians(mat.Rotation[0])) * scale(mat.Scale);
+	gl_Position = u_ViewProjection * transform * vec4(in_Position, 1.0);
 }
 
 #type fragment
@@ -49,7 +109,9 @@ void main()
 
 struct Material
 {
-	mat4 Transform;
+	vec3 Location;
+	vec3 Rotation;
+	vec3 Scale;
 	vec3 Diffuse;
 	vec3 Specular;
 	vec3 Ambient;
