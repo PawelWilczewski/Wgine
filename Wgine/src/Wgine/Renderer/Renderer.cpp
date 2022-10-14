@@ -26,8 +26,9 @@ namespace Wgine
 		{}
 
 		Ref<Mesh> Mesh;
-		// TODO: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
-		const Transform &Transform;
+		// TODO URGENT: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
+		// ^^^ this is not acc an issue anymore but we're copying which may be unnecessary; should we just pass as a reference?
+		Transform Transform;
 	};
 
 	struct PerShaderData
