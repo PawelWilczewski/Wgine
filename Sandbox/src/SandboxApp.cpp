@@ -191,6 +191,10 @@ public:
 		ImGui::Text("FPS:        %f", Time::GetFPS());
 		ImGui::Text("Frame time: %f ms", Time::GetDeltaSeconds() * 1000.f);
 		ImGui::ColorEdit4("Shader color", glm::value_ptr(m_PickedColor));
+
+		updates += 1.f;
+		ImGui::Text("Avg fps: %f", updates / Time::GetTimeSeconds());
+
 		ImGui::End();
 	}
 
@@ -200,6 +204,8 @@ public:
 	}
 
 private:
+	float updates = 0.f;
+
 	Ref<Scene> m_Scene;
 	Camera *m_Camera;
 	SceneEntity *m_Triangle;
