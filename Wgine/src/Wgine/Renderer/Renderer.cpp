@@ -58,6 +58,9 @@ namespace Wgine
 
 		Ref<StorageBuffer> MaterialIDSSBO;
 		std::vector<int> MaterialID;
+
+		Ref<StorageBuffer> TransformSSBO;
+		std::vector<TransformGPU> Transforms;
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
@@ -93,8 +96,9 @@ namespace Wgine
 		{
 			shaderData.IndexCount = 0;
 			shaderData.VertexCount = 0;
-			shaderData.Meshes.clear(); // TODO: instead maybe just use count so no need to resize every time added
+			shaderData.Meshes.clear(); // TODO do now, same for the things below: instead maybe just use count so no need to resize every time added < important
 			shaderData.Materials.clear(); // TODO: same here
+			shaderData.Transforms.clear(); // TODO: same here
 		}
 
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)

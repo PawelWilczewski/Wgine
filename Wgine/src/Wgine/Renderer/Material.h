@@ -13,9 +13,6 @@ namespace Wgine
 		{
 		}
 
-		alignas(16) glm::vec3 Location;
-		alignas(16) glm::vec3 Rotation;
-		alignas(16) glm::vec3 Scale;
 		alignas(16) glm::vec3 Diffuse;
 		alignas(16) glm::vec3 Specular;
 		alignas(16) glm::vec3 Ambient;
