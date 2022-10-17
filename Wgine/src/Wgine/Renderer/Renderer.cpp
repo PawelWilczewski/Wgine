@@ -181,17 +181,15 @@ namespace Wgine
 			shaderData.TransformIDs.push_back(transformID);
 
 		// push offset indices
-#if 1
-		auto indicesOffset = mesh->GetIndicesOffset(shaderData.Vertices.size());
-		shaderData.Indices.insert(shaderData.Indices.end(), indicesOffset.begin(), indicesOffset.end());
-#else
 		auto offset = shaderData.Vertices.size();
 		auto &indices = mesh->GetIndices();
 		for (int i = 0; i < indices.size(); i++)
 			shaderData.Indices.push_back(indices[i] + offset);
-#endif
+
 		// push vertices
-		shaderData.Vertices.insert(shaderData.Vertices.end(), mesh->GetVertices().begin(), mesh->GetVertices().end());
+		for (int i = 0; i < mesh->GetVertices().size(); i++)
+			shaderData.Vertices.push_back(mesh->GetVertices()[i]);
+		//shaderData.Vertices.insert(shaderData.Vertices.end(), mesh->GetVertices().begin(), mesh->GetVertices().end());
 		
 		// push back materials and material ids
 		uint32_t index;
