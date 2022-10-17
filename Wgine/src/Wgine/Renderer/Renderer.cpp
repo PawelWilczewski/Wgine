@@ -9,6 +9,7 @@
 
 #include "Wgine/Renderer/Material.h"
 
+#include "Wgine/Core/Time.h"
 
 namespace Wgine
 {
@@ -19,58 +20,102 @@ namespace Wgine
 
 	constexpr uint32_t MaterialsBindingSlot = 0;
 	
-	struct MeshInfo
-	{
-		MeshInfo(Ref<Mesh> mesh, const Transform &transform)
-			: Mesh(mesh), Transform(transform)
-		{}
-
-		Ref<Mesh> Mesh;
-		// TODO URGENT: in rare occasions, the transform might be invalidated before we render (object destroyed on a different thread or sth?), possibly we will have to use Ref<Transform> instead
-		// ^^^ this is not acc an issue anymore but we're copying which may be unnecessary; should we just pass as a reference?
-		Transform Transform;
-	};
-
-	struct PerShaderData
-	{
-		PerShaderData()
-		{}
-
-		Ref<Shader> Shader;
-		Ref<VertexArray> VAO = VertexArray::Create();
-		Ref<VertexBuffer> VBO;
-		Ref<IndexBuffer> IBO;
-
-		uint32_t IndexCount = 0;
-		uint32_t CurrentMaxIndexCount = 0;
-		uint32_t VertexCount = 0;
-		uint32_t CurrentMaxVertexCount = 0;
-
-		std::vector<MeshInfo> Meshes = std::vector<MeshInfo>();
-		std::vector<Vertex> Vertices; // TODO: probably use raw pointers like in renderer 2d
-		std::vector<uint32_t> Indices;
-
-		Ref<StorageBuffer> MaterialSSBO;
-		// material index in the ssbo array for each according vertex index
-		// TODO: we can probably include transforms in the "material/mesh info?" ssbo to see if it's faster to carry out transform * viewprojection multiplication on the gpu
-		std::vector<Ref<PhongMaterial>> Materials; // TODO: in the future we can simplify the SSBO of materials to exclude duplicates and save assets (if ref is the same then no need to copy to ssbo; just adjust indices appropriately)
-		uint32_t CurrentMaxMaterialCount = 0;
-
-		Ref<StorageBuffer> MaterialIDSSBO;
-		std::vector<int> MaterialID;
-
-		Ref<StorageBuffer> TransformSSBO;
-		std::vector<TransformGPU> Transforms;
-	};
-
-	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
-
 	struct RendererData
 	{
 		Scene *ActiveScene = nullptr;
 	};
 
 	static RendererData s_RendererData = RendererData();
+
+	struct PerShaderData
+	{
+		PerShaderData()
+		{}
+
+		PerShaderData(Ref<Shader> s)
+			: Shader(s), VAO(VertexArray::Create())
+		{
+			auto timeStart = Time::GetTimeSeconds();
+			Vertices.reserve(500000);
+			Indices.reserve(500000);
+			Materials.reserve(500);
+			MaterialIDs.reserve(500000);
+			Transforms.reserve(5000);
+			TransformIDs.reserve(500000);
+			Meshes.reserve(5000);
+
+			VAO = VertexArray::Create();
+			VBO = VertexBuffer::Create(sizeof(Vertex) * 500000);
+			VBO->SetLayout(Vertex::GetLayout());
+			IBO = IndexBuffer::Create(500000);
+			VAO->AddVertexBuffer(VBO);
+			VAO->SetIndexBuffer(IBO);
+
+			TransformSSBO = StorageBuffer::Create(sizeof(TransformGPU) * 5000);
+			TransformIDSSBO = StorageBuffer::Create(sizeof(int32_t) * 500000);
+			MaterialSSBO = StorageBuffer::Create(sizeof(PhongMaterial) * 100);
+			MaterialIDSSBO = StorageBuffer::Create(sizeof(uint32_t) * 500000);
+
+			Reset();
+		}
+
+		void Reset()
+		{
+			Meshes.clear();
+			Transforms.clear();
+			TransformIDs.clear();
+			Materials.clear();
+			MaterialIDs.clear();
+			Vertices.clear();
+			Indices.clear();
+		}
+
+		void Flush()
+		{
+			VBO->SetData(Vertices.data(), sizeof(Vertex) * Vertices.size());
+			IBO->SetData(Indices.data(), Indices.size());
+			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
+			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
+			MaterialSSBO->SetData(Materials.data(), sizeof(PhongMaterial) * Materials.size());
+			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
+
+			Shader->Bind();
+			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
+
+			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
+			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
+			//Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: material tiling param for each texture
+
+			VAO->Bind();
+			IBO->Bind();
+			VBO->Bind();
+			Shader->Bind();
+			RenderCommand::DrawIndexed(VAO, Indices.size());
+		}
+
+		Ref<Shader> Shader;
+		std::vector<Ref<Mesh>> Meshes;
+
+		Ref<VertexArray> VAO;
+		Ref<VertexBuffer> VBO;
+		Ref<IndexBuffer> IBO;
+		Ref<StorageBuffer> TransformSSBO;
+		Ref<StorageBuffer> TransformIDSSBO;
+		Ref<StorageBuffer> MaterialSSBO;
+		Ref<StorageBuffer> MaterialIDSSBO;
+
+		std::vector<TransformGPU> Transforms;
+		std::vector<int32_t> TransformIDs;
+		std::vector<Ref<PhongMaterial>> Materials;
+		std::vector<int32_t> MaterialIDs;
+		std::vector<Vertex> Vertices;
+		std::vector<uint32_t> Indices;
+	};
+
+	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
 
 	void Renderer::Init()
 	{
@@ -93,13 +138,7 @@ namespace Wgine
 
 		// reset shader data
 		for (auto &[shaderName, shaderData] : s_ShaderData)
-		{
-			shaderData.IndexCount = 0;
-			shaderData.VertexCount = 0;
-			shaderData.Meshes.clear(); // TODO do now, same for the things below: instead maybe just use count so no need to resize every time added < important
-			shaderData.Materials.clear(); // TODO: same here
-			shaderData.Transforms.clear(); // TODO: same here
-		}
+			shaderData.Reset();
 
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
 			Submit(*entity);
@@ -115,133 +154,62 @@ namespace Wgine
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
+		// TODO: in order to greatly improve performance, only update "dirty" entities (use some array mask to make it more efficient)
+
 		if (!mesh)
 			return;
 
 		// new Shader
 		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
-		{
-			s_ShaderData[shader->GetPath()] = PerShaderData();
-			s_ShaderData[shader->GetPath()].Shader = shader;
-		}
+			s_ShaderData[shader->GetPath()] = PerShaderData(shader);
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
 
-		shaderData.Meshes.push_back(MeshInfo(mesh, transform));
-		shaderData.VertexCount += mesh->GetVertices().size();
-		shaderData.IndexCount += mesh->GetIndices().size();
+		// push meshes, transforms
+		shaderData.Meshes.push_back(mesh);
+		int32_t transformID = shaderData.Transforms.size();
+		shaderData.Transforms.push_back(transform);
+
+		// push transform ids
+		for (int i = 0; i < mesh->GetVertices().size(); i++)
+			shaderData.TransformIDs.push_back(transformID);
+
+		// push offset indices
+#if 1
+		auto indicesOffset = mesh->GetIndicesOffset(shaderData.Vertices.size());
+		shaderData.Indices.insert(shaderData.Indices.end(), indicesOffset.begin(), indicesOffset.end());
+#else
+		auto offset = shaderData.Vertices.size();
+		auto &indices = mesh->GetIndices();
+		for (int i = 0; i < indices.size(); i++)
+			shaderData.Indices.push_back(indices[i] + offset);
+#endif
+		// push vertices
+		shaderData.Vertices.insert(shaderData.Vertices.end(), mesh->GetVertices().begin(), mesh->GetVertices().end());
 		
-		shaderData.Materials.push_back(material);
+		// push back materials and material ids
+		uint32_t index;
+		auto findMaterial = std::find(shaderData.Materials.begin(), shaderData.Materials.end(), material);
+		if (findMaterial != shaderData.Materials.end())
+			index = findMaterial - shaderData.Materials.begin();
+		else
+		{
+			index = shaderData.Materials.size();
+			shaderData.Materials.push_back(material);
+		}
+		for (int i = 0; i < mesh->GetVertices().size(); i++)
+			shaderData.MaterialIDs.push_back(index);		
 	}
 
 	void Renderer::EndScene()
 	{
 		for (auto &[shaderName, shaderData] : s_ShaderData)
-		{
-			// resize vertex buffer and material ids buffer
-			if (shaderData.VertexCount > shaderData.CurrentMaxVertexCount)
-			{
-				shaderData.CurrentMaxVertexCount = shaderData.VertexCount;
-
-				// vertices
-				shaderData.Vertices.resize(shaderData.VertexCount); // TODO: maybe resize in some increments instead?? like 512 or so
-				shaderData.VBO = VertexBuffer::Create(sizeof(Vertex) * shaderData.VertexCount);
-				shaderData.VBO->SetLayout(Vertex::GetLayout());
-
-				// ids
-				shaderData.MaterialID.resize(shaderData.VertexCount);
-				shaderData.MaterialIDSSBO = StorageBuffer::Create(sizeof(int) * shaderData.VertexCount);
-			}
-
-			// resize index buffer
-			if (shaderData.IndexCount > shaderData.CurrentMaxIndexCount)
-			{
-				shaderData.CurrentMaxIndexCount = shaderData.IndexCount;
-
-				// indices
-				shaderData.Indices.resize(shaderData.IndexCount);
-				shaderData.IBO = IndexBuffer::Create(shaderData.IndexCount);
-			}
-
-			uint32_t vertexOffset = 0;
-			uint32_t indexOffset = 0;
-			int i = 0;
-			for (const auto &meshData : shaderData.Meshes)
-			{
-				// paste vertices and indices appropriately
-				//meshData.Mesh->PasteVerticesTransformed(&shaderData.Vertices[vertexOffset], *meshData.Transform.get());
-				for (int j = 0; j < meshData.Mesh->GetVertices().size(); j++)
-					shaderData.Vertices[vertexOffset + j] = meshData.Mesh->GetVertices()[j];
-				meshData.Mesh->PasteIndicesOffset(&shaderData.Indices[indexOffset], vertexOffset);
-
-				// set material ids
-				//memset(&shaderData.MaterialID[vertexOffset], i++, meshData.Mesh->GetVertices().size());
-				for (uint32_t j = 0; j < meshData.Mesh->GetVertices().size(); j++)
-					shaderData.MaterialID[vertexOffset + j] = i;
-				i++;
-
-				// update offsets
-				vertexOffset += meshData.Mesh->GetVertices().size();
-				indexOffset += meshData.Mesh->GetIndices().size();
-			}
-
-			// update vbo
-			shaderData.VBO->SetData(
-				shaderData.Vertices.data(),
-				sizeof(Vertex) * shaderData.Vertices.size()
-			);
-
-			// update ibo
-			shaderData.IBO->SetData(
-				shaderData.Indices.data(),
-				shaderData.Indices.size()
-			);
-
-			// update vao
-			shaderData.VAO->SetVertexBuffer(shaderData.VBO, 0);
-			shaderData.VAO->SetIndexBuffer(shaderData.IBO);
-
-
-			// upload materials ssbo
-			auto materialData = std::vector<PhongMaterial>();
-			materialData.resize(shaderData.Materials.size());
-			for (int i = 0; i < shaderData.Materials.size(); i++)
-			{
-				//memcpy_s(&materialData[i], sizeof(PhongMaterial), shaderData.Materials[i].get(), sizeof(PhongMaterial));
-				materialData[i] = *shaderData.Materials[i].get();
-				materialData[i].Location = shaderData.Meshes[i].Transform.Location;
-				materialData[i].Rotation = shaderData.Meshes[i].Transform.Rotation;
-				materialData[i].Scale = shaderData.Meshes[i].Transform.Scale;
-			}
-
-			if (shaderData.Materials.size() > shaderData.CurrentMaxMaterialCount)
-			{
-				shaderData.CurrentMaxMaterialCount = shaderData.Materials.size();
-				shaderData.MaterialSSBO = StorageBuffer::Create(materialData.data(), sizeof(PhongMaterial) * materialData.size());
-			}
-
-			shaderData.MaterialIDSSBO->SetData(shaderData.MaterialID.data(), sizeof(uint32_t) * shaderData.MaterialID.size());
-
-			shaderData.Shader->Bind();
-			shaderData.Shader->SetupStorageBuffer("ss_MaterialIDs", 0, shaderData.MaterialIDSSBO->GetPtr());
-			shaderData.Shader->SetupStorageBuffer("ss_Materials", 1, shaderData.MaterialSSBO->GetPtr());
-
 			Flush(shaderData);
-		}
 	}
 
-	void Renderer::Flush(const PerShaderData &data)
+	void Renderer::Flush(PerShaderData &data)
 	{
-		data.Shader->Bind();
-		data.Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-		data.Shader->UploadUniformIntArray("u_Texture", s_TextureSlots, s_TextureSlotsCount);
-		data.Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
-
-		data.VAO->Bind();
-		data.IBO->Bind();
-		data.VBO->Bind();
-
-		RenderCommand::DrawIndexed(data.VAO, data.IndexCount);
+		data.Flush();
 	}
 
 	void Renderer::OnWindowResized(float width, float height)

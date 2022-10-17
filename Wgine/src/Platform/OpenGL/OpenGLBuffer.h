@@ -8,19 +8,22 @@ namespace Wgine
 	{
 	public:
 		OpenGLVertexBuffer(uint32_t size);
-		OpenGLVertexBuffer(float *vertices, uint32_t size);
+		OpenGLVertexBuffer(void *vertices, uint32_t size);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
 		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) override;
+		virtual void Resize(uint32_t newSize) override;
+		virtual void SetLayout(const BufferLayout &layout) override { m_Layout = layout; }
 
-		inline virtual void SetLayout(const BufferLayout &layout) override { m_Layout = layout; }
-		inline virtual const BufferLayout &GetBufferLayout() const override { return m_Layout; }
+		virtual uint32_t GetSize() const override { return m_Size; }
+		virtual const BufferLayout &GetBufferLayout() const override { return m_Layout; }
 
 	private:
 		uint32_t m_Ptr;
+		uint32_t m_Size;
 		BufferLayout m_Layout;
 	};
 
@@ -35,6 +38,7 @@ namespace Wgine
 		virtual void Unbind() const override;
 
 		virtual void SetData(const void *data, uint32_t count, uint32_t offsetCount = 0) override;
+		virtual void Resize(uint32_t newCount) override;
 
 		virtual uint32_t GetCount() const { return m_Count; }
 
@@ -54,10 +58,13 @@ namespace Wgine
 		virtual void Unbind() const override;
 
 		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) override;
+		virtual void Resize(uint32_t newSize) override;
 
 		virtual uint32_t GetPtr() const override { return m_Ptr; }
+		virtual uint32_t GetSize() const { return m_Size; }
 
 	private:
 		uint32_t m_Ptr;
+		uint32_t m_Size;
 	};
 }

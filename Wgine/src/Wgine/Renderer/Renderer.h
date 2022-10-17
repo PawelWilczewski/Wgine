@@ -26,7 +26,7 @@ namespace Wgine
 		static void Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, const Transform &transform);
 		static void EndScene();
 
-		static void Flush(const PerShaderData &data);
+		static void Flush(PerShaderData &data);
 
 		static API GetAPI() { return s_API; }
 

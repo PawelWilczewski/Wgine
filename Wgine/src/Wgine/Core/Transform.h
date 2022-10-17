@@ -9,18 +9,6 @@
 
 namespace Wgine
 {
-	struct TransformGPU
-	{
-		TransformGPU(glm::vec3 location = glm::vec3(0.f), glm::vec3 rotation = glm::vec3(0.f), glm::vec3 scale = glm::vec3(1.f))
-			: Location(location), Rotation(rotation), Scale(scale)
-		{
-
-		}
-		alignas(16) glm::vec3 Location;
-		alignas(16) glm::vec3 Rotation;
-		alignas(16) glm::vec3 Scale;
-	};
-
 	class Transform
 	{
 	public:
@@ -50,5 +38,22 @@ namespace Wgine
 			m = glm::rotate(m, glm::radians(Rotation[0]), Transform::s_VectorForward); // roll rotation
 			return glm::scale(m, Scale);
 		}
+	};
+
+	struct TransformGPU
+	{
+		TransformGPU(glm::vec3 location = glm::vec3(0.f), glm::vec3 rotation = glm::vec3(0.f), glm::vec3 scale = glm::vec3(1.f))
+			: Location(location), Rotation(rotation), Scale(scale)
+		{
+		}
+
+		TransformGPU(const Transform &t)
+			: Location(t.Location), Rotation(t.Rotation), Scale(t.Scale)
+		{
+		}
+
+		alignas(16) glm::vec3 Location;
+		alignas(16) glm::vec3 Rotation;
+		alignas(16) glm::vec3 Scale;
 	};
 }

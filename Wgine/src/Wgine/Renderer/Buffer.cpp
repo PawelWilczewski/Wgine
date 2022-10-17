@@ -11,7 +11,7 @@ namespace Wgine
 		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, size);
 	}
 
-	Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(void *vertices, uint32_t size)
 	{
 		SWITCH_RENDERAPI_MAKEREF(VertexBuffer, vertices, size);
 	}

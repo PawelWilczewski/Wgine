@@ -89,10 +89,10 @@ namespace Wgine
 		void AddQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3)
 		{
 			uint32_t nextIndex = m_Vertices.size();
-			m_Vertices.reserve(m_Vertices.size() + 4);
+			//m_Vertices.reserve(m_Vertices.size() + 4);
 			m_Vertices.insert(m_Vertices.end(), { v0, v1, v2, v3 });
 
-			m_Indices.reserve(m_Indices.size() + 6);
+			//m_Indices.reserve(m_Indices.size() + 6);
 			m_Indices.insert(m_Indices.end(), { nextIndex, nextIndex + 1, nextIndex + 2, nextIndex + 2, nextIndex + 3, nextIndex });
 		}
 
