@@ -76,7 +76,14 @@ namespace Wgine
 			IBO->SetData(Indices.data(), Indices.size());
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
-			MaterialSSBO->SetData(Materials.data(), sizeof(PhongMaterial) * Materials.size());
+			Scope<PhongMaterial[]> materialsRaw(new PhongMaterial[Materials.size()]);
+			for (int i = 0; i < Materials.size(); i++)
+				materialsRaw[i] = *Materials[i].get();
+			//std::vector<PhongMaterial> materialsRaw;
+			//materialsRaw.reserve(Materials.size());
+			//for (int i = 0; i < Materials.size(); i++)
+			//	materialsRaw.push_back(*Materials[i].get());
+			MaterialSSBO->SetData(materialsRaw.get(), sizeof(PhongMaterial) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 
 			Shader->Bind();
@@ -92,7 +99,7 @@ namespace Wgine
 			VAO->Bind();
 			IBO->Bind();
 			VBO->Bind();
-			Shader->Bind();
+
 			RenderCommand::DrawIndexed(VAO, Indices.size());
 		}
 

@@ -142,12 +142,12 @@ void main()
 
 //	out_Color = vec4(vec3(Materials.length()), 1.0);
 
-//	if (Materials.length() == 0)
-//	{
-//		out_Color = vec4(0.5, 0.7, 1.0, 1.0);
-//	}
-//	else
-//	{
-//		out_Color = vec4(1.0, 0.2, 0.3, 1.0);
-//	}
+	if (Materials.length() == 0)
+	{
+		out_Color = vec4(0.5, 0.7, 1.0, 1.0);
+	}
+	else
+	{
+		out_Color = vec4(1.0, 0.2, 0.3, 1.0);
+	}
 }
