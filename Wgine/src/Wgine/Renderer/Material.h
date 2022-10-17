@@ -6,6 +6,7 @@
 
 namespace Wgine
 {
+	// TODO: material tiling param for each texture
 	struct PhongMaterial
 	{
 		PhongMaterial(glm::vec3 diffuse = glm::vec3(0.2f, 0.6f, 1.f), glm::vec3 specular = glm::vec3(0.5f), glm::vec3 ambient = glm::vec3(0.2f), int diffuseTex = -1, int specularTex = -1)

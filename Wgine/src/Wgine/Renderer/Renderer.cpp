@@ -9,8 +9,6 @@
 #include "Wgine/Renderer/Vertex.h"
 #include "Wgine/Renderer/Material.h"
 
-#include "TextureLibrary.h"
-
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
@@ -81,20 +79,11 @@ namespace Wgine
 				materialsData[i] = *Materials[i].get();
 			MaterialSSBO->SetData(materialsData.get(), sizeof(PhongMaterial) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
-
-			Shader->Bind();
-			TextureLibrary::Get("assets/textures/coords.png")->Bind(0);
-			TextureLibrary::Get("assets/textures/transparent.png")->Bind(1);
-
-			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
-			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
-			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
-			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
-
+			
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
-			//Shader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: material tiling param for each texture
 
+			Shader->Bind();
 			VAO->Bind();
 			IBO->Bind();
 			VBO->Bind();
@@ -167,7 +156,13 @@ namespace Wgine
 
 		// new Shader
 		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
+		{
 			s_ShaderData[shader->GetPath()] = PerShaderData(shader);
+			shader->SetupStorageBuffer("ss_MaterialIDs", 0, s_ShaderData[shader->GetPath()].MaterialIDSSBO->GetPtr());
+			shader->SetupStorageBuffer("ss_Materials", 1, s_ShaderData[shader->GetPath()].MaterialSSBO->GetPtr());
+			shader->SetupStorageBuffer("ss_TransformIDs", 2, s_ShaderData[shader->GetPath()].TransformIDSSBO->GetPtr());
+			shader->SetupStorageBuffer("ss_Transforms", 3, s_ShaderData[shader->GetPath()].TransformSSBO->GetPtr());
+		}
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
 
@@ -189,8 +184,7 @@ namespace Wgine
 		// push vertices
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
 			shaderData.Vertices.push_back(mesh->GetVertices()[i]);
-		//shaderData.Vertices.insert(shaderData.Vertices.end(), mesh->GetVertices().begin(), mesh->GetVertices().end());
-		
+
 		// push back materials and material ids
 		uint32_t index;
 		auto findMaterial = std::find(shaderData.Materials.begin(), shaderData.Materials.end(), material);
@@ -202,7 +196,7 @@ namespace Wgine
 			shaderData.Materials.push_back(material);
 		}
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
-			shaderData.MaterialIDs.push_back(index);		
+			shaderData.MaterialIDs.push_back(index);
 	}
 
 	void Renderer::EndScene()
