@@ -3,13 +3,13 @@
 #include "Renderer2D.h"
 #include "Vertex.h"
 
+#include "Wgine/Core/Core.h"
+#include "Wgine/Core/Time.h"
 #include "Wgine/Renderer/Mesh.h"
 #include "Wgine/Renderer/Vertex.h"
-#include "Wgine/Core/Core.h"
-
 #include "Wgine/Renderer/Material.h"
 
-#include "Wgine/Core/Time.h"
+#include "TextureLibrary.h"
 
 namespace Wgine
 {
@@ -76,17 +76,16 @@ namespace Wgine
 			IBO->SetData(Indices.data(), Indices.size());
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
-			Scope<PhongMaterial[]> materialsRaw(new PhongMaterial[Materials.size()]);
+			Scope<PhongMaterial[]> materialsData(new PhongMaterial[Materials.size()]);
 			for (int i = 0; i < Materials.size(); i++)
-				materialsRaw[i] = *Materials[i].get();
-			//std::vector<PhongMaterial> materialsRaw;
-			//materialsRaw.reserve(Materials.size());
-			//for (int i = 0; i < Materials.size(); i++)
-			//	materialsRaw.push_back(*Materials[i].get());
-			MaterialSSBO->SetData(materialsRaw.get(), sizeof(PhongMaterial) * Materials.size());
+				materialsData[i] = *Materials[i].get();
+			MaterialSSBO->SetData(materialsData.get(), sizeof(PhongMaterial) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 
 			Shader->Bind();
+			TextureLibrary::Get("assets/textures/coords.png")->Bind(0);
+			TextureLibrary::Get("assets/textures/transparent.png")->Bind(1);
+
 			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());

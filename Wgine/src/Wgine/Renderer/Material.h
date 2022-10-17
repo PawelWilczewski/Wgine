@@ -16,8 +16,8 @@ namespace Wgine
 		alignas(16) glm::vec3 Diffuse;
 		alignas(16) glm::vec3 Specular;
 		alignas(16) glm::vec3 Ambient;
-		int DiffuseTex;
-		int SpecularTex;
+		int32_t DiffuseTex;
+		int32_t SpecularTex;
 	};
 
 	class Material
@@ -30,7 +30,6 @@ namespace Wgine
 
 		~Material()
 		{
-
 		}
 
 	public:
