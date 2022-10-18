@@ -70,8 +70,9 @@ namespace Wgine
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot) const
+	void OpenGLTexture2D::Bind(uint8_t slot)
 	{
 		glBindTextureUnit(slot, m_RendererID);
+		m_Slot = slot;
 	}
 }

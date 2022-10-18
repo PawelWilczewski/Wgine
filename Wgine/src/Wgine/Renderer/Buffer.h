@@ -100,34 +100,45 @@ namespace Wgine
 	class VertexBuffer // TODO: incorporate template specialization?
 	{
 	public:
+		static Ref<VertexBuffer> Create(uint32_t size);
+		static Ref<VertexBuffer> Create(void *vertices, uint32_t size);
+
+	public:
 		virtual ~VertexBuffer() = default;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		// will automatically resize to twice the required amount if exceeded the current size
+		// will invalidate the data up to the offset if exceeded the current size
 		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) = 0;
-
+		// doesnt keep the elements currently stored; only resized if bigger size than current
+		virtual void Resize(uint32_t newSize) = 0;
 		virtual void SetLayout(const BufferLayout &layout) = 0;
-		virtual const BufferLayout &GetBufferLayout() const = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(float *vertices, uint32_t size);
+		virtual uint32_t GetSize() const = 0;
+		virtual const BufferLayout &GetBufferLayout() const = 0;
 	};
 
 	class IndexBuffer // TODO: incorporate template specialization?
 	{
+	public:
+		static Ref<IndexBuffer> Create(uint32_t count);
+		static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
+
 	public:
 		virtual ~IndexBuffer() {}
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		// will automatically resize to twice the required amount if exceeded the current size
+		// will invalidate the data up to the offset if exceeded the current size
 		virtual void SetData(const void *data, uint32_t count, uint32_t offsetCount = 0) = 0;
+		// doesnt keep the elements currently stored; only resized if bigger size than current
+		virtual void Resize(uint32_t newCount) = 0;
 
 		virtual uint32_t GetCount() const = 0;
-
-		static Ref<IndexBuffer> Create(uint32_t count);
-		static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
 	};
 
 	class StorageBuffer // TODO: incorporate template specialization?
@@ -138,8 +149,13 @@ namespace Wgine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		// will automatically resize to twice the required amount if exceeded the current size
+		// will invalidate the data up to the offset if exceeded the current size
 		virtual void SetData(const void *data, uint32_t size, uint32_t offsetBytes = 0) = 0;
+		// doesnt keep the elements currently stored; only resized if bigger size than current
+		virtual void Resize(uint32_t newSize) = 0;
 
+		virtual uint32_t GetSize() const = 0;
 		virtual uint32_t GetPtr() const = 0;
 
 		static Ref<StorageBuffer> Create(uint32_t size);

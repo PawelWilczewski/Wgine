@@ -24,12 +24,12 @@ namespace Wgine
 
 		// +x to the right (+y in 3d space)
 		// +y upwards (+z in 3d space)
-		static void DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture, const glm::vec2 &tiling = glm::vec2(1.f), const glm::vec4 &tint = glm::vec4(1.f));
+		static void DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, Texture2D &texture, const glm::vec2 &tiling = glm::vec2(1.f), const glm::vec4 &tint = glm::vec4(1.f));
 
 		// in 3d space
 		static void DrawQuad(const Transform &transform, const glm::vec4 &color);
 
 		// in 3d space
-		static void DrawQuad(const Transform &transform, const Texture2D &texture, const glm::vec2 &tiling = glm::vec2(1.f), const glm::vec4 &tint = glm::vec4(1.f));
+		static void DrawQuad(const Transform &transform, Texture2D &texture, const glm::vec2 &tiling = glm::vec2(1.f), const glm::vec4 &tint = glm::vec4(1.f));
 	};
 }

@@ -68,7 +68,7 @@ namespace Wgine
 		// TEMP
 		Ref<Mesh> MeshData;
 		Ref<Shader> ShaderData;
-		Ref<PhongMaterial> MaterialData = MakeRef<PhongMaterial>();
+		Ref<Material> MaterialData = MakeRef<Material>();
 
 	protected:
 		virtual void UpdateEntityMatrix() { m_EntityMatrix = m_Transform.ToModelMatrix(); }
