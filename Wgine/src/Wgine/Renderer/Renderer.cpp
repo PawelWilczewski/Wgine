@@ -18,18 +18,32 @@ namespace Wgine
 
 	constexpr uint32_t MaterialsBindingSlot = 0;
 	
-	struct RendererData
+	class RendererData
 	{
+	public:
 		Scene *ActiveScene = nullptr;
 
-		std::array<Ref<Texture2D>, Renderer::s_TextureSlotsCount> Textures;
-		uint32_t TextureSlot = 0;
-
+	public:
 		void ResetTextures()
 		{
-			Textures.empty();
-			TextureSlot = 0;
+			m_Textures.empty();
+			m_TextureSlot = 0;
 		}
+
+		// returns unsigned -1 (largest uint32) in case texture is not bound
+		uint32_t GetBoundTextureSlot(Ref<Texture2D> texture)
+		{
+			auto it = std::find(m_Textures.begin(), m_Textures.end(), texture);
+			return it == m_Textures.end() ? -1 : it - m_Textures.begin();
+		}
+
+		uint32_t FreeSlotsCount() const { return 31 - m_TextureSlot; }
+
+		bool BindTexture(Ref<Texture2D> texture) { m_Textures[m_TextureSlot++] = texture; }
+
+	private:
+		uint32_t m_TextureSlot = 0;
+		std::array<Ref<Texture2D>, Renderer::s_TextureSlotsCount> m_Textures;
 	};
 
 	static RendererData s_RendererData = RendererData();
