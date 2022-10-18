@@ -113,8 +113,7 @@ struct Material
 	vec3 Diffuse;
 	vec3 Specular;
 	vec3 Ambient;
-	int DiffuseTex;
-	int SpecularTex;
+	uint Textures[8];
 };
 
 layout (std430, binding = 1) buffer ss_Materials
@@ -128,7 +127,15 @@ in vec3 io_Normal;
 in flat int io_MaterialID;
 
 uniform sampler2D u_Texture[32];
-uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (how?) (in material per texture?)
+uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (in material array of vec2d?)
+
+sampler2D TextureAt(uint index)
+{
+	uint indexInArray = index / 4;
+	uint part = 3 - index % 4;
+
+	return u_Texture[(Materials[io_MaterialID].Textures[indexInArray] >> (8U * part)) & 0xffU];
+}
 
 void main()
 {

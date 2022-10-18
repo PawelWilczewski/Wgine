@@ -21,6 +21,15 @@ namespace Wgine
 	struct RendererData
 	{
 		Scene *ActiveScene = nullptr;
+
+		std::array<Ref<Texture2D>, Renderer::s_TextureSlotsCount> Textures;
+		uint32_t TextureSlot = 0;
+
+		void ResetTextures()
+		{
+			Textures.empty();
+			TextureSlot = 0;
+		}
 	};
 
 	static RendererData s_RendererData = RendererData();
@@ -51,7 +60,7 @@ namespace Wgine
 
 			TransformSSBO = StorageBuffer::Create(sizeof(TransformGPU) * 5000);
 			TransformIDSSBO = StorageBuffer::Create(sizeof(int32_t) * 500000);
-			MaterialSSBO = StorageBuffer::Create(sizeof(PhongMaterial) * 100);
+			MaterialSSBO = StorageBuffer::Create(sizeof(MaterialGPU) * 100);
 			MaterialIDSSBO = StorageBuffer::Create(sizeof(uint32_t) * 500000);
 
 			Reset();
@@ -74,13 +83,19 @@ namespace Wgine
 			IBO->SetData(Indices.data(), Indices.size());
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
-			Scope<PhongMaterial[]> materialsData(new PhongMaterial[Materials.size()]);
+
+			Scope<MaterialGPU[]> materialsData(new MaterialGPU[Materials.size()]);
+			std::find(s_RendererData.Textures.begin(), s_RendererData.Textures.end(), material->DiffuseTex);
+
 			for (int i = 0; i < Materials.size(); i++)
 				materialsData[i] = *Materials[i].get();
-			MaterialSSBO->SetData(materialsData.get(), sizeof(PhongMaterial) * Materials.size());
+
+			MaterialSSBO->SetData(materialsData.get(), sizeof(MaterialGPU) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 			
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
+
+			// TODO: this should be uploaded only once at the start?
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
 
 			Shader->Bind();
@@ -104,7 +119,7 @@ namespace Wgine
 
 		std::vector<TransformGPU> Transforms;
 		std::vector<int32_t> TransformIDs;
-		std::vector<Ref<PhongMaterial>> Materials;
+		std::vector<Ref<Material>> Materials;
 		std::vector<int32_t> MaterialIDs;
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
@@ -133,7 +148,7 @@ namespace Wgine
 
 		// reset shader data
 		for (auto &[shaderName, shaderData] : s_ShaderData)
-			shaderData.Reset();
+			shaderData.Reset(); // TODO: Im not sure this is where resetting should happen; perhaps after flushing (end scene?) makes sense?
 
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
 			Submit(*entity);
@@ -145,7 +160,7 @@ namespace Wgine
 	}
 
 	// TODO: no need to keep references? just add to the resultant array that will be sent to the GPU (copying is necessary no matter what?)
-	void Renderer::Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, const Transform &transform)
+	void Renderer::Submit(Ref<Shader> shader, Ref<Material> material, Ref<Mesh> mesh, const Transform &transform)
 	{
 		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
 
@@ -185,7 +200,7 @@ namespace Wgine
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
 			shaderData.Vertices.push_back(mesh->GetVertices()[i]);
 
-		// push back materials and material ids
+		// material
 		uint32_t index;
 		auto findMaterial = std::find(shaderData.Materials.begin(), shaderData.Materials.end(), material);
 		if (findMaterial != shaderData.Materials.end())
@@ -195,6 +210,8 @@ namespace Wgine
 			index = shaderData.Materials.size();
 			shaderData.Materials.push_back(material);
 		}
+
+		// material id
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
 			shaderData.MaterialIDs.push_back(index);
 	}

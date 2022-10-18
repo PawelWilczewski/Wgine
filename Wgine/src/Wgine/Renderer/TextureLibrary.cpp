@@ -11,9 +11,7 @@ namespace Wgine
 		if (s_FileLibrary.find(filePath) != s_FileLibrary.end())
 			return s_FileLibrary[filePath];
 
-		auto texture = Texture2D::Create(filePath);
-		s_FileLibrary[filePath] = texture;
-		return texture;
+		return s_FileLibrary[filePath] = Texture2D::Create(filePath);
 	}
 
 	Ref<Texture2D> TextureLibrary::Get(uint32_t color)
@@ -21,8 +19,6 @@ namespace Wgine
 		if (s_ConstLibrary.find(color) != s_ConstLibrary.end())
 			return s_ConstLibrary[color];
 
-		auto texture = Texture2D::Create(1, 1, &color);
-		s_ConstLibrary[color] = texture;
-		return texture;
+		return s_ConstLibrary[color] = Texture2D::Create(1, 1, &color);
 	}
 }

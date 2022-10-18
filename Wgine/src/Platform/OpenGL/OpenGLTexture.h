@@ -16,11 +16,14 @@ namespace Wgine
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
-		virtual void Bind(uint32_t slot = 0) const override;
+		virtual void Bind(uint8_t slot = 1) override;
+
+		virtual uint32_t GetSlot() const override { return m_Slot; }
 
 	private:
 		std::string m_Path;
 		uint32_t m_Width, m_Height;
 		GLuint m_RendererID;
+		uint8_t m_Slot = 0;
 	};
 }

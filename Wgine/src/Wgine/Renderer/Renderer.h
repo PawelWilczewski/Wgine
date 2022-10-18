@@ -23,7 +23,7 @@ namespace Wgine
 
 		static void BeginScene(Scene *scene);
 		static void Submit(const SceneEntity &entity);
-		static void Submit(Ref<Shader> shader, Ref<PhongMaterial> material, Ref<Mesh> mesh, const Transform &transform);
+		static void Submit(Ref<Shader> shader, Ref<Material> material, Ref<Mesh> mesh, const Transform &transform);
 		static void EndScene();
 
 		static void Flush(PerShaderData &data);

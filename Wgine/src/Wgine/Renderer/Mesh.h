@@ -24,9 +24,9 @@ namespace Wgine
 		std::vector<Vertex> GetVerticesTransformed(const glm::mat4 &t) const
 		{
 			auto result = std::vector<Vertex>();
-			result.resize(m_Vertices.size());
+			result.reserve(m_Vertices.size());
 			for (int i = 0; i < m_Vertices.size(); i++)
-				result[i] = Vertex(glm::vec3(t * glm::vec4(m_Vertices[i].Position, 1.f)), m_Vertices[i].Color, m_Vertices[i].TexCoord);
+				result.push_back(Vertex(glm::vec3(t * glm::vec4(m_Vertices[i].Position, 1.f)), m_Vertices[i].Color, m_Vertices[i].TexCoord));
 			return result;
 		}
 
@@ -39,9 +39,9 @@ namespace Wgine
 		std::vector<uint32_t> GetIndicesOffset(uint32_t offset) const
 		{
 			auto result = std::vector<uint32_t>();
-			result.resize(m_Indices.size());
+			result.reserve(m_Indices.size());
 			for (int i = 0; i < m_Indices.size(); i++)
-				result[i] = m_Indices[i] + offset;
+				result.push_back(m_Indices[i] + offset);
 			return result;
 		}
 
@@ -61,7 +61,7 @@ namespace Wgine
 		{
 			m_Vertices.insert(m_Vertices.end(), v, v + count);
 		}
-		void AddIndex(uint32_t i) // TODO: add indices by ptr and count
+		void AddIndex(uint32_t i)
 		{
 			m_Indices.push_back(i);
 		}

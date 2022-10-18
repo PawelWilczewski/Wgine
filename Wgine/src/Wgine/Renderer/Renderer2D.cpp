@@ -84,7 +84,7 @@ namespace Wgine
 
 	void Renderer2D::Flush()
 	{
-		TextureLibrary::GetTransparent()->Bind(0);
+		TextureLibrary::GetTransparent()->Bind(1);
 		s_Data.UnlitTextureShader->Bind();
 
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
@@ -113,7 +113,7 @@ namespace Wgine
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
+	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture, tiling, tint);
 	}
@@ -160,7 +160,7 @@ namespace Wgine
 			});*/
 	}
 
-	void Renderer2D::DrawQuad(const Transform &transform, const Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
+	void Renderer2D::DrawQuad(const Transform &transform, Texture2D &texture, const glm::vec2 &tiling, const glm::vec4 &tint)
 	{
 		WGINE_CORE_ASSERT(s_Data.ActiveScene, "Invalid active scene when creating quad!");
 		texture.Bind();

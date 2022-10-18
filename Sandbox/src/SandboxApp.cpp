@@ -145,7 +145,7 @@ public:
 
 		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 
-		m_BaseMaterial = MakeRef<PhongMaterial>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), 1, 0);
+		m_BaseMaterial = MakeRef<MaterialGPU>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), 1, 0);
 	}
 
 	virtual void OnAttach() override
@@ -177,10 +177,10 @@ public:
 					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
 			}
 
-			m_Texture->Bind(0);
+			m_Texture->Bind(1);
 			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
 			
-			m_TransparentTexture->Bind(1);
+			m_TransparentTexture->Bind(2);
 			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
 		} Renderer::EndScene();
 	}
@@ -217,7 +217,7 @@ private:
 	SceneEntity *m_AxisCamera;
 	Ref<Mesh> m_QuadMesh;
 
-	Ref<PhongMaterial> m_BaseMaterial;
+	Ref<MaterialGPU> m_BaseMaterial;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 
