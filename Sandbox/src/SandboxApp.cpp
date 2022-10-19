@@ -71,7 +71,7 @@ public:
 		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
 		{
 			// triangle data
-			m_Triangle->MeshData = MakeRef<Mesh>();// VertexArray::Create();
+			m_Triangle->MeshData = MakeRef<Mesh>();
 			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f, 1.0f }, { 0.f, 1.f } });
 			m_Triangle->MeshData->AddVertex({ {  0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f, 1.0f }, { 1.f, 1.f } });
 			m_Triangle->MeshData->AddVertex({ {  0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.5f, 0.f } });
@@ -95,9 +95,9 @@ public:
 			//	{ { 1.0f,  1.0f,  0.2f} },
 			//	});
 			//m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
-			for (int y = 0; y < 500; y++)
-				for (int x = 0; x < 50; x++)
-					m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
+			//for (int y = 0; y < 500; y++)
+			//	for (int x = 0; x < 50; x++)
+			//		m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
 			m_Square->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
@@ -169,14 +169,14 @@ public:
 			});
 
 		Renderer::BeginScene(m_Scene.get()); {
-			for (int y = 0; y < 200; y++)
-			{
-				for (int x = 0; x < 200; x++)
-					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
-			}
+			//for (int y = 0; y < 200; y++)
+			//{
+			//	for (int x = 0; x < 200; x++)
+			//		Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
+			//}
 
-			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
-			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
+			//Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
+			//Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
 		} Renderer::EndScene();
 	}
 

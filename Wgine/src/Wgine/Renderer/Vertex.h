@@ -15,7 +15,11 @@ namespace Wgine
 		Vertex()
 		{}
 
-		Vertex(const glm::vec3 &position, const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f), const glm::vec3 &normal = glm::vec3(0.f))
+		Vertex(const glm::vec3 &position, const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
+			: Position(position), Color(color), TexCoord(texCoord)
+		{}
+
+		Vertex(const glm::vec3 &position, const glm::vec3 &normal = glm::vec3(0.f), const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
 			: Position(position), Color(color), TexCoord(texCoord), Normal(normal)
 		{}
 
@@ -32,8 +36,6 @@ namespace Wgine
 		glm::vec4 Color = glm::vec4(1.f); // TODO: maybe change to 3-component vertex color
 		glm::vec2 TexCoord = glm::vec2(0.f);
 		glm::vec3 Normal = glm::vec3(0.f);
-		//uint32_t transformID; // (set automatically later on)
-		// TODO: lighting stuff?
 
 	public:
 		static const BufferLayout &GetLayout() { return s_Layout; }

@@ -16,40 +16,12 @@ namespace Wgine
 
 		Mesh(Vertex *triVertices, uint32_t verticesCount, uint32_t *indices, uint32_t indicesCount)
 			: m_Vertices(triVertices, triVertices + verticesCount), m_Indices(indices, indices + indicesCount)
-		{}
+		{
+			RecalculateNormals();
+		}
 
 		const std::vector<Vertex> &GetVertices() const { return m_Vertices; }
 		const std::vector<uint32_t> &GetIndices() const { return m_Indices; }
-
-		std::vector<Vertex> GetVerticesTransformed(const glm::mat4 &t) const
-		{
-			auto result = std::vector<Vertex>();
-			result.reserve(m_Vertices.size());
-			for (int i = 0; i < m_Vertices.size(); i++)
-				result.push_back(Vertex(glm::vec3(t * glm::vec4(m_Vertices[i].Position, 1.f)), m_Vertices[i].Color, m_Vertices[i].TexCoord));
-			return result;
-		}
-
-		void PasteVerticesTransformed(Vertex *dst, const glm::mat4 &t) const
-		{
-			for (int i = 0; i < m_Vertices.size(); i++)
-				*(dst + i) = { glm::vec3(t * glm::vec4(m_Vertices[i].Position, 1.f)), m_Vertices[i].Color, m_Vertices[i].TexCoord };
-		}
-
-		std::vector<uint32_t> GetIndicesOffset(uint32_t offset) const
-		{
-			auto result = std::vector<uint32_t>();
-			result.reserve(m_Indices.size());
-			for (int i = 0; i < m_Indices.size(); i++)
-				result.push_back(m_Indices[i] + offset);
-			return result;
-		}
-
-		void PasteIndicesOffset(uint32_t *dst, uint32_t offset) const
-		{
-			for (int i = 0; i < m_Indices.size(); i++)
-				*(dst + i) = m_Indices[i] + offset;
-		}
 
 	public:
 		void AddVertex(Vertex v) { m_Vertices.push_back(v); }
@@ -84,6 +56,22 @@ namespace Wgine
 			uint32_t nextIndex = m_Vertices.size();
 			m_Vertices.insert(m_Vertices.end(), { v0, v1, v2, v3 });
 			m_Indices.insert(m_Indices.end(), { nextIndex, nextIndex + 1, nextIndex + 2, nextIndex + 2, nextIndex + 3, nextIndex });
+		}
+
+		void RecalculateNormals()
+		{
+			std::unordered_map<uint32_t, uint32_t> counts;
+			for (int i = 1; i < m_Indices.size(); i += 3)
+			{
+				auto vertIndex = m_Indices[i];
+				auto previousVertIndex = m_Indices[i - 1];
+				auto nextVertIndex = m_Indices[i + 1];
+				m_Vertices[vertIndex].Normal += glm::cross(m_Vertices[previousVertIndex].Position - m_Vertices[vertIndex].Position, m_Vertices[nextVertIndex].Position - m_Vertices[vertIndex].Position);
+				counts[vertIndex]++; // TODO: uninitialized?
+			}
+
+			for (const auto &[key, value] : counts)
+				m_Vertices[key].Normal /= value;
 		}
 
 	private:
