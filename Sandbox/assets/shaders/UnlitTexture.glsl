@@ -144,6 +144,7 @@ void main()
 	Material mat = Materials[io_MaterialID];
 //	if (mat.DiffuseTex >= 0)
 	out_Color = texture(TextureAt(0), io_TexCoord /* * u_Tiling */);
+	out_Color = vec4(io_Normal, 1.0);
 //	else
 //		out_Color = vec4(mat.Diffuse, 1.0);
 //

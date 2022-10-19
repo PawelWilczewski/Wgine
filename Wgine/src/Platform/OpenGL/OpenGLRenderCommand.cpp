@@ -114,7 +114,7 @@ namespace Wgine
 
 		// normals
 		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 
 		// antialias
 		//glEnable(GL_POLYGON_SMOOTH);

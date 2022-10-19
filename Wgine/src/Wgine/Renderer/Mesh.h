@@ -60,18 +60,31 @@ namespace Wgine
 
 		void RecalculateNormals()
 		{
-			std::unordered_map<uint32_t, uint32_t> counts;
-			for (int i = 1; i < m_Indices.size(); i += 3)
+			Scope<float[]> counts(new float[m_Vertices.size()]);
+
+			for (int i = 0; i < m_Indices.size(); i += 3)
 			{
-				auto vertIndex = m_Indices[i];
-				auto previousVertIndex = m_Indices[i - 1];
-				auto nextVertIndex = m_Indices[i + 1];
-				m_Vertices[vertIndex].Normal += glm::cross(m_Vertices[previousVertIndex].Position - m_Vertices[vertIndex].Position, m_Vertices[nextVertIndex].Position - m_Vertices[vertIndex].Position);
-				counts[vertIndex]++; // TODO: uninitialized?
+				auto first = m_Indices[i];
+				auto second = m_Indices[i + 1];
+				auto third = m_Indices[i + 2];
+				auto firstNormal = glm::cross(m_Vertices[third].Position - m_Vertices[first].Position, m_Vertices[second].Position - m_Vertices[first].Position);
+				auto secondNormal = glm::cross(m_Vertices[first].Position - m_Vertices[second].Position, m_Vertices[third].Position - m_Vertices[second].Position);
+				auto thirdNormal = glm::cross(m_Vertices[first].Position - m_Vertices[third].Position, m_Vertices[second].Position - m_Vertices[third].Position);
+				
+				auto area = 0.5f * secondNormal.length();
+
+				m_Vertices[first].Normal += glm::normalize(firstNormal) * area;
+				m_Vertices[second].Normal += glm::normalize(firstNormal) * area;
+				m_Vertices[third].Normal += glm::normalize(firstNormal) * area;
+				
+				// TODO: maybe weighted normal by adding face
+				counts[first] += area;
+				counts[second] += area;
+				counts[third] += area;
 			}
 
-			for (const auto &[key, value] : counts)
-				m_Vertices[key].Normal /= value;
+			for (int i = 0; i < m_Vertices.size(); i++)
+				m_Vertices[i].Normal /= counts[i];
 		}
 
 	private:
