@@ -142,10 +142,9 @@ public:
 		);
 
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
-
 		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 
-		m_BaseMaterial = MakeRef<MaterialGPU>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), 1, 0);
+		m_BaseMaterial = MakeRef<Material>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), m_Texture, m_TransparentTexture);
 	}
 
 	virtual void OnAttach() override
@@ -217,7 +216,7 @@ private:
 	SceneEntity *m_AxisCamera;
 	Ref<Mesh> m_QuadMesh;
 
-	Ref<MaterialGPU> m_BaseMaterial;
+	Ref<Material> m_BaseMaterial;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
 

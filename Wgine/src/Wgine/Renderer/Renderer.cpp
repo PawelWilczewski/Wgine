@@ -12,11 +12,8 @@
 namespace Wgine
 {
 	Renderer::API Renderer::s_API = Renderer::API::OpenGL;
-
 	const uint32_t Renderer::s_TextureSlotsCount = 32;
 	int Renderer::s_TextureSlots[s_TextureSlotsCount] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
-
-	constexpr uint32_t MaterialsBindingSlot = 0;
 	
 	class RendererData
 	{
@@ -24,22 +21,35 @@ namespace Wgine
 		Scene *ActiveScene = nullptr;
 
 	public:
+		// returns texture slot beginning at 0
+		uint8_t BindTexture(Ref<Texture2D> texture)
+		{
+			auto slot = FindTextureSlot(texture);
+			if (slot == -1) // texture is not bound yet
+			{
+				m_Textures[m_TextureSlot++] = texture;
+				texture->Bind(m_TextureSlot - 1);
+				return m_TextureSlot - 1;
+			}
+			else // texture already bound
+				return slot;
+		}
+
 		void ResetTextures()
 		{
 			m_Textures.empty();
 			m_TextureSlot = 0;
 		}
 
+		uint32_t GetFreeSlotsCount() const { return 32 - m_TextureSlot; }
+
+	private:
 		// returns unsigned -1 (largest uint32) in case texture is not bound
-		uint32_t GetBoundTextureSlot(Ref<Texture2D> texture)
+		uint32_t FindTextureSlot(Ref<Texture2D> texture)
 		{
 			auto it = std::find(m_Textures.begin(), m_Textures.end(), texture);
 			return it == m_Textures.end() ? -1 : it - m_Textures.begin();
 		}
-
-		uint32_t FreeSlotsCount() const { return 31 - m_TextureSlot; }
-
-		bool BindTexture(Ref<Texture2D> texture) { m_Textures[m_TextureSlot++] = texture; }
 
 	private:
 		uint32_t m_TextureSlot = 0;
@@ -99,10 +109,20 @@ namespace Wgine
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
 
 			Scope<MaterialGPU[]> materialsData(new MaterialGPU[Materials.size()]);
-			std::find(s_RendererData.Textures.begin(), s_RendererData.Textures.end(), material->DiffuseTex);
-
+			
 			for (int i = 0; i < Materials.size(); i++)
-				materialsData[i] = *Materials[i].get();
+			{
+				if (s_RendererData.GetFreeSlotsCount() < 2) // TODO: adjust to include dynamic texture count
+				{
+					// TODO: flush and reset textures (probably we should not reset the vbo, ibo etc. but render it partially)
+				}
+				else
+				{
+					materialsData[i] = *Materials[i].get();
+					materialsData[i].Textures[0] = s_RendererData.BindTexture(Materials[i]->DiffuseTex);
+					materialsData[i].Textures[1] = s_RendererData.BindTexture(Materials[i]->SpecularTex);
+				}
+			}
 
 			MaterialSSBO->SetData(materialsData.get(), sizeof(MaterialGPU) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());

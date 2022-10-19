@@ -72,7 +72,7 @@ namespace Wgine
 
 	void OpenGLTexture2D::Bind(uint8_t slot)
 	{
-		glBindTextureUnit(slot - 1, m_RendererID);
+		glBindTextureUnit(slot, m_RendererID);
 		m_Slot = slot;
 	}
 }

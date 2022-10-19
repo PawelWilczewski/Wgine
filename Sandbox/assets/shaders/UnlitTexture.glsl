@@ -132,7 +132,7 @@ uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (in material arra
 sampler2D TextureAt(uint index)
 {
 	uint indexInArray = index / 4;
-	uint part = 3 - index % 4;
+	uint part = index % 4;
 
 	return u_Texture[(Materials[io_MaterialID].Textures[indexInArray] >> (8U * part)) & 0xffU];
 }
@@ -142,11 +142,11 @@ void main()
 //	out_Color = vec4(io_MaterialID / 5.0, io_MaterialID / 5.0 , io_MaterialID / 5.0, 1.0);
 
 	Material mat = Materials[io_MaterialID];
-	if (mat.DiffuseTex >= 0)
-		out_Color = texture(u_Texture[mat.DiffuseTex], io_TexCoord /* * u_Tiling */) * vec4(mat.Diffuse, 1.0);
-	else
-		out_Color = vec4(mat.Diffuse, 1.0);
-
+//	if (mat.DiffuseTex >= 0)
+	out_Color = texture(TextureAt(0), io_TexCoord /* * u_Tiling */);
+//	else
+//		out_Color = vec4(mat.Diffuse, 1.0);
+//
 //	out_Color = vec4(vec3(Materials.length()), 1.0);
 
 //	if (Materials.length() == 0)

@@ -16,7 +16,7 @@ namespace Wgine
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
-		virtual void Bind(uint8_t slot = 1) override;
+		virtual void Bind(uint8_t slot) override;
 
 		virtual uint32_t GetSlot() const override { return m_Slot; }
 
