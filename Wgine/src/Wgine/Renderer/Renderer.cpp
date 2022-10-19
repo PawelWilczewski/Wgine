@@ -115,6 +115,7 @@ namespace Wgine
 				if (s_RendererData.GetFreeSlotsCount() < 2) // TODO: adjust to include dynamic texture count
 				{
 					// TODO: flush and reset textures (probably we should not reset the vbo, ibo etc. but render it partially)
+					WGINE_CORE_ASSERT(false, "TODO: Implement flushing when exceeded texture slots limit!");
 				}
 				else
 				{
