@@ -113,8 +113,8 @@ namespace Wgine
 		glDepthFunc(GL_LEQUAL); // left-handed coordinate system so this is necessary
 
 		// normals
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 
 		// antialias
 		//glEnable(GL_POLYGON_SMOOTH);

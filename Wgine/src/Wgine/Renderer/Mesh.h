@@ -11,7 +11,7 @@ namespace Wgine
 	{
 	public:
 		Mesh()
-			: m_Vertices()
+			: m_Vertices(), m_Indices()
 		{}
 
 		Mesh(Vertex *triVertices, uint32_t verticesCount, uint32_t *indices, uint32_t indicesCount)

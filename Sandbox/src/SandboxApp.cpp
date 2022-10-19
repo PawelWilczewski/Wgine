@@ -80,21 +80,21 @@ public:
 		}
 
 		m_Square = m_Scene->ConstructEntity<SceneEntity>();
-		m_Square->SetRotation({ 0.f, 45.f, 180.f });
+		m_Square->SetRotation({ 0.f, 0.f, 80.f });
 		// square data
 		{
-			m_Square->MeshData = MakeRef<Mesh>();
-			m_Square->MeshData->AddVertices({
-				{ {-1.0f,  1.0f, -0.5f} },
-				{ {-1.0f, -1.0f, -0.5f} },
-				{ { 1.0f, -1.0f, -0.5f} },
-				{ { 1.0f,  1.0f, -0.5f} },
-				{ { 1.0f, -1.0f,  0.2f} },
-				{ { 1.0f, -1.0f,  0.8f} },
-				{ { 1.0f,  1.0f,  0.8f} },
-				{ { 1.0f,  1.0f,  0.2f} },
-				});
-			m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
+			m_Square->MeshData = MeshLibrary::GetQuad();
+			//m_Square->MeshData->AddVertices({
+			//	{ {-1.0f,  1.0f, -0.5f} },
+			//	{ {-1.0f, -1.0f, -0.5f} },
+			//	{ { 1.0f, -1.0f, -0.5f} },
+			//	{ { 1.0f,  1.0f, -0.5f} },
+			//	{ { 1.0f, -1.0f,  0.2f} },
+			//	{ { 1.0f, -1.0f,  0.8f} },
+			//	{ { 1.0f,  1.0f,  0.8f} },
+			//	{ { 1.0f,  1.0f,  0.2f} },
+			//	});
+			//m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
 			for (int y = 0; y < 500; y++)
 				for (int x = 0; x < 50; x++)
 					m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
@@ -132,7 +132,6 @@ public:
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
-		m_VertexArray = VertexArray::Create();
 		m_QuadMesh = MakeRef<Mesh>();
 		m_QuadMesh->AddQuad(
 			{ { -1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
@@ -176,10 +175,7 @@ public:
 					Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
 			}
 
-			m_Texture->Bind(1);
 			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
-			
-			m_TransparentTexture->Bind(2);
 			Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
 		} Renderer::EndScene();
 	}
@@ -219,8 +215,6 @@ private:
 	Ref<Material> m_BaseMaterial;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
-
-	Ref<VertexArray> m_VertexArray;
 
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
 };
