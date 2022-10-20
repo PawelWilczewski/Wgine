@@ -15,25 +15,25 @@ namespace Wgine
 		Vertex()
 		{}
 
-		Vertex(const glm::vec3 &position, const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
+		Vertex(const glm::vec3 &position, const glm::vec3 &color = glm::vec3(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
 			: Position(position), Color(color), TexCoord(texCoord)
 		{}
 
-		Vertex(const glm::vec3 &position, const glm::vec3 &normal = glm::vec3(0.f), const glm::vec4 &color = glm::vec4(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
+		Vertex(const glm::vec3 &position, const glm::vec3 &normal = glm::vec3(0.f), const glm::vec3 &color = glm::vec3(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
 			: Position(position), Color(color), TexCoord(texCoord), Normal(normal)
 		{}
 
 		operator std::string() const {
 			std::ostringstream ss;
 			ss << "Vertex: pos(" << Position.x << ", " << Position.y << ", " << Position.z <<
-				")\tcolor(" << Color.x << ", " << Color.y << ", " << Color.z << ", " << Color.w <<
+				")\tcolor(" << Color.x << ", " << Color.y << ", " << Color.z <<
 				")\ttex(" << TexCoord.x << ", " << TexCoord.y <<
 				")\tnormal(" << Normal.x << ", " << Normal.y << ", " << Normal.z << ")";
 			return ss.str();
 		}
 
 		glm::vec3 Position = glm::vec3(0.f);
-		glm::vec4 Color = glm::vec4(1.f); // TODO: maybe change to 3-component vertex color
+		glm::vec3 Color = glm::vec3(1.f);
 		glm::vec2 TexCoord = glm::vec2(0.f);
 		glm::vec3 Normal = glm::vec3(0.f);
 

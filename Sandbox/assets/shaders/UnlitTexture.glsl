@@ -2,7 +2,7 @@
 #version 460 core
 
 layout(location = 0) in vec3 in_Position;
-layout(location = 1) in vec4 in_Color;
+layout(location = 1) in vec3 in_Color;
 layout(location = 2) in vec2 in_TexCoord;
 layout(location = 3) in vec3 in_Normal;
 
@@ -86,7 +86,7 @@ mat4 scale(vec3 s)
 
 uniform mat4 u_ViewProjection;
 
-out vec4 io_Color;
+out vec3 io_Color;
 out vec2 io_TexCoord;
 out vec3 io_Normal;
 out flat int io_MaterialID;
@@ -121,7 +121,7 @@ layout (std430, binding = 1) buffer ss_Materials
 	Material Materials[];
 };
 
-in vec4 io_Color;
+in vec3 io_Color;
 in vec2 io_TexCoord;
 in vec3 io_Normal;
 in flat int io_MaterialID;

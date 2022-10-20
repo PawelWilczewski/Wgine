@@ -34,9 +34,9 @@ public:
 		m_Scene->OnTick(deltaSeconds);
 		
 		Renderer2D::BeginScene(m_Scene.get()); {
-			Renderer2D::DrawQuad({ 1.f, 1.f }, 30.f, { 10.f, 10.f }, { 0.8f, 0.2f, 0.3f, 1.f });
-			Renderer2D::DrawQuad({ -2.f, -1.f }, 45.f, { 4.f, 4.f }, { 0.1f, 0.9f, 0.3f, 1.f });
-			Renderer2D::DrawQuad(Transform({ -20.f, 15.f, 10.f }, { 15.f, 0.f, 0.f }, {10.f, 10.f, 10.f}), {0.1f, 0.9f, 0.3f, 1.f});
+			Renderer2D::DrawQuad({ 1.f, 1.f }, 30.f, { 10.f, 10.f }, { 0.8f, 0.2f, 0.3f });
+			Renderer2D::DrawQuad({ -2.f, -1.f }, 45.f, { 4.f, 4.f }, { 0.1f, 0.9f, 0.3f });
+			Renderer2D::DrawQuad(Transform({ -20.f, 15.f, 10.f }, { 15.f, 0.f, 0.f }, { 10.f, 10.f, 10.f }), { 0.1f, 0.9f, 0.3f });
 			Renderer2D::DrawQuad(Transform({ -20.f, -15.f, 5.f }, { 0.f, 0.f, 0.f }, { 10.f, 10.f, 10.f }), *m_TransparentTexture, { 2.f, 2.f }, { 0.8f, 0.3f, 0.4f, 0.8f });
 		} Renderer2D::EndScene();
 	}
@@ -72,9 +72,9 @@ public:
 		{
 			// triangle data
 			m_Triangle->MeshData = MakeRef<Mesh>();
-			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f, 1.0f }, { 0.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ {  0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f, 1.0f }, { 1.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ {  0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.5f, 0.f } });
+			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f }, { 0.f, 1.f } });
+			m_Triangle->MeshData->AddVertex({ {  0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f }, { 1.f, 1.f } });
+			m_Triangle->MeshData->AddVertex({ {  0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f }, { 0.5f, 0.f } });
 			m_Triangle->MeshData->AddIndices({ 0, 1, 2 });
 			m_Triangle->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
@@ -83,7 +83,7 @@ public:
 		//m_Square->SetRotation({ 0.f, 0.f, 80.f });
 		// square data
 		{
-			m_Square->MeshData = MeshLibrary::GetCubeSmooth();
+			m_Square->MeshData = MeshLibrary::GetCube();
 			//m_Square->MeshData->AddVertices({
 			//	{ {-1.0f,  1.0f, -0.5f} },
 			//	{ {-1.0f, -1.0f, -0.5f} },
@@ -111,16 +111,16 @@ public:
 			m_AxisCamera->MeshData = axisMesh;
 			// triangle vertex buffer
 			axisMesh->AddVertices({
-				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } },
-				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } }, 
-				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f, 1.0f }, { 0.f, 0.f } }, // red
-				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f, 1.0f }, { 0.f, 0.f } }, // red
-				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { 0.f, 0.f } }, // green
-				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { 0.f, 0.f } }, // green
-				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } }, 
-				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.f, 0.f } }, // blue
-				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f, 1.0f }, { 0.f, 0.f } }, // blue
-				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f, 1.0f }, { 0.f, 0.f } },
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } },
+				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } }, 
+				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f }, { 0.f, 0.f } }, // red
+				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f }, { 0.f, 0.f } }, // red
+				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f }, { 0.f, 0.f } }, // green
+				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f }, { 0.f, 0.f } }, // green
+				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } }, 
+				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f }, { 0.f, 0.f } }, // blue
+				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f }, { 0.f, 0.f } }, // blue
+				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } },
 			});
 			axisMesh->AddIndices({
 				0, 1, 2, 0, 2, 3,
@@ -134,10 +134,10 @@ public:
 
 		m_QuadMesh = MakeRef<Mesh>();
 		m_QuadMesh->AddQuad(
-			{ { -1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
-			{ { -1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
-			{ {  1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
-			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } }
+			{ { -1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f } },
+			{ { -1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 0.f, 1.f } },
+			{ {  1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 1.f, 0.f } }
 		);
 
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");

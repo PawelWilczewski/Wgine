@@ -108,7 +108,7 @@ namespace Wgine
 		//submitExtraUniforms(s_Data.UnlitTextureShader);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec4 &color)
+	void Renderer2D::DrawQuad(const glm::vec2 &location, float rotation, const glm::vec2 &scale, const glm::vec3 &color)
 	{
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), color);
 	}
@@ -118,7 +118,7 @@ namespace Wgine
 		DrawQuad(Transform(glm::vec3(-1.f, location.x, location.y), glm::vec3(rotation, 0.f, 0.f), glm::vec3(1.f, scale.x, scale.y)), texture, tiling, tint);
 	}
 
-	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec4 &color)
+	void Renderer2D::DrawQuad(const Transform &transform, const glm::vec3 &color)
 	{
 		WGINE_CORE_ASSERT(s_Data.ActiveScene, "Invalid active scene when creating quad!");
 
