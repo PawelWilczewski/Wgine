@@ -70,31 +70,30 @@ namespace Wgine
 
     static Ref<Mesh> s_Cube = MakeRef<Mesh>(s_CubeVertices, 24, s_CubeIndices, 36);
 
-    // flat shading below:
-    //static Vertex s_CubeVertices[8] = {
-    //    // -z side
-    //    { { -0.5f, -0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
-    //    { {  0.5f, -0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
-    //    { {  0.5f,  0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
-    //    { { -0.5f,  0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+    static Vertex s_CubeSmoothVertices[8] = {
+        // -z side
+        { { -0.5f, -0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
+        { {  0.5f, -0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
+        { {  0.5f,  0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
+        { { -0.5f,  0.5f, -0.5f }, { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
 
-    //    // +z side
-    //    { { -0.5f, -0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
-    //    { { -0.5f,  0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
-    //    { {  0.5f,  0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
-    //    { {  0.5f, -0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
-    //};
+        // +z side
+        { { -0.5f, -0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 0.f, 1.f } },
+        { { -0.5f,  0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 0.f, 0.f } },
+        { {  0.5f,  0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 1.f, 0.f } },
+        { {  0.5f, -0.5f, 0.5f },  { 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f } },
+    };
 
-    //static uint32_t s_CubeIndices[36] = {
-    //    0, 1, 2, 2, 3, 0,
-    //    4, 5, 6, 6, 7, 4,
-    //    1, 0, 4, 4, 7, 1,
-    //    5, 4, 0, 0, 3, 5,
-    //    5, 3, 2, 2, 6, 5,
-    //    7, 6, 2, 2, 1, 7
-    //};
+    static uint32_t s_CubeSmoothIndices[36] = {
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4,
+        1, 0, 4, 4, 7, 1,
+        5, 4, 0, 0, 3, 5,
+        5, 3, 2, 2, 6, 5,
+        7, 6, 2, 2, 1, 7
+    };
 
-	//static Ref<Mesh> s_Cube = MakeRef<Mesh>(s_CubeVertices, 8, s_CubeIndices, 36);
+	static Ref<Mesh> s_CubeSmooth = MakeRef<Mesh>(s_CubeSmoothVertices, 8, s_CubeSmoothIndices, 36);
     #pragma endregion
 
 	Ref<Mesh> MeshLibrary::Get(const std::string &filePath)
@@ -109,4 +108,5 @@ namespace Wgine
 
     Ref<Mesh>MeshLibrary::GetQuad() { return s_Quad; }
 	Ref<Mesh> MeshLibrary::GetCube() { return s_Cube; }
+    Ref<Mesh> MeshLibrary::GetCubeSmooth() { return s_CubeSmooth; }
 }

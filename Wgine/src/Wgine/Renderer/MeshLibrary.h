@@ -11,6 +11,7 @@ namespace Wgine
 
 		static Ref<Mesh> GetQuad();
 		static Ref<Mesh> GetCube();
+		static Ref<Mesh> GetCubeSmooth();
 		// TODO: add more shapes
 	};
 }

@@ -83,7 +83,7 @@ public:
 		//m_Square->SetRotation({ 0.f, 0.f, 80.f });
 		// square data
 		{
-			m_Square->MeshData = MeshLibrary::GetCube();
+			m_Square->MeshData = MeshLibrary::GetCubeSmooth();
 			//m_Square->MeshData->AddVertices({
 			//	{ {-1.0f,  1.0f, -0.5f} },
 			//	{ {-1.0f, -1.0f, -0.5f} },
