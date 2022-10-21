@@ -96,12 +96,12 @@ void main()
 {
 	io_Color = in_Color;
 	io_TexCoord = in_TexCoord;
-	io_Normal = in_Normal;
 	io_MaterialID = MaterialIDs[gl_VertexID];
 
 	Transform t = Transforms[TransformIDs[gl_VertexID]];
 	mat4 transform = translation(t.Location) * rotation3dZ(radians(t.Rotation[2])) * rotation3dY(radians(t.Rotation[1])) * rotation3dX(radians(t.Rotation[0])) * scale(t.Scale);
 
+	io_Normal = mat3(transpose(inverse(transform))) * in_Normal;
 	io_WorldPos = vec3(transform * vec4(t.Location, 1.0));
 	gl_Position = u_ViewProjection * transform * vec4(in_Position, 1.0);
 }
@@ -138,6 +138,8 @@ layout (std430, binding = 4) buffer ss_PointLights
 	PointLight PointLights[];
 };
 
+uniform vec3 u_CameraLocation;
+
 in vec3 io_Color;
 in vec2 io_TexCoord;
 in vec3 io_Normal;
@@ -166,17 +168,26 @@ void main()
 //
 //	out_Color = vec4(PointLights[0].Intensity);
 //	out_Color = vec4(PointLights[0].Color, 1.f);
-
+	
+	// diffuse color
     vec4 color = texture(TextureAt(1), io_TexCoord);
 
+	// ambient lighting
 	float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * PointLights[0].Color;
 
+	// diffuse lighting
 	vec3 lightDir = normalize(PointLights[0].Location - io_WorldPos); 
 	float diff = max(dot(io_Normal, lightDir), 0.0);
 	vec3 diffuse = diff * PointLights[0].Color;
 
-    out_Color = vec4(ambient + diffuse, 1.0) * color;
+	// specular lighting
+	vec3 viewDir = normalize(u_CameraLocation - io_WorldPos);
+	vec3 reflectDir = reflect(-lightDir, io_Normal); 
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // TODO: this is incorrect
+	vec3 specular = mat.Specular * spec * PointLights[0].Color;  
+
+    out_Color = vec4(ambient + diffuse + specular, 1.0) * color;
 
 
 //	else

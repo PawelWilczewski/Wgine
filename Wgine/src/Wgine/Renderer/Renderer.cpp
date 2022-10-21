@@ -147,6 +147,7 @@ namespace Wgine
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 			
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
+			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveScene->GetActiveCamera()->GetLocation());
 
 			// TODO: this should be uploaded only once at the start?
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
