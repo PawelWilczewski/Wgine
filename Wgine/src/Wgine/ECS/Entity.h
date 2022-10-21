@@ -57,10 +57,10 @@ namespace Wgine
 		const glm::vec3 GetUpVector() const { return m_Transform.GetUpVector(); }
 		const glm::mat4 &GetEntityMatrix() const { return m_EntityMatrix; }
 
-		void SetTransform(Transform t) { m_Transform = t; UpdateEntityMatrix(); }
-		void SetLocation(glm::vec3 location) { m_Transform.Location = location; UpdateEntityMatrix(); }
-		void SetRotation(glm::vec3 rotation) { m_Transform.Rotation = rotation; UpdateEntityMatrix(); }
-		void SetScale(glm::vec3 scale) { m_Transform.Scale = scale; UpdateEntityMatrix(); }
+		void SetTransform(const Transform &t) { m_Transform = t; UpdateEntityMatrix(); }
+		void SetLocation(const glm::vec3 &location) { m_Transform.Location = location; UpdateEntityMatrix(); }
+		void SetRotation(const glm::vec3 &rotation) { m_Transform.Rotation = rotation; UpdateEntityMatrix(); }
+		void SetScale(const glm::vec3 &scale) { m_Transform.Scale = scale; UpdateEntityMatrix(); }
 
 		// TEMP
 		Ref<Mesh> MeshData;

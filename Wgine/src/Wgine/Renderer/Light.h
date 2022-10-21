@@ -16,14 +16,15 @@ namespace Wgine
 		virtual LightType GetLightType() const { return LightType::None; }
 
 		Light() {}
-		Light(const Transform &t, float intensity = 1.f)
-			: m_Transform(t), m_Intensity(intensity)
+		Light(const Transform &t, float intensity = 1.f, glm::vec3 color = glm::vec3(1.f))
+			: m_Transform(t), m_Intensity(intensity), m_Color(color)
 		{}
 
 		virtual ~Light() {}; // = 0; TODO: how to achieve abstract class without linking errors?
 
 		// TODO: in the future this should be a part of transform component so this class is simplified and the actual ECS will improve performance
 		float GetIntensity() const { return m_Intensity; }
+		const glm::vec3 &GetColor() const { return m_Color; }
 		const Transform &GetTransform() const { return m_Transform; }
 		const glm::vec3 &GetLocation() const { return m_Transform.Location; }
 		// TODO: i.e. point light doesn't need rotation nor scale; we should implement some other class like DirectionalLight and that should include those (Area light/sun light etc.)
@@ -33,14 +34,16 @@ namespace Wgine
 		const glm::vec3 GetRightVector() const { return m_Transform.GetRightVector(); }
 		const glm::vec3 GetUpVector() const { return m_Transform.GetUpVector(); }
 
-		void SetIntensity(float intensity) { }
-		void SetTransform(Transform t) { m_Transform = t; }
-		void SetLocation(glm::vec3 location) { m_Transform.Location = location; }
-		void SetRotation(glm::vec3 rotation) { m_Transform.Rotation = rotation; }
-		void SetScale(glm::vec3 scale) { m_Transform.Scale = scale; }
+		void SetIntensity(float intensity) { m_Intensity = intensity; }
+		void SetColor(const glm::vec3 &color) { m_Color = color; }
+		void SetTransform(const Transform &t) { m_Transform = t; }
+		void SetLocation(const glm::vec3 &location) { m_Transform.Location = location; }
+		void SetRotation(const glm::vec3 &rotation) { m_Transform.Rotation = rotation; }
+		void SetScale(const glm::vec3 &scale) { m_Transform.Scale = scale; }
 
 	protected:
 		float m_Intensity = 1.f;
+		glm::vec3 m_Color = glm::vec3(1.f);
 		Transform m_Transform;
 	};
 
@@ -53,8 +56,8 @@ namespace Wgine
 		{
 		}
 
-		PointLight(const Transform &t, float intensity = 1.f)
-			: Light(t, intensity)
+		PointLight(const Transform &t, float intensity = 1.f, glm::vec3 color = glm::vec3(1.f))
+			: Light(t, intensity, color)
 		{
 		}
 
@@ -68,12 +71,14 @@ namespace Wgine
 			: Location(pointLight.GetLocation()),
 			  Rotation(pointLight.GetRotation()),
 			  Scale(pointLight.GetScale()),
-			  Intensity(pointLight.GetIntensity())
+			  Intensity(pointLight.GetIntensity()),
+			  Color(pointLight.GetColor())
 		{}
 
 		alignas(16) glm::vec3 Location;
 		alignas(16) glm::vec3 Rotation;
 		alignas(16) glm::vec3 Scale;
 		float Intensity;
+		alignas(16) glm::vec3 Color;
 	};
 }

@@ -122,6 +122,7 @@ struct PointLight
 	vec3 Rotation;
 	vec3 Scale;
 	float Intensity;
+	vec3 Color;
 };
 
 layout (std430, binding = 1) buffer ss_Materials
@@ -155,11 +156,19 @@ void main()
 //	out_Color = vec4(io_MaterialID / 5.0, io_MaterialID / 5.0 , io_MaterialID / 5.0, 1.0);
 
 	Material mat = Materials[io_MaterialID];
-//	if (mat.DiffuseTex >= 0)
-	out_Color = texture(TextureAt(0), io_TexCoord /* * u_Tiling */);
-	out_Color = vec4(io_Normal, 1.0);
 
-	out_Color = vec4(PointLights[0].Intensity);
+//	out_Color = texture(TextureAt(0), io_TexCoord /* * u_Tiling */);
+//	out_Color = vec4(io_Normal, 1.0);
+//
+//	out_Color = vec4(PointLights[0].Intensity);
+//	out_Color = vec4(PointLights[0].Color, 1.f);
+
+	float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * PointLights[0].Color;
+
+    vec4 result = texture(TextureAt(1), io_TexCoord) * vec4(ambient, 1.0);
+    out_Color = result;
+
 
 //	else
 //		out_Color = vec4(mat.Diffuse, 1.0);
