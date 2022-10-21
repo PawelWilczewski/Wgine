@@ -90,6 +90,7 @@ out vec3 io_Color;
 out vec2 io_TexCoord;
 out vec3 io_Normal;
 out flat int io_MaterialID;
+out vec3 io_WorldPos;
 
 void main()
 {
@@ -100,6 +101,8 @@ void main()
 
 	Transform t = Transforms[TransformIDs[gl_VertexID]];
 	mat4 transform = translation(t.Location) * rotation3dZ(radians(t.Rotation[2])) * rotation3dY(radians(t.Rotation[1])) * rotation3dX(radians(t.Rotation[0])) * scale(t.Scale);
+
+	io_WorldPos = vec3(transform * vec4(t.Location, 1.0));
 	gl_Position = u_ViewProjection * transform * vec4(in_Position, 1.0);
 }
 
@@ -139,6 +142,7 @@ in vec3 io_Color;
 in vec2 io_TexCoord;
 in vec3 io_Normal;
 in flat int io_MaterialID;
+in vec3 io_WorldPos;
 
 uniform sampler2D u_Texture[32];
 uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (in material array of vec2d?)
@@ -163,11 +167,16 @@ void main()
 //	out_Color = vec4(PointLights[0].Intensity);
 //	out_Color = vec4(PointLights[0].Color, 1.f);
 
+    vec4 color = texture(TextureAt(1), io_TexCoord);
+
 	float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * PointLights[0].Color;
 
-    vec4 result = texture(TextureAt(1), io_TexCoord) * vec4(ambient, 1.0);
-    out_Color = result;
+	vec3 lightDir = normalize(PointLights[0].Location - io_WorldPos); 
+	float diff = max(dot(io_Normal, lightDir), 0.0);
+	vec3 diffuse = diff * PointLights[0].Color;
+
+    out_Color = vec4(ambient + diffuse, 1.0) * color;
 
 
 //	else
