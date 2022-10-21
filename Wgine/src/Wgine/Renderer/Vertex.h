@@ -19,9 +19,9 @@ namespace Wgine
 			: Position(position), Color(color), TexCoord(texCoord)
 		{}
 
-		Vertex(const glm::vec3 &position, const glm::vec3 &normal = glm::vec3(0.f), const glm::vec3 &color = glm::vec3(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
-			: Position(position), Color(color), TexCoord(texCoord), Normal(normal)
-		{}
+		//Vertex(const glm::vec3 &position, const glm::vec3 &normal = glm::vec3(0.f), const glm::vec3 &color = glm::vec3(1.f), const glm::vec2 &texCoord = glm::vec2(0.f))
+		//	: Position(position), Color(color), TexCoord(texCoord), Normal(normal)
+		//{}
 
 		operator std::string() const {
 			std::ostringstream ss;

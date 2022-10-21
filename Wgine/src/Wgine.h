@@ -19,6 +19,7 @@
 #include "Wgine/Renderer/ShaderLibrary.h"
 #include "Wgine/Renderer/Mesh.h"
 #include "Wgine/Renderer/MeshLibrary.h"
+#include "Wgine/Renderer/Light.h"
 
 #include "Wgine/ECS/Scene.h"
 #include "Wgine/ECS/Entity.h"

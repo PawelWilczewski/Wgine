@@ -8,6 +8,7 @@
 #include "Wgine/Renderer/Mesh.h"
 #include "Wgine/Renderer/Vertex.h"
 #include "Wgine/Renderer/Material.h"
+#include "Wgine/Renderer/Light.h"
 
 namespace Wgine
 {
@@ -18,9 +19,17 @@ namespace Wgine
 	class RendererData
 	{
 	public:
-		Scene *ActiveScene = nullptr;
+		RendererData()
+		{
+			ActiveScene = nullptr;
+			m_TextureSlot = 0;
+		}
 
-	public:
+		void Init()
+		{
+			PointLightsSSBO = StorageBuffer::Create(sizeof(PointLightGPU) * 16);
+		}
+
 		// returns texture slot beginning at 0
 		uint8_t BindTexture(Ref<Texture2D> texture)
 		{
@@ -37,11 +46,15 @@ namespace Wgine
 
 		void ResetTextures()
 		{
-			m_Textures.empty();
 			m_TextureSlot = 0;
 		}
 
 		uint32_t GetFreeSlotsCount() const { return 32 - m_TextureSlot; }
+
+
+		void ResetLights() { m_PointLights.clear(); }
+		void AddPointLight(PointLight *l) { m_PointLights.push_back(*l); }
+		void UploadLights() { PointLightsSSBO->SetData(m_PointLights.data(), sizeof(PointLightGPU) * m_PointLights.size()); }
 
 	private:
 		// returns unsigned -1 (largest uint32) in case texture is not bound
@@ -51,9 +64,15 @@ namespace Wgine
 			return it == m_Textures.end() ? -1 : it - m_Textures.begin();
 		}
 
+	public:
+		Scene *ActiveScene = nullptr;
+		Ref<StorageBuffer> PointLightsSSBO;
+
 	private:
-		uint32_t m_TextureSlot = 0;
+		uint32_t m_TextureSlot;
 		std::array<Ref<Texture2D>, Renderer::s_TextureSlotsCount> m_Textures;
+
+		std::vector<PointLightGPU> m_PointLights;
 	};
 
 	static RendererData s_RendererData = RendererData();
@@ -66,7 +85,6 @@ namespace Wgine
 		PerShaderData(Ref<Shader> s)
 			: Shader(s), VAO(VertexArray::Create())
 		{
-			auto timeStart = Time::GetTimeSeconds();
 			Vertices.reserve(500000);
 			Indices.reserve(500000);
 			Materials.reserve(500);
@@ -162,12 +180,22 @@ namespace Wgine
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
 
+	static void SetupShaderSSBOs(Shader *shader)
+	{
+		shader->SetupStorageBuffer("ss_MaterialIDs", 0, s_ShaderData[shader->GetPath()].MaterialIDSSBO->GetPtr());
+		shader->SetupStorageBuffer("ss_Materials", 1, s_ShaderData[shader->GetPath()].MaterialSSBO->GetPtr());
+		shader->SetupStorageBuffer("ss_TransformIDs", 2, s_ShaderData[shader->GetPath()].TransformIDSSBO->GetPtr());
+		shader->SetupStorageBuffer("ss_Transforms", 3, s_ShaderData[shader->GetPath()].TransformSSBO->GetPtr());
+		shader->SetupStorageBuffer("ss_PointLights", 4, s_RendererData.PointLightsSSBO->GetPtr());
+	}
+
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
 		Renderer2D::Init();
 
 		s_ShaderData = std::unordered_map<std::string, PerShaderData>();
+		s_RendererData.Init();
 	}
 
 	void Renderer::Shutdown()
@@ -185,13 +213,19 @@ namespace Wgine
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 			shaderData.Reset(); // TODO: Im not sure this is where resetting should happen; perhaps after flushing (end scene?) makes sense?
 
+		// reset lights data ^ same thing to consider as above
+		s_RendererData.ResetLights();
+
 		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
 			Submit(*entity);
+
+		for (auto light : s_RendererData.ActiveScene->m_Lights)
+			Submit(light);
 	}
 
 	void Renderer::Submit(const SceneEntity &entity)
 	{
-		Renderer::Submit(entity.ShaderData, entity.MaterialData, entity.MeshData, entity.GetTransform());
+		Submit(entity.ShaderData, entity.MaterialData, entity.MeshData, entity.GetTransform());
 	}
 
 	// TODO: no need to keep references? just add to the resultant array that will be sent to the GPU (copying is necessary no matter what?)
@@ -208,10 +242,7 @@ namespace Wgine
 		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
 		{
 			s_ShaderData[shader->GetPath()] = PerShaderData(shader);
-			shader->SetupStorageBuffer("ss_MaterialIDs", 0, s_ShaderData[shader->GetPath()].MaterialIDSSBO->GetPtr());
-			shader->SetupStorageBuffer("ss_Materials", 1, s_ShaderData[shader->GetPath()].MaterialSSBO->GetPtr());
-			shader->SetupStorageBuffer("ss_TransformIDs", 2, s_ShaderData[shader->GetPath()].TransformIDSSBO->GetPtr());
-			shader->SetupStorageBuffer("ss_Transforms", 3, s_ShaderData[shader->GetPath()].TransformSSBO->GetPtr());
+			SetupShaderSSBOs(shader.get());
 		}
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
@@ -251,8 +282,26 @@ namespace Wgine
 			shaderData.MaterialIDs.push_back(index);
 	}
 
+	void Renderer::Submit(Light *light)
+	{
+		switch (light->GetLightType())
+		{
+		case Light::LightType::PointLight:
+		{
+			auto pointLight = static_cast<PointLight *>(light);
+			s_RendererData.AddPointLight(pointLight);
+			break;
+		}
+		default:
+			WGINE_CORE_ASSERT(false, "Invalid light type / not implemented light type!");
+			break;
+		}
+	}
+
 	void Renderer::EndScene()
 	{
+		s_RendererData.UploadLights();
+
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 			Flush(shaderData);
 	}

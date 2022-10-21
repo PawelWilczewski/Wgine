@@ -4,6 +4,7 @@
 #include "Wgine/Camera/Camera.h"
 #include "Wgine/Renderer/Shader.h"
 #include "Wgine/ECS/Scene.h"
+#include "Wgine/Renderer/Light.h"
 
 namespace Wgine
 {
@@ -24,6 +25,7 @@ namespace Wgine
 		static void BeginScene(Scene *scene);
 		static void Submit(const SceneEntity &entity);
 		static void Submit(Ref<Shader> shader, Ref<Material> material, Ref<Mesh> mesh, const Transform &transform);
+		static void Submit(Light *light);
 		static void EndScene();
 
 		static void Flush(PerShaderData &data);

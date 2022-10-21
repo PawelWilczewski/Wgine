@@ -15,6 +15,7 @@ namespace Wgine
 		friend class Scene;
 	public:
 		Entity() {}
+		virtual ~Entity() {}
 
 	protected:
 		virtual void OnStart() {}
@@ -37,28 +38,24 @@ namespace Wgine
 	class SceneEntity : public Entity
 	{
 	public:
-		SceneEntity()
-			: m_Transform(Transform())
-		{
-			UpdateEntityMatrix();
-		}
-
-		SceneEntity(Transform transform)
+		SceneEntity(const Transform &transform = Transform())
 			: m_Transform(transform)
 		{
 			UpdateEntityMatrix();
 		}
 
+		virtual ~SceneEntity() {}
+
 	public:
 		// TODO: in the future this should be a part of transform component so this class is simplified and the actual ECS will improve performance
 		const Transform &GetTransform() const { return m_Transform; }
-		const glm::mat4 &GetEntityMatrix() const { return m_EntityMatrix; }
 		const glm::vec3 &GetLocation() const { return m_Transform.Location; }
 		const glm::vec3 &GetRotation() const { return m_Transform.Rotation; }
 		const glm::vec3 &GetScale() const { return m_Transform.Scale; }
 		const glm::vec3 GetForwardVector() const { return m_Transform.GetForwardVector(); }
 		const glm::vec3 GetRightVector() const { return m_Transform.GetRightVector(); }
 		const glm::vec3 GetUpVector() const { return m_Transform.GetUpVector(); }
+		const glm::mat4 &GetEntityMatrix() const { return m_EntityMatrix; }
 
 		void SetTransform(Transform t) { m_Transform = t; UpdateEntityMatrix(); }
 		void SetLocation(glm::vec3 location) { m_Transform.Location = location; UpdateEntityMatrix(); }
@@ -71,6 +68,7 @@ namespace Wgine
 		Ref<Material> MaterialData = MakeRef<Material>();
 
 	protected:
+		// TODO: probably get rid of the entity matrix as we update everything on the shader side
 		virtual void UpdateEntityMatrix() { m_EntityMatrix = m_Transform.ToModelMatrix(); }
 
 	protected:

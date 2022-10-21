@@ -68,6 +68,8 @@ public:
 		m_Scene->SetActiveCamera(m_Camera);
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
+		auto pointLight = m_Scene->ConstructLight<PointLight>(Transform({ 1.f, 3.f, 4.f }), 0.4f);
+
 		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
 		{
 			// triangle data

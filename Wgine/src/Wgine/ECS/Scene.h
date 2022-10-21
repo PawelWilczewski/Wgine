@@ -31,17 +31,27 @@ namespace Wgine
 		inline T *ConstructEntity(Args &&...args)
 		{
 			static_assert(std::is_base_of<Entity, T>::value, "Cannot construct class not deriving from Entity!"); // TODO: when switched c++ 20 use constraints and concepts? https://en.cppreference.com/w/cpp/language/constraints
-			T *entity = new T(std::forward<Args>(args)...);
+			T *entity = new T(std::forward<Args>(args)...); // TODO: wtf? shouldnt we use unique pointers here instead?
 			entity->m_Scene = this;
-			m_Entities.push_back(entity); // TODO: system where resizing entities happens in increments of 10/20/100 or so?
-			if (auto scenEntity = dynamic_cast<SceneEntity *>(entity))
-				m_SceneEntities.push_back(scenEntity);
+			m_Entities.push_back(entity);
+			if (auto sceneEntity = dynamic_cast<SceneEntity *>(entity))
+				m_SceneEntities.push_back(sceneEntity);
 			return entity;
+		}
+
+		template <typename T, typename ...Args>
+		inline T *ConstructLight(Args &&...args)
+		{
+			static_assert(std::is_base_of<Light, T>::value, "Cannot construct class not deriving from Light!"); // TODO: when switched c++ 20 use constraints and concepts? https://en.cppreference.com/w/cpp/language/constraints
+			T *light = new T(std::forward<Args>(args)...); // TODO: wtf? shouldnt we use unique pointers here instead?
+			m_Lights.push_back(light);
+			return light;
 		}
 
 	public:
 		std::vector<Entity *> m_Entities;
 		std::vector<SceneEntity *> m_SceneEntities; // subset of entities which are sceneentities
+		std::vector<class Light *> m_Lights;
 		//std::vector<Entity *> m_EventPropagateEntities; // TODO: implement this if performance is bad for looping through all entities
 		float m_DeltaSeconds;
 		Camera *m_ActiveCamera;
