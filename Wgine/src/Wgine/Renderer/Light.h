@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Wgine/ECS/Entity.h"
+#include "Wgine/Core/Transform.h"
 
 namespace Wgine
 {
@@ -20,12 +20,13 @@ namespace Wgine
 			: m_Transform(t), m_Intensity(intensity)
 		{}
 
-		virtual ~Light() = 0;
+		virtual ~Light() {}; // = 0; TODO: how to achieve abstract class without linking errors?
 
 		// TODO: in the future this should be a part of transform component so this class is simplified and the actual ECS will improve performance
 		float GetIntensity() const { return m_Intensity; }
 		const Transform &GetTransform() const { return m_Transform; }
 		const glm::vec3 &GetLocation() const { return m_Transform.Location; }
+		// TODO: i.e. point light doesn't need rotation nor scale; we should implement some other class like DirectionalLight and that should include those (Area light/sun light etc.)
 		const glm::vec3 &GetRotation() const { return m_Transform.Rotation; }
 		const glm::vec3 &GetScale() const { return m_Transform.Scale; }
 		const glm::vec3 GetForwardVector() const { return m_Transform.GetForwardVector(); }
