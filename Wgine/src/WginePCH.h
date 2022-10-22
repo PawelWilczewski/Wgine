@@ -5,6 +5,8 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include <string>
 #include <sstream>

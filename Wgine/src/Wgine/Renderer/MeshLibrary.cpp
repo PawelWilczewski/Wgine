@@ -106,7 +106,76 @@ namespace Wgine
 		//return s_FileLibrary[filePath] = Mesh::Create(filePath);
 	}
 
-    Ref<Mesh>MeshLibrary::GetQuad() { return s_Quad; }
+    Ref<Mesh> MeshLibrary::GetQuad() { return s_Quad; }
 	Ref<Mesh> MeshLibrary::GetCube() { return s_Cube; }
     Ref<Mesh> MeshLibrary::GetCubeSmooth() { return s_CubeSmooth; }
+    Ref<Mesh> MeshLibrary::GetSphere(uint32_t slices, uint32_t stacks)
+    {
+        // source: https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html
+
+        auto mesh = MakeRef<Mesh>();
+
+        // top vertex
+        Vertex topV = { { 0.f, 1.f, 0.f } };
+        uint32_t topIndex = mesh->GetVertices().size();
+        mesh->AddVertex(topV);
+
+        // stack / slice verts
+        for (int i = 0; i < stacks - 1; i++)
+        {
+            auto phi = M_PI * (float)(i + 1) / stacks;
+            for (int j = 0; j < slices; j++)
+            {
+                auto theta = 2.f * M_PI * j / (float) slices;
+                auto x = glm::sin(phi) * glm::cos(theta);
+                auto y = glm::cos(phi);
+                auto z = glm::sin(phi) * glm::sin(theta);
+                mesh->AddVertex({ {x, y, z} });
+            }
+        }
+
+        // bottom vertex
+        Vertex bottomV = { { 0.f, -1.f, 0.f } };
+        uint32_t bottomIndex = mesh->GetVertices().size();
+        mesh->AddVertex(bottomV);
+
+        // top / bottom tris
+        for (int i = 0; i < slices; i++)
+        {
+            auto i0 = i + 1;
+            auto i1 = (i + 1) % slices + 1;
+            mesh->AddIndex(i0);
+            mesh->AddIndex(i1);
+            mesh->AddIndex(topIndex);
+            i0 = i + slices * (stacks - 2) + 1;
+            i1 = (i + 1) % slices + slices * (stacks - 2) + 1;
+            mesh->AddIndex(i1);
+            mesh->AddIndex(i0);
+            mesh->AddIndex(bottomIndex);
+        }
+
+        // in-between quads (tris)
+        for (int j = 0; j < stacks - 2; j++)
+        {
+            auto j0 = j * slices + 1;
+            auto j1 = (j + 1) * slices + 1;
+            for (int i = 0; i < slices; i++)
+            {
+                auto i0 = j0 + i;
+                auto i1 = j0 + (i + 1) % slices;
+                auto i2 = j1 + (i + 1) % slices;
+                auto i3 = j1 + i;
+                mesh->AddIndex(i2);
+                mesh->AddIndex(i1);
+                mesh->AddIndex(i0);
+                mesh->AddIndex(i0);
+                mesh->AddIndex(i3);
+                mesh->AddIndex(i2);
+            }
+        }
+
+        mesh->RecalculateNormals();
+
+        return mesh;
+    }
 }

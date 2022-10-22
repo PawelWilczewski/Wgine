@@ -4,6 +4,7 @@
 
 namespace Wgine
 {
+	// TODO: should create some MeshGenerator class and thus Mesh will be read-only so that returned cube cant be messed up by the user etc.
 	class MeshLibrary
 	{
 	public:
@@ -12,6 +13,8 @@ namespace Wgine
 		static Ref<Mesh> GetQuad();
 		static Ref<Mesh> GetCube();
 		static Ref<Mesh> GetCubeSmooth();
+
+		static Ref<Mesh> GetSphere(uint32_t slices = 32U, uint32_t stacks = 32U);
 		// TODO: add more shapes
 	};
 }

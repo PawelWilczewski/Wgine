@@ -99,11 +99,14 @@ void main()
 	io_MaterialID = MaterialIDs[gl_VertexID];
 
 	Transform t = Transforms[TransformIDs[gl_VertexID]];
-	mat4 transform = translation(t.Location) * rotation3dZ(radians(t.Rotation[2])) * rotation3dY(radians(t.Rotation[1])) * rotation3dX(radians(t.Rotation[0])) * scale(t.Scale);
+	mat4 model = translation(t.Location) * rotation3dZ(radians(t.Rotation[2])) * rotation3dY(radians(t.Rotation[1])) * rotation3dX(radians(t.Rotation[0])) * scale(t.Scale);
 
-	io_Normal = mat3(transpose(inverse(transform))) * in_Normal;
-	io_WorldPos = vec3(transform * vec4(t.Location, 1.0));
-	gl_Position = u_ViewProjection * transform * vec4(in_Position, 1.0);
+	vec4 worldPosition = model * vec4(in_Position, 1.0);
+
+//	io_Normal = in_Normal;
+	io_Normal = mat3(transpose(inverse(model))) * in_Normal;
+	io_WorldPos = vec3(worldPosition);
+	gl_Position = u_ViewProjection * worldPosition;
 }
 
 #type fragment
@@ -168,9 +171,11 @@ void main()
 //
 //	out_Color = vec4(PointLights[0].Intensity);
 //	out_Color = vec4(PointLights[0].Color, 1.f);
-	
+
+	vec3 normal = normalize(io_Normal);
+
 	// diffuse color
-    vec4 color = texture(TextureAt(1), io_TexCoord);
+    vec4 color = vec4(1.f);//texture(TextureAt(1), io_TexCoord);
 
 	// ambient lighting
 	float ambientStrength = 0.1;
@@ -178,17 +183,17 @@ void main()
 
 	// diffuse lighting
 	vec3 lightDir = normalize(PointLights[0].Location - io_WorldPos); 
-	float diff = max(dot(io_Normal, lightDir), 0.0);
+	float diff = max(dot(normal, lightDir), 0.0);
 	vec3 diffuse = diff * PointLights[0].Color;
 
 	// specular lighting
 	vec3 viewDir = normalize(u_CameraLocation - io_WorldPos);
-	vec3 reflectDir = reflect(-lightDir, io_Normal); 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // TODO: this is incorrect
-	vec3 specular = mat.Specular * spec * PointLights[0].Color;  
+	vec3 reflectDir = reflect(-lightDir, normal); 
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // TODO: this is incorrect?
+	vec3 specular = mat.Specular * spec * PointLights[0].Color;
 
-    out_Color = vec4(ambient + diffuse + specular, 1.0) * color;
-
+    out_Color = vec4(vec3(PointLights[0].Intensity) * (ambient + diffuse + specular), 1.0) * color;
+//	out_Color = vec4(normal, 1.0);
 
 //	else
 //		out_Color = vec4(mat.Diffuse, 1.0);

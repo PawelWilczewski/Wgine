@@ -68,40 +68,22 @@ public:
 		m_Scene->SetActiveCamera(m_Camera);
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
-		auto pointLight = m_Scene->ConstructLight<PointLight>(Transform({ 1.f, 3.f, 4.f }), 0.4f);
+		auto lightTransform = Transform({ 1.f, 3.f, 4.f });
+		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(0.2f, 0.8f, 0.8f));
+		auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransform);
+		lightVis->MeshData = MeshLibrary::GetSphere();
+		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 
-		m_Triangle = m_Scene->ConstructEntity<SceneEntity>();
-		{
-			// triangle data
-			m_Triangle->MeshData = MakeRef<Mesh>();
-			m_Triangle->MeshData->AddVertex({ { -0.5f, -0.5f, 0.0f }, { 0.8f, 0.1f, 0.2f }, { 0.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ {  0.5f, -0.5f, 0.0f }, { 0.1f, 0.8f, 0.4f }, { 1.f, 1.f } });
-			m_Triangle->MeshData->AddVertex({ {  0.0f,  0.5f, 0.0f }, { 0.2f, 0.5f, 0.9f }, { 0.5f, 0.f } });
-			m_Triangle->MeshData->AddIndices({ 0, 1, 2 });
-			m_Triangle->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-		}
+		auto sphere = m_Scene->ConstructEntity<SceneEntity>();
+		sphere->MeshData = MeshLibrary::GetCubeSmooth();
+		sphere->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		sphere->SetLocation({ 3.f, 0.f, 0.f });
 
-		m_Square = m_Scene->ConstructEntity<SceneEntity>();
-		//m_Square->SetRotation({ 0.f, 0.f, 80.f });
-		// square data
-		{
-			m_Square->MeshData = MeshLibrary::GetCube();
-			//m_Square->MeshData->AddVertices({
-			//	{ {-1.0f,  1.0f, -0.5f} },
-			//	{ {-1.0f, -1.0f, -0.5f} },
-			//	{ { 1.0f, -1.0f, -0.5f} },
-			//	{ { 1.0f,  1.0f, -0.5f} },
-			//	{ { 1.0f, -1.0f,  0.2f} },
-			//	{ { 1.0f, -1.0f,  0.8f} },
-			//	{ { 1.0f,  1.0f,  0.8f} },
-			//	{ { 1.0f,  1.0f,  0.2f} },
-			//	});
-			//m_Square->MeshData->AddIndices({ 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 });
-			//for (int y = 0; y < 500; y++)
-			//	for (int x = 0; x < 50; x++)
-			//		m_Square->MeshData->AddQuad({ { x * 3.f, 1.f + y * 3.f, 0.f } }, { { x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, -1.f + y * 3.f, 0.f } }, { { 2.f + x * 3.f, 1.f + y * 3.f, 0.f } });
-			m_Square->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-		}
+		auto cube = m_Scene->ConstructEntity<SceneEntity>();
+		cube->MeshData = MeshLibrary::GetSphere();
+		cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		cube->SetLocation({ -2.f, 0.f, 1.f });
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
 		m_AxisCamera = m_Scene->ConstructEntity<SceneEntity>();
@@ -134,14 +116,6 @@ public:
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
 
-		m_QuadMesh = MakeRef<Mesh>();
-		m_QuadMesh->AddQuad(
-			{ { -1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f } },
-			{ { -1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 0.f, 1.f } },
-			{ {  1.0f, -1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 0.f, 0.f } },
-			{ {  1.0f,  1.0f, 0.f }, { 1.f, 1.f, 1.f }, { 1.f, 0.f } }
-		);
-
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
 		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 
@@ -161,24 +135,17 @@ public:
 	virtual void OnUpdate(const float &deltaSeconds) override
 	{
 		m_Scene->OnTick(deltaSeconds);
-		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1 });
+		RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.f });
 		RenderCommand::Clear();
 
 		m_AxisCamera->SetTransform({
 			m_Camera->GetLocation() + m_Camera->GetForwardVector() * 0.2f + m_Camera->GetUpVector() * 0.04f + m_Camera->GetRightVector() * 0.10f,
 			{ 0.f, 0.f, 0.f },
 			{ 0.03f, 0.03f, 0.03f }
-			});
+		});
 
 		Renderer::BeginScene(m_Scene.get()); {
-			//for (int y = 0; y < 200; y++)
-			//{
-			//	for (int x = 0; x < 200; x++)
-			//		Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform(glm::vec3(3.f + 2.5f * x, 3.f + 2.5f * y, y * 1.f + x * 1.f)));
-			//}
 
-			//Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 5.f, -6.f, 2.f }, { 0.f, -90.f, 0.f }, { 5.f, 5.f, 5.f }));
-			//Renderer::Submit(ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl"), m_BaseMaterial, m_QuadMesh, Transform({ 0.f, -10.f, 2.f }, { 0.f, -90.f, -90.f }, { 5.f, 5.f, 5.f }));
 		} Renderer::EndScene();
 	}
 
@@ -208,11 +175,8 @@ private:
 
 	Ref<Scene> m_Scene;
 	Camera *m_Camera;
-	SceneEntity *m_Triangle;
-	SceneEntity *m_Square;
 	SceneEntity *m_Axis;
 	SceneEntity *m_AxisCamera;
-	Ref<Mesh> m_QuadMesh;
 
 	Ref<Material> m_BaseMaterial;
 
