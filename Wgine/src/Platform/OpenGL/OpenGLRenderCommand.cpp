@@ -10,7 +10,7 @@ namespace Wgine
 {
 	RenderCommand *RenderCommand::s_Instance = new OpenGLRenderCommand();
 
-#ifdef WGINE_DEBUG
+#if defined WGINE_DEBUG || defined WGINE_RELEASE
 	static void GLAPIENTRY errorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 	{
 		std::string_view sev;
@@ -124,7 +124,7 @@ namespace Wgine
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifdef WGINE_DEBUG
+#if defined WGINE_DEBUG || defined WGINE_RELEASE
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback(errorCallback, 0);
 #endif
@@ -148,5 +148,10 @@ namespace Wgine
 	void OpenGLRenderCommand::DrawIndexedImpl(const Ref<VertexArray> &vertexArray, uint32_t count)
 	{
 		glDrawElements(GL_TRIANGLES, count == 0 ? vertexArray->GetIndexBuffer()->GetCount() : count, GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLRenderCommand::DrawLinesImpl(uint32_t count, uint32_t offsetCount)
+	{
+		glDrawArrays(GL_LINES, offsetCount, count);
 	}
 }

@@ -13,5 +13,6 @@ namespace Wgine
 		virtual void ClearImpl() override;
 
 		virtual void DrawIndexedImpl(const Ref<VertexArray> &vertexArray, uint32_t count) override;
+		virtual void DrawLinesImpl(uint32_t count, uint32_t offsetCount) override;
 	};
 }

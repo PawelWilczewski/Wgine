@@ -66,6 +66,7 @@ namespace Wgine
 		Ref<Mesh> MeshData;
 		Ref<Shader> ShaderData;
 		Ref<Material> MaterialData = MakeRef<Material>();
+		void DebugDrawNormals(float size = 0.1f) const;
 
 	protected:
 		// TODO: probably get rid of the entity matrix as we update everything on the shader side

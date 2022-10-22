@@ -9,6 +9,7 @@
 #include "Wgine/Renderer/Vertex.h"
 #include "Wgine/Renderer/Material.h"
 #include "Wgine/Renderer/Light.h"
+#include "Wgine/Renderer/RendererDebug.h"
 
 namespace Wgine
 {
@@ -146,13 +147,13 @@ namespace Wgine
 			MaterialSSBO->SetData(materialsData.get(), sizeof(MaterialGPU) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 			
+			Shader->Bind();
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
 			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveScene->GetActiveCamera()->GetLocation());
 
 			// TODO: this should be uploaded only once at the start?
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
 
-			Shader->Bind();
 			VAO->Bind();
 			IBO->Bind();
 			VBO->Bind();
@@ -194,6 +195,7 @@ namespace Wgine
 	{
 		RenderCommand::Init();
 		Renderer2D::Init();
+		RendererDebug::Init();
 
 		s_ShaderData = std::unordered_map<std::string, PerShaderData>();
 		s_RendererData.Init();
@@ -209,6 +211,7 @@ namespace Wgine
 		WGINE_CORE_ASSERT(scene, "Invalid scene for renderer!");
 
 		s_RendererData.ActiveScene = scene;
+		RendererDebug::SetCamera(scene->GetActiveCamera());
 
 		// reset shader data
 		for (auto &[shaderName, shaderData] : s_ShaderData)
@@ -305,6 +308,8 @@ namespace Wgine
 
 		for (auto &[shaderName, shaderData] : s_ShaderData)
 			Flush(shaderData);
+
+		RendererDebug::Flush();
 	}
 
 	void Renderer::Flush(PerShaderData &data)

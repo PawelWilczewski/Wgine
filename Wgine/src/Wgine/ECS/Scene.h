@@ -22,7 +22,7 @@ namespace Wgine
 
 		void SetActiveCamera(Camera *camera) { m_ActiveCamera = camera; }
 		glm::mat4 GetViewProjectionMatrix() const { return m_ActiveCamera->GetViewProjectionMatrix(); }
-		const Camera *GetActiveCamera() const { return m_ActiveCamera; }
+		Camera *GetActiveCamera() const { return m_ActiveCamera; }
 
 	public:
 		float GetDeltaSeconds() const { return m_DeltaSeconds; }

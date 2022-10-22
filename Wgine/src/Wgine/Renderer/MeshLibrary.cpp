@@ -174,7 +174,7 @@ namespace Wgine
             }
         }
 
-        mesh->RecalculateNormals();
+        mesh->RecalculateNormals(); // TODO: debug normals by drawing them (legacy ogl2 thingy?)
 
         return mesh;
     }

@@ -75,15 +75,15 @@ public:
 		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 
-		auto sphere = m_Scene->ConstructEntity<SceneEntity>();
-		sphere->MeshData = MeshLibrary::GetCubeSmooth();
-		sphere->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-		sphere->SetLocation({ 3.f, 0.f, 0.f });
+		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
+		m_Cube->MeshData = MeshLibrary::GetCubeSmooth();
+		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
 
-		auto cube = m_Scene->ConstructEntity<SceneEntity>();
-		cube->MeshData = MeshLibrary::GetSphere();
-		cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-		cube->SetLocation({ -2.f, 0.f, 1.f });
+		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
+		m_Sphere->MeshData = MeshLibrary::GetSphere(16, 16);
+		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		m_Sphere->SetLocation({ -2.f, 0.f, 1.f });
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
 		m_AxisCamera = m_Scene->ConstructEntity<SceneEntity>();
@@ -146,6 +146,9 @@ public:
 
 		Renderer::BeginScene(m_Scene.get()); {
 
+			m_Sphere->DebugDrawNormals();
+			m_Cube->DebugDrawNormals();
+
 		} Renderer::EndScene();
 	}
 
@@ -177,6 +180,8 @@ private:
 	Camera *m_Camera;
 	SceneEntity *m_Axis;
 	SceneEntity *m_AxisCamera;
+	SceneEntity *m_Sphere;
+	SceneEntity *m_Cube;
 
 	Ref<Material> m_BaseMaterial;
 
