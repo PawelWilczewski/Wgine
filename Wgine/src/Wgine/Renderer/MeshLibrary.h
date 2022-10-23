@@ -11,8 +11,7 @@ namespace Wgine
 		static Ref<Mesh> Get(const std::string &filePath); // TODO: <- implement mesh file import
 
 		static Ref<Mesh> GetQuad();
-		static Ref<Mesh> GetCube();
-		static Ref<Mesh> GetCubeSmooth();
+		static Ref<Mesh> GetCube(bool smooth = false);
 
 		static Ref<Mesh> GetSphere(uint32_t slices = 32U, uint32_t stacks = 32U);
 		// TODO: add more shapes

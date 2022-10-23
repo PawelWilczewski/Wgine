@@ -76,8 +76,7 @@ public:
 		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
-		m_Cube->MeshData = MeshLibrary::GetCubeSmooth();
-		m_Cube->MeshData->RecalculateNormals(true);
+		m_Cube->MeshData = MeshLibrary::GetCube(true);
 		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
 
@@ -88,31 +87,59 @@ public:
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
 		m_AxisCamera = m_Scene->ConstructEntity<SceneEntity>();
-		m_AxisCamera->SetLocation({ 1.f, 2.f, 2.f });
 		// axis data
 		{
 			auto axisMesh = MakeRef<Mesh>();
 			m_Axis->MeshData = axisMesh;
 			m_AxisCamera->MeshData = axisMesh;
-			// triangle vertex buffer
-			axisMesh->AddVertices({
-				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } },
-				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } }, 
-				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f }, { 0.f, 0.f } }, // red
-				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f }, { 0.f, 0.f } }, // red
-				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f }, { 0.f, 0.f } }, // green
-				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f }, { 0.f, 0.f } }, // green
-				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } }, 
-				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f }, { 0.f, 0.f } }, // blue
-				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f }, { 0.f, 0.f } }, // blue
-				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f }, { 0.f, 0.f } },
-			});
-			axisMesh->AddIndices({
-				0, 1, 2, 0, 2, 3,
-				0, 4, 5, 5, 9, 0,
-				0, 6, 7, 7, 8, 6
-			});
+			// red (x) front
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f } },
+				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f } }
+			);
+			// red (x) reverse
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 1.0f,  0.0f, 0.0f }, { 0.9f, 0.2f, 0.3f } },
+				{ { 1.0f,  0.1f, 0.0f }, { 0.9f, 0.2f, 0.3f } },
+				{ { 0.0f,  0.1f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
+			);
 
+			// green (y) front
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f } },
+				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f } }
+			);
+
+			// green (y) reverse
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.0f,  1.0f, 0.0f }, { 0.5f, 0.8f, 0.2f } },
+				{ { 0.0f,  1.0f, 0.1f }, { 0.5f, 0.8f, 0.2f } },
+				{ { 0.0f,  0.0f, 0.1f }, { 0.0f, 0.0f, 0.0f } }
+			);
+
+			// blue (z) front
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f } },
+				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f } }
+			);
+
+			// blue (z) reverse
+			axisMesh->AddQuad(
+				{ { 0.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				{ { 0.0f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f } },
+				{ { 0.1f,  0.0f, 1.0f }, { 0.2f, 0.5f, 0.9f } },
+				{ { 0.1f,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
+			);
+
+			m_Axis->MeshData->RecalculateNormals();
 			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		}
@@ -149,6 +176,7 @@ public:
 
 			m_Sphere->DebugDrawNormals();
 			m_Cube->DebugDrawNormals();
+			m_Axis->DebugDrawNormals();
 
 		} Renderer::EndScene();
 	}

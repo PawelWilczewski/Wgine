@@ -17,7 +17,7 @@ namespace Wgine
         0, 1, 2, 2, 3, 0,
     };
 
-    static Ref<Mesh> s_Quad = MakeRef<Mesh>(s_QuadVertices, 4, s_QuadIndices, 6);
+    static Ref<Mesh> s_Quad = MakeRef<Mesh>(s_QuadVertices, 4, s_QuadIndices, 6, true);
     #pragma endregion
 
     #pragma region Cube
@@ -68,7 +68,7 @@ namespace Wgine
         20, 21, 22, 22, 23, 20, // +y side
 	};
 
-    static Ref<Mesh> s_Cube = MakeRef<Mesh>(s_CubeVertices, 24, s_CubeIndices, 36);
+    static Ref<Mesh> s_Cube = MakeRef<Mesh>(s_CubeVertices, 24, s_CubeIndices, 36, true);
 
     static Vertex s_CubeSmoothVertices[8] = {
         // -z side
@@ -93,7 +93,7 @@ namespace Wgine
         5, 3, 2, 2, 6, 5, // +y side
     };
 
-	static Ref<Mesh> s_CubeSmooth = MakeRef<Mesh>(s_CubeSmoothVertices, 8, s_CubeSmoothIndices, 36);
+	static Ref<Mesh> s_CubeSmooth = MakeRef<Mesh>(s_CubeSmoothVertices, 8, s_CubeSmoothIndices, 36, true);
     #pragma endregion
 
 	Ref<Mesh> MeshLibrary::Get(const std::string &filePath)
@@ -107,8 +107,7 @@ namespace Wgine
 	}
 
     Ref<Mesh> MeshLibrary::GetQuad() { return s_Quad; }
-	Ref<Mesh> MeshLibrary::GetCube() { return s_Cube; }
-    Ref<Mesh> MeshLibrary::GetCubeSmooth() { return s_CubeSmooth; }
+	Ref<Mesh> MeshLibrary::GetCube(bool smooth) { return smooth ? s_CubeSmooth: s_Cube; }
     Ref<Mesh> MeshLibrary::GetSphere(uint32_t slices, uint32_t stacks)
     {
         // source: https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html
@@ -177,11 +176,7 @@ namespace Wgine
             }
         }
 
-        //for (auto &vert : mesh->GetVertices())
-        //    vert.Normal = glm::normalize(vert.Position);
-
-        //mesh->RecalculateNormals();
-
+        // normals have been calculated on the go for a tiny boost in performance
         return mesh;
     }
 }
