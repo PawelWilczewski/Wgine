@@ -17,11 +17,10 @@ namespace Wgine
 		Mesh(Vertex *triVertices, uint32_t verticesCount, uint32_t *indices, uint32_t indicesCount)
 			: m_Vertices(triVertices, triVertices + verticesCount), m_Indices(indices, indices + indicesCount)
 		{
-			RecalculateNormals();
 		}
 
-		const std::vector<Vertex> &GetVertices() const { return m_Vertices; }
-		const std::vector<uint32_t> &GetIndices() const { return m_Indices; }
+		std::vector<Vertex> GetVertices() const { return m_Vertices; }
+		std::vector<uint32_t> GetIndices() const { return m_Indices; }
 
 		void AddVertex(const Vertex &v) { m_Vertices.push_back(v); }
 		void AddVertices(std::vector<Vertex> v) { m_Vertices.insert(m_Vertices.end(), v.begin(), v.end()); }
@@ -42,11 +41,8 @@ namespace Wgine
 			m_Indices.insert(m_Indices.end(), { nextIndex, nextIndex + 1, nextIndex + 2, nextIndex + 2, nextIndex + 3, nextIndex });
 		}
 
-		// must share vertices
-		void RecalculateNormals();
-
-		// must not share vertices
-		void RecalculateNormalsFlat();
+		// must share vertices for smooth and must not for flat
+		void RecalculateNormals(bool smooth);
 
 	private:
 		std::vector<Vertex> m_Vertices;

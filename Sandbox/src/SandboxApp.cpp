@@ -77,6 +77,7 @@ public:
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
 		m_Cube->MeshData = MeshLibrary::GetCubeSmooth();
+		m_Cube->MeshData->RecalculateNormals(true);
 		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
 		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
 

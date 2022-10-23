@@ -42,6 +42,9 @@ namespace Wgine
 
 	void RendererDebug::Flush()
 	{
+		if (s_RendererData.LineVerts.size() == 0)
+			return;
+
 		// upload data
 		s_RendererData.VBO->SetData(s_RendererData.LineVerts.data(), sizeof(Vertex) * s_RendererData.LineVerts.size());
 

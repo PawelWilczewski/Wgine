@@ -21,9 +21,8 @@ namespace Wgine
 	{
 	public:
 		RendererData()
+			: m_TextureSlot(0), ActiveScene(nullptr), m_PointLights(std::vector<PointLightGPU>())
 		{
-			ActiveScene = nullptr;
-			m_TextureSlot = 0;
 		}
 
 		void Init()
@@ -51,7 +50,6 @@ namespace Wgine
 		}
 
 		uint32_t GetFreeSlotsCount() const { return 32 - m_TextureSlot; }
-
 
 		void ResetLights() { m_PointLights.clear(); }
 		void AddPointLight(PointLight *l) { m_PointLights.push_back(*l); }

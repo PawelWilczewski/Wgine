@@ -7,9 +7,8 @@
 namespace Wgine
 {
 	Scene::Scene()
-		: m_DeltaSeconds (1.f/60.f)
+		: m_DeltaSeconds(1.f/60.f), m_ActiveCamera(nullptr), m_Lights(std::vector<Light *>()), m_Entities(std::vector<Entity *>()), m_SceneEntities(std::vector<SceneEntity *>())
 	{
-		// TODO: system where resizing entities happens in increments of 10/20/100 or so? is that the standard?
 		m_Entities.reserve(50);
 	}
 

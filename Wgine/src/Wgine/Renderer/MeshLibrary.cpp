@@ -112,11 +112,11 @@ namespace Wgine
     Ref<Mesh> MeshLibrary::GetSphere(uint32_t slices, uint32_t stacks)
     {
         // source: https://www.danielsieger.com/blog/2021/03/27/generating-spheres.html
-
         auto mesh = MakeRef<Mesh>();
 
         // top vertex
-        Vertex topV = { { 0.f, 1.f, 0.f } };
+        Vertex topV = { glm::vec3(0.f, 1.f, 0.f) };
+        topV.Normal = glm::normalize(topV.Position);
         uint32_t topIndex = mesh->GetVertices().size();
         mesh->AddVertex(topV);
 
@@ -130,12 +130,15 @@ namespace Wgine
                 auto x = glm::sin(phi) * glm::cos(theta);
                 auto y = glm::cos(phi);
                 auto z = glm::sin(phi) * glm::sin(theta);
-                mesh->AddVertex({ {x, y, z} });
+                Vertex v = { glm::vec3(x, y, z) };
+                v.Normal = glm::normalize(v.Position);
+                mesh->AddVertex(v);
             }
         }
 
         // bottom vertex
-        Vertex bottomV = { { 0.f, -1.f, 0.f } };
+        Vertex bottomV = { glm::vec3(0.f, -1.f, 0.f) };
+        bottomV.Normal = glm::normalize(bottomV.Position);
         uint32_t bottomIndex = mesh->GetVertices().size();
         mesh->AddVertex(bottomV);
 
@@ -174,7 +177,10 @@ namespace Wgine
             }
         }
 
-        mesh->RecalculateNormals(); // TODO: debug normals by drawing them (legacy ogl2 thingy?)
+        //for (auto &vert : mesh->GetVertices())
+        //    vert.Normal = glm::normalize(vert.Position);
+
+        //mesh->RecalculateNormals();
 
         return mesh;
     }
