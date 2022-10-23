@@ -72,17 +72,17 @@ public:
 		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(0.2f, 0.8f, 0.8f));
 		auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransform);
 		lightVis->MeshData = MeshLibrary::GetSphere();
-		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
 		m_Cube->MeshData = MeshLibrary::GetCube(true);
-		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
 
 		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
 		m_Sphere->MeshData = MeshLibrary::GetSphere(16, 16);
-		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		m_Sphere->SetLocation({ -2.f, 0.f, 1.f });
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
@@ -140,8 +140,8 @@ public:
 			);
 
 			m_Axis->MeshData->RecalculateNormals();
-			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
-			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
+			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
 		}
 
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");

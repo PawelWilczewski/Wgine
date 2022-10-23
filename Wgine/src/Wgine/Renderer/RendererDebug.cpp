@@ -29,7 +29,7 @@ namespace Wgine
 		s_RendererData.VBO->SetLayout(Vertex::GetLayout());
 		s_RendererData.VAO->AddVertexBuffer(s_RendererData.VBO);
 
-		s_RendererData.Shader = ShaderLibrary::Get("assets/shaders/Unlit.glsl");
+		s_RendererData.Shader = ShaderLibrary::Get("assets/shaders/UnlitDebug.glsl");
 
 		s_RendererData.LineVerts = std::vector<Vertex>();
 	}

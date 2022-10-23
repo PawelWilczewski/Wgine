@@ -59,7 +59,7 @@ namespace Wgine
 
 		//s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
-		s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/UnlitTexture.glsl");
+		s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 	}
 
 	void Renderer2D::Shutdown()
