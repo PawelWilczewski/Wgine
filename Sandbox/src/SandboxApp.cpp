@@ -65,11 +65,12 @@ public:
 	{
 		m_Scene = std::make_shared<Scene>();
 		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 0.1f, 100000.f);
-		m_Scene->SetActiveCamera(m_Camera);
+		Renderer::SetActiveCamera(m_Camera);
+		//m_Scene->SetActiveCamera(m_Camera); // TODO: probably no need to ever store this
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
 		auto lightTransform = Transform({ 1.f, 3.f, 4.f });
-		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(0.2f, 0.8f, 0.8f));
+		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(1.f, 1.f, 1.f));
 		auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransform);
 		lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
 		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
@@ -172,13 +173,12 @@ public:
 			{ 0.03f, 0.03f, 0.03f }
 		});
 
-		Renderer::BeginScene(m_Scene.get()); {
-
-			m_Sphere->DebugDrawNormals();
-			m_Cube->DebugDrawNormals();
-			m_Axis->DebugDrawNormals();
-
-		} Renderer::EndScene();
+		
+		Renderer::Submit(m_Scene.get());
+		m_Sphere->DebugDrawNormals();
+		m_Cube->DebugDrawNormals();
+		m_Axis->DebugDrawNormals();
+		Renderer::Flush();
 	}
 
 	virtual void OnImGuiRender() override

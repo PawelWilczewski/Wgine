@@ -21,7 +21,7 @@ namespace Wgine
 	{
 	public:
 		RendererData()
-			: m_TextureSlot(0), ActiveScene(nullptr), m_PointLights(std::vector<PointLightGPU>())
+			: m_TextureSlot(0), m_PointLights(std::vector<PointLightGPU>())
 		{
 		}
 
@@ -64,7 +64,7 @@ namespace Wgine
 		}
 
 	public:
-		Scene *ActiveScene = nullptr;
+		Camera *ActiveCamera = nullptr;
 		Ref<StorageBuffer> PointLightsSSBO;
 
 	private:
@@ -130,8 +130,9 @@ namespace Wgine
 			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_PointLights", 4, s_RendererData.PointLightsSSBO->GetPtr());
-			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveScene->GetActiveCamera()->GetLocation());
+			// TODO: use ubo for these 3 (at least for sure for u_Texture to avoid sending all that each time)
+			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveCamera->GetViewProjectionMatrix());
+			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveCamera->GetLocation());
 			// TODO: can this be uploaded only once at the start?
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
 
@@ -160,6 +161,8 @@ namespace Wgine
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 
 			RenderCommand::DrawIndexed(VAO, Indices.size());
+
+			Reset();
 		}
 
 		Ref<Shader> Shader;
@@ -198,24 +201,20 @@ namespace Wgine
 		Renderer2D::Shutdown();
 	}
 
-	void Renderer::BeginScene(Scene *scene)
+	void Renderer::SetActiveCamera(Camera *camera)
+	{
+		s_RendererData.ActiveCamera = camera;
+		RendererDebug::SetActiveCamera(camera);
+	}
+
+	void Renderer::Submit(Scene *scene)
 	{
 		WGINE_CORE_ASSERT(scene, "Invalid scene for renderer!");
 
-		s_RendererData.ActiveScene = scene;
-		RendererDebug::SetCamera(scene->GetActiveCamera());
-
-		// reset shader data
-		for (auto &[shaderName, shaderData] : s_ShaderData)
-			shaderData.Reset(); // TODO: Im not sure this is where resetting should happen; perhaps after flushing (end scene?) makes sense?
-
-		// reset lights data ^ same thing to consider as above
-		s_RendererData.ResetLights();
-
-		for (auto entity : s_RendererData.ActiveScene->m_SceneEntities)
+		for (auto entity : scene->m_SceneEntities)
 			Submit(*entity);
 
-		for (auto light : s_RendererData.ActiveScene->m_Lights)
+		for (auto light : scene->m_Lights)
 			Submit(light);
 	}
 
@@ -291,19 +290,16 @@ namespace Wgine
 		}
 	}
 
-	void Renderer::EndScene()
+	void Renderer::Flush()
 	{
 		s_RendererData.UploadLights();
 
 		for (auto &[shaderName, shaderData] : s_ShaderData)
-			Flush(shaderData);
+			shaderData.Flush();
 
 		RendererDebug::Flush();
-	}
 
-	void Renderer::Flush(PerShaderData &data)
-	{
-		data.Flush();
+		s_RendererData.ResetLights();
 	}
 
 	void Renderer::OnWindowResized(float width, float height)

@@ -17,7 +17,7 @@ namespace Wgine
 
 	static RendererData s_RendererData;
 
-	void RendererDebug::SetCamera(Camera *camera)
+	void RendererDebug::SetActiveCamera(Camera *camera)
 	{
 		s_RendererData.Camera = camera;
 	}

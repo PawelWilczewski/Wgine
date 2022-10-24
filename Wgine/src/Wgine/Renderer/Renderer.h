@@ -22,13 +22,13 @@ namespace Wgine
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(Scene *scene);
+		static void SetActiveCamera(Camera *camera);
+
+		static void Submit(Scene *scene);
 		static void Submit(const SceneEntity &entity); // TODO: pointer here to be more consistent
 		static void Submit(Ref<Shader> shader, Ref<Material> material, Ref<Mesh> mesh, const Transform &transform);
 		static void Submit(Light *light);
-		static void EndScene();
-
-		static void Flush(PerShaderData &data);
+		static void Flush();
 
 		static API GetAPI() { return s_API; }
 
