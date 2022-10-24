@@ -120,6 +120,10 @@ namespace Wgine
 
 		void Flush()
 		{
+			VAO->Bind();
+			VBO->Bind();
+			IBO->Bind();
+
 			Shader->Bind();
 			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
@@ -154,10 +158,6 @@ namespace Wgine
 
 			MaterialSSBO->SetData(materialsData.get(), sizeof(MaterialGPU) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
-			
-			VAO->Bind();
-			VBO->Bind();
-			IBO->Bind();
 
 			RenderCommand::DrawIndexed(VAO, Indices.size());
 		}
