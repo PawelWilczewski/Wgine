@@ -102,7 +102,7 @@ namespace Wgine
 			TransformSSBO = StorageBuffer::Create(sizeof(TransformGPU) * 5000);
 			TransformIDSSBO = StorageBuffer::Create(sizeof(int32_t) * 500000);
 			MaterialSSBO = StorageBuffer::Create(sizeof(MaterialGPU) * 100);
-			MaterialIDSSBO = StorageBuffer::Create(sizeof(uint32_t) * 500000);
+			MaterialIDSSBO = StorageBuffer::Create(sizeof(int32_t) * 500000);
 
 			Reset();
 		}
@@ -120,13 +120,23 @@ namespace Wgine
 
 		void Flush()
 		{
+			Shader->Bind();
+			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_PointLights", 4, s_RendererData.PointLightsSSBO->GetPtr());
+			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
+			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveScene->GetActiveCamera()->GetLocation());
+			// TODO: can this be uploaded only once at the start?
+			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
+
 			VBO->SetData(Vertices.data(), sizeof(Vertex) * Vertices.size());
 			IBO->SetData(Indices.data(), Indices.size());
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
 
 			Scope<MaterialGPU[]> materialsData(new MaterialGPU[Materials.size()]);
-			
 			for (int i = 0; i < Materials.size(); i++)
 			{
 				if (s_RendererData.GetFreeSlotsCount() < 2) // TODO: adjust to include dynamic texture count
@@ -145,16 +155,9 @@ namespace Wgine
 			MaterialSSBO->SetData(materialsData.get(), sizeof(MaterialGPU) * Materials.size());
 			MaterialIDSSBO->SetData(MaterialIDs.data(), sizeof(int32_t) * MaterialIDs.size());
 			
-			Shader->Bind();
-			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveScene->GetViewProjectionMatrix());
-			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveScene->GetActiveCamera()->GetLocation());
-
-			// TODO: this should be uploaded only once at the start?
-			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
-
 			VAO->Bind();
-			IBO->Bind();
 			VBO->Bind();
+			IBO->Bind();
 
 			RenderCommand::DrawIndexed(VAO, Indices.size());
 		}
@@ -179,15 +182,6 @@ namespace Wgine
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
-
-	static void SetupShaderSSBOs(Shader *shader)
-	{
-		shader->SetupStorageBuffer("ss_MaterialIDs", 0, s_ShaderData[shader->GetPath()].MaterialIDSSBO->GetPtr());
-		shader->SetupStorageBuffer("ss_Materials", 1, s_ShaderData[shader->GetPath()].MaterialSSBO->GetPtr());
-		shader->SetupStorageBuffer("ss_TransformIDs", 2, s_ShaderData[shader->GetPath()].TransformIDSSBO->GetPtr());
-		shader->SetupStorageBuffer("ss_Transforms", 3, s_ShaderData[shader->GetPath()].TransformSSBO->GetPtr());
-		shader->SetupStorageBuffer("ss_PointLights", 4, s_RendererData.PointLightsSSBO->GetPtr());
-	}
 
 	void Renderer::Init()
 	{
@@ -242,10 +236,7 @@ namespace Wgine
 
 		// new Shader
 		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
-		{
 			s_ShaderData[shader->GetPath()] = PerShaderData(shader);
-			SetupShaderSSBOs(shader.get());
-		}
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
 

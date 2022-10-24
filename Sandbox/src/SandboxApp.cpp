@@ -71,7 +71,7 @@ public:
 		auto lightTransform = Transform({ 1.f, 3.f, 4.f });
 		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(0.2f, 0.8f, 0.8f));
 		auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransform);
-		lightVis->MeshData = MeshLibrary::GetSphere();
+		lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
 		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 

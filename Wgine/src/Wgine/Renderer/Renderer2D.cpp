@@ -85,8 +85,8 @@ namespace Wgine
 	void Renderer2D::Flush()
 	{
 		TextureLibrary::GetTransparent()->Bind(1);
-		s_Data.UnlitTextureShader->Bind();
 
+		s_Data.UnlitTextureShader->Bind();
 		s_Data.UnlitTextureShader->UploadUniformMat4("u_ViewProjection", s_Data.ActiveScene->GetViewProjectionMatrix());
 		s_Data.UnlitTextureShader->UploadUniformFloat2("u_Tiling", { 1.f, 1.f }); // TODO: same thing as with transform; also the case with some other stuff
 		s_Data.UnlitTextureShader->UploadUniformIntArray("u_Texture", Renderer:: s_TextureSlots, Renderer::s_TextureSlotsCount);

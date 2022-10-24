@@ -28,6 +28,8 @@ layout (std430, binding = 3) buffer ss_Transforms
 	Transform Transforms[];
 };
 
+// TODO: ALLOW FOR INCLUDES IN GLSL (#include similar thing to <hash> type) then include the below functions this way
+
 mat4 rotation3dX(float angle) {
   float s = sin(angle);
   float c = cos(angle);
@@ -103,7 +105,6 @@ void main()
 
 	vec4 worldPosition = model * vec4(in_Position, 1.0);
 
-//	io_Normal = in_Normal;
 	io_Normal = mat3(transpose(inverse(model))) * in_Normal;
 	io_WorldPos = vec3(worldPosition);
 	gl_Position = u_ViewProjection * worldPosition;
@@ -162,20 +163,12 @@ sampler2D TextureAt(uint index)
 
 void main()
 {
-//	out_Color = vec4(io_MaterialID / 5.0, io_MaterialID / 5.0 , io_MaterialID / 5.0, 1.0);
-
 	Material mat = Materials[io_MaterialID];
-
-//	out_Color = texture(TextureAt(0), io_TexCoord /* * u_Tiling */);
-//	out_Color = vec4(io_Normal, 1.0);
-//
-//	out_Color = vec4(PointLights[0].Intensity);
-//	out_Color = vec4(PointLights[0].Color, 1.f);
 
 	vec3 normal = normalize(io_Normal);
 
 	// diffuse color
-    vec4 color = vec4(1.f);//texture(TextureAt(1), io_TexCoord);
+	vec4 color = vec4(1.f);//texture(TextureAt(1), io_TexCoord);
 
 	// ambient lighting
 	float ambientStrength = 0.1;
@@ -189,23 +182,8 @@ void main()
 	// specular lighting
 	vec3 viewDir = normalize(u_CameraLocation - io_WorldPos);
 	vec3 reflectDir = reflect(-lightDir, normal); 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // TODO: this is incorrect?
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 	vec3 specular = mat.Specular * spec * PointLights[0].Color;
 
     out_Color = vec4(vec3(PointLights[0].Intensity) * (ambient + diffuse + specular), 1.0) * color;
-//	out_Color = vec4(normal, 1.0);
-
-//	else
-//		out_Color = vec4(mat.Diffuse, 1.0);
-//
-//	out_Color = vec4(vec3(Materials.length()), 1.0);
-
-//	if (Materials.length() == 0)
-//	{
-//		out_Color = vec4(0.5, 0.7, 1.0, 1.0);
-//	}
-//	else
-//	{
-//		out_Color = vec4(1.0, 0.2, 0.3, 1.0);
-//	}
 }
