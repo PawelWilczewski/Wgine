@@ -65,7 +65,7 @@ namespace Wgine
 		// TEMP
 		Ref<Mesh> MeshData;
 		Ref<Shader> ShaderData;
-		Ref<Material> MaterialData = MakeRef<Material>();
+		Ref<Material> MaterialData = MakeRef<Material>(); // TODO: remove the constructor asap (this creates an additional material reference for each created object diregarding duplicates - we want to eliminate that); default to nullptr and instead use some default values for material if submitting this
 		void DebugDrawNormals(float size = 0.1f) const;
 
 	protected:

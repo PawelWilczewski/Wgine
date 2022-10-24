@@ -17,6 +17,9 @@ namespace Wgine
 	const uint32_t Renderer::s_TextureSlotsCount = 32;
 	int Renderer::s_TextureSlots[s_TextureSlotsCount] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
 	
+	// invalid texture is uint8(-1) = 255
+	constexpr uint8_t INVALID_TEXTURE_SLOT = -1;
+
 	class RendererData
 	{
 	public:
@@ -124,7 +127,7 @@ namespace Wgine
 			VBO->Bind();
 			IBO->Bind();
 
-			Shader->Bind();
+			Shader->Bind(); // TODO: URGENT, instead of always doing this, each shader should have a function responsible for this so we don't send unnecessary data/data to unbound ssbos
 			Shader->SetupStorageBuffer("ss_MaterialIDs", 0, MaterialIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
@@ -152,8 +155,8 @@ namespace Wgine
 				else
 				{
 					materialsData[i] = *Materials[i].get();
-					materialsData[i].Textures[0] = s_RendererData.BindTexture(Materials[i]->DiffuseTex);
-					materialsData[i].Textures[1] = s_RendererData.BindTexture(Materials[i]->SpecularTex);
+					materialsData[i].Textures[0] = Materials[i]->DiffuseTex ? s_RendererData.BindTexture(Materials[i]->DiffuseTex) : INVALID_TEXTURE_SLOT;
+					materialsData[i].Textures[1] = Materials[i]->SpecularTex ? s_RendererData.BindTexture(Materials[i]->SpecularTex) : INVALID_TEXTURE_SLOT;
 				}
 			}
 
@@ -226,7 +229,7 @@ namespace Wgine
 	// TODO: no need to keep references? just add to the resultant array that will be sent to the GPU (copying is necessary no matter what?)
 	void Renderer::Submit(Ref<Shader> shader, Ref<Material> material, Ref<Mesh> mesh, const Transform &transform)
 	{
-		WGINE_ASSERT(s_RendererData.ActiveScene, "No active scene for renderer!");
+		WGINE_ASSERT(s_RendererData.ActiveCamera, "No active camera for renderer!");
 
 		// TODO: in order to greatly improve performance, only update "dirty" entities (use some array mask to make it more efficient)
 

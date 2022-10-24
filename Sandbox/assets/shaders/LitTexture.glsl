@@ -113,13 +113,19 @@ void main()
 #type fragment
 #version 460 core
 
+// invalid texture index is uint8(-1) = 255
+#define INVALID_TEXTURE_INDEX 255
+
 layout(location = 0) out vec4 out_Color;
 
 struct Material
 {
 	vec3 Diffuse;
-	vec3 Specular;
-	vec3 Ambient;
+	float Specular;
+	float Ambient;
+	float Shininess;
+	// this is actually an array of 32, 2-byte uints. stored like this to be more memory efficient (only 32 texture slots in opengl so 8 bits is enough)
+	// in order to access the appropriate index, pass the desired slot (0-32) to ActualTextureIndex and then access u_Texture using that slot
 	uint Textures[8];
 };
 
@@ -153,12 +159,32 @@ in vec3 io_WorldPos;
 uniform sampler2D u_Texture[32];
 uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (in material array of vec2d?)
 
-sampler2D TextureAt(uint index)
+// converts given slot to index to be used in u_Texture (conversion from local texture index in range <0-32> to global texture index in range <x-y>)
+uint ActualTextureIndex(uint slot)
 {
-	uint indexInArray = index / 4;
-	uint part = index % 4;
+	uint indexInArray = slot / 4;
+	uint part = slot % 4;
 
-	return u_Texture[(Materials[io_MaterialID].Textures[indexInArray] >> (8U * part)) & 0xffU];
+	return (Materials[io_MaterialID].Textures[indexInArray] >> (8U * part)) & 0xffU;
+}
+
+vec4 SampleTexture(uint slot, vec2 coords, vec4 invalidAlternative)
+{
+	uint index = ActualTextureIndex(slot);
+	if (index == INVALID_TEXTURE_INDEX)
+		return invalidAlternative;
+	else
+		return texture(u_Texture[index], coords);
+}
+
+vec3 SampleTextureVec3(uint slot, vec2 coords, vec3 invalidAlternative)
+{
+	return vec3(SampleTexture(slot, coords, vec4(invalidAlternative, 1.0))); // TODO: maybe inefficient this casting, probably can just implement this separately
+}
+
+float SampleTextureScalar(uint slot, vec2 coords, float invalidAlternative)
+{
+	return SampleTexture(slot, coords, vec4(invalidAlternative)).x; // TODO: maybe inefficient this casting, probably can just implement this separately
 }
 
 void main()
@@ -167,23 +193,23 @@ void main()
 
 	vec3 normal = normalize(io_Normal);
 
-	// diffuse color
-	vec4 color = vec4(1.f);//texture(TextureAt(1), io_TexCoord);
+	// get textures if valid, otherwise constants
+	vec3 matDiffuse = SampleTextureVec3(0U, io_TexCoord, mat.Diffuse);
+	float matSpecular = SampleTextureScalar(1U, io_TexCoord, mat.Specular);
 
 	// ambient lighting
-	float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * PointLights[0].Color;
+    vec3 ambient = matDiffuse * mat.Ambient * PointLights[0].Color;
 
 	// diffuse lighting
-	vec3 lightDir = normalize(PointLights[0].Location - io_WorldPos); 
+	vec3 lightDir = normalize(PointLights[0].Location - io_WorldPos);
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = diff * PointLights[0].Color;
+	vec3 diffuse = matDiffuse * diff * PointLights[0].Color;
 
 	// specular lighting
 	vec3 viewDir = normalize(u_CameraLocation - io_WorldPos);
 	vec3 reflectDir = reflect(-lightDir, normal); 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	vec3 specular = mat.Specular * spec * PointLights[0].Color;
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat.Shininess);
+	vec3 specular = matSpecular * spec * PointLights[0].Color;
 
-    out_Color = vec4(vec3(PointLights[0].Intensity) * (ambient + diffuse + specular), 1.0) * color;
+    out_Color = vec4(vec3(PointLights[0].Intensity) * (ambient + diffuse + specular), 1.0);
 }

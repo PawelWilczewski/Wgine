@@ -63,6 +63,10 @@ public:
 	GameplayLayer()
 		: Layer("Gameplay")
 	{
+		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
+		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
+		m_BaseMaterial = MakeRef<Material>(glm::vec3(1.f, 0.2f, 0.3f), 1.f, 0.f, 32.f, m_Texture, m_TransparentTexture);
+
 		m_Scene = std::make_shared<Scene>();
 		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 0.1f, 100000.f);
 		Renderer::SetActiveCamera(m_Camera);
@@ -77,13 +81,15 @@ public:
 		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
-		m_Cube->MeshData = MeshLibrary::GetCube(true);
+		m_Cube->MeshData = MeshLibrary::GetCube(false);
 		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
+		m_Cube->MaterialData = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/diffuse.png"), TextureLibrary::Get("assets/textures/specular.png"));
 		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
 
 		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
-		m_Sphere->MeshData = MeshLibrary::GetSphere(16, 16);
+		m_Sphere->MeshData = MeshLibrary::GetSphere(); // 16, 16 for 4x better performance lol
 		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
+		//m_Sphere->MaterialData = m_BaseMaterial;
 		m_Sphere->SetLocation({ -2.f, 0.f, 1.f });
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
@@ -144,11 +150,6 @@ public:
 			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
 		}
-
-		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
-		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
-
-		m_BaseMaterial = MakeRef<Material>(glm::vec3(1.f, 0.2f, 0.3f), glm::vec3(1.f), glm::vec3(1.f), m_Texture, m_TransparentTexture);
 	}
 
 	virtual void OnAttach() override
