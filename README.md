@@ -9,17 +9,13 @@ The project is developed using Visual Studio 2022 which is the recommended IDE.
 
 To build the project, `cd` to your desired parent directory and use the following string of commands:
 
-1. `git clone --recursive https://github.com/PawelWilczewski/Wgine`
-2. `cd Wgine`
+1. `git clone --recursive https://github.com/PawelWilczewski/Wgine & cd Wgine`
 3. `git submodule update --init --force --remote --recursive`
-4. `mkdir thirdparty\bin\premake`
-5. `cd thirdparty\bin\premake`
-6. `curl --location --output premake.zip --url https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip`
-7. `tar -xf premake.zip`
-8. `del premake.zip`
-9. `curl --location --output LICENSE --url https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt`
-10. `cd .. & cd .. & cd ..`
-11. `GenerateProjects.bat`
+4. `mkdir thirdparty\bin\premake & cd thirdparty\bin\premake`
+5. `curl --location --output premake.zip --url https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip`
+6. `curl --location --output LICENSE --url https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt`
+7. `tar -xf premake.zip & del premake.zip`
+8. `cd .. & cd .. & cd .. & GenerateProjects.bat`
 
 This will recursively clone the project, update all of the submodules and download and unzip premake to the required directory.
 
