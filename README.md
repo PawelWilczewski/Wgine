@@ -18,7 +18,8 @@ To build the project, `cd` to your desired parent directory and use the followin
 7. `tar -xf premake.zip`
 8. `del premake.zip`
 9. `curl --location --output LICENSE --url https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt`
-10. `GenerateProjects.bat`
+10. `cd .. & cd .. & cd ..`
+11. `GenerateProjects.bat`
 
 This will recursively clone the project, update all of the submodules and download and unzip premake to the required directory.
 
