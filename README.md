@@ -1,5 +1,7 @@
 # Wgine
-3D game engine with the focus on efficient batch rendering and (incoming) PBR workflow. The project is at its very early stages - very little is guaranteed at this point. Currently, only OpenGL is supported, which will temporarily be the main graphics API of the engine. Support for DX11, DX12 and Vulkan incoming.
+3D game engine with the focus on efficient batch rendering and (incoming) PBR workflow. The project is at its very early stages - little is guaranteed at this point. Currently, only OpenGL is supported, which will temporarily be the main graphics API of the engine. Support for DX11, DX12 and Vulkan incoming.
+
+![Preview](../assets/img/preview.png?raw=true)
 
 # Platforms
 Windows x64 is the only supported platform right now. Likely Linux support in the future. The core of the engine is independent of any OS.
