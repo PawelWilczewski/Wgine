@@ -1,4 +1,4 @@
-#type vertex
+#type "vertex"
 #version 460 core
 
 layout(location = 0) in vec3 in_Position;
@@ -28,7 +28,6 @@ layout (std430, binding = 3) buffer ss_Transforms
 	Transform Transforms[];
 };
 
-// TODO: ALLOW FOR INCLUDES IN GLSL (#include similar thing to <hash> type) then include the below functions this way
 
 mat4 rotation3dX(float angle) {
   float s = sin(angle);
@@ -100,7 +99,7 @@ void main()
 	gl_Position = u_ViewProjection * worldPosition;
 }
 
-#type fragment
+#type "fragment"
 #version 460 core
 
 layout(location = 0) out vec4 out_Color;

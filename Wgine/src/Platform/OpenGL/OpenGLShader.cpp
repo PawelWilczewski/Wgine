@@ -21,7 +21,7 @@ namespace Wgine
 
 	OpenGLShader::OpenGLShader(const std::string &sourceFilePath)
 	{
-		Compile(ExtractShadersSource(FileUtils::ReadFile(sourceFilePath)));
+		Compile(ExtractShadersSource(sourceFilePath, FileUtils::ReadFile(sourceFilePath)));
 
 		m_Path = sourceFilePath;
 	}
@@ -119,29 +119,82 @@ namespace Wgine
 			glDetachShader(program, shader);
 	}
 
-	std::unordered_map<GLenum, std::string> OpenGLShader::ExtractShadersSource(const std::string &fileSource)
+	// first lambda argument is the text after the token between the double quotation marks "
+	// second argument is the following text until the next token of the same arg occurs
+	// returns the substring before the first token
+	static std::string ParseToken(const std::string &token, const std::string &source, std::function<void(const std::string &, const std::string &)> parseCallback)
 	{
-		std::unordered_map<GLenum, std::string> result;
-		const char *token = "#type";
-		auto start = fileSource.find(token);
-		while (fileSource.length() > start)
-		{
-			int i;
-			for (i = start + 5; i < fileSource.length(); i++) // skip through all the whitespaces
-				if (fileSource[i] != ' ' && fileSource[i] != '\t' && fileSource[i] != '\v')
-					break;
+		auto start = source.find(token);
 
-			// determine the type
-			auto endline = fileSource.find_first_of("\n\r", i);
-			WGINE_CORE_ASSERT(endline != std::string::npos, "Shader parsing error! {0}", fileSource);
-			std::string type = fileSource.substr(i, endline - i);
-			i += type.length();
+		std::string before;
+		if (start == std::string::npos)
+			before = source;
+		else
+			before = source.substr(0, start);
+
+		while (source.length() > start)
+		{
+			// determine the arg
+			auto firstQuotation = source.find('"', start);
+			auto secondQuotation = source.find('"', firstQuotation + 1);
+
+			WGINE_CORE_ASSERT(firstQuotation != std::string::npos && secondQuotation != std::string::npos, "Shader parsing error (probably missing \")! {0}", source);
+			std::string arg = source.substr(firstQuotation + 1, secondQuotation - firstQuotation - 1);
 
 			// finished? the loop is gonna terminate if end is npos
-			auto end = fileSource.find(token, start + strlen(token));
-			result[StringToShaderType(type)] = fileSource.substr(i, end - i);
+			auto end = source.find(token, start + token.length());
+			parseCallback(arg, source.substr(secondQuotation + 1, end - secondQuotation - 1));
 			start = end;
 		}
+
+		return before;
+	}
+
+	// can be nested includes (when #include appears in an included file)
+	// the limitation is you can't yet include the same file twice in one file, regardless of which shader type the include directive is in
+	// also, DON'T type #include in comments
+	static std::string ResolveIncludes(const std::string &filePath, const std::string &fileSource)
+	{
+		// TODO: important: since we have multiple shaders in one file, we need to append the shader type to the file
+		//  so we can include the same file multiple times as long as it is in different shader types
+		std::vector <std::string> filesIncluded = { filePath };
+		std::string result = fileSource;
+		std::string toParse = fileSource;
+
+		while (toParse.find("#include") != std::string::npos)
+		{
+			result = "";
+			std::string before = ParseToken("#include", toParse, [&](const std::string &arg, const std::string &next) {
+				auto p = std::filesystem::path(filePath);
+				auto argFile = p.parent_path(); argFile += "/" + arg;
+				auto argFileStr = argFile.generic_string();
+
+				// skip if file already included
+				if (std::find(filesIncluded.begin(), filesIncluded.end(), argFileStr) != filesIncluded.end())
+				{
+					result += next;
+					return;
+				}
+				else
+					filesIncluded.push_back(argFileStr);
+
+				result += FileUtils::ReadFile(argFileStr) + next;
+				//finalSrc += "\r\n" + next; // just to be safe, ensure the newline as well
+			});
+			result = before + result;
+			toParse = result;
+		}
+		return result;
+	}
+
+	std::unordered_map<GLenum, std::string> OpenGLShader::ExtractShadersSource(const std::string &filePath, const std::string &fileSource)
+	{
+		std::unordered_map<GLenum, std::string> result;
+
+		auto src = ResolveIncludes(filePath, fileSource);
+		ParseToken("#type", src, [&](const std::string &arg, const std::string &next) {
+			result[StringToShaderType(arg)] = next;
+		});
 
 		return result;
 	}
