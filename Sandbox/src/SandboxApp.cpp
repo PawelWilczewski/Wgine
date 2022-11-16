@@ -73,12 +73,18 @@ public:
 		//m_Scene->SetActiveCamera(m_Camera); // TODO: probably no need to ever store this
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
-		auto lightTransform = Transform({ 1.f, 3.f, 4.f });
-		auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransform, 1.0f, glm::vec3(1.f, 1.f, 1.f));
-		auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransform);
-		lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
-		lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
-		lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
+		constexpr uint32_t lightCount = 3;
+		Transform lightTransforms[lightCount] = { Transform({1.f, 3.f, 4.f}), Transform({1.f, -3.f, 4.f}), Transform({0.f, 4.f, 2.f}) };
+		glm::vec3 lightColors[lightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
+		for (uint32_t i = 0; i < lightCount; i++)
+		{
+			auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransforms[i], lightColors[i], 1.0f, 0.f, 10.f);
+			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransforms[i]);
+			lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
+			lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitDiffuseConst.glsl");
+			lightVis->MaterialData = MakeRef<Material>(lightColors[i]);
+			lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
+		}
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
 		m_Cube->MeshData = MeshLibrary::GetCube(false);
