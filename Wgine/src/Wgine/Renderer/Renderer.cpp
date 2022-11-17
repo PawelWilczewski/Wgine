@@ -24,13 +24,20 @@ namespace Wgine
 	{
 	public:
 		RendererData()
-			: m_TextureSlot(0), m_PointLights(std::vector<PointLightGPU>())
+			: m_TextureSlot(0),
+			m_AmbientLights({}),
+			m_DirectionalLights({}),
+			m_PointLights({}),
+			m_SpotLights({})
 		{
 		}
 
 		void Init()
 		{
+			AmbientLightsSSBO = StorageBuffer::Create(sizeof(AmbientLightGPU) * 1);
+			DirectionalLightsSSBO = StorageBuffer::Create(sizeof(DirectionalLightGPU) * 1);
 			PointLightsSSBO = StorageBuffer::Create(sizeof(PointLightGPU) * 16);
+			SpotLightsSSBO = StorageBuffer::Create(sizeof(SpotLightGPU) * 8);
 		}
 
 		// returns texture slot beginning at 0
@@ -54,9 +61,25 @@ namespace Wgine
 
 		uint32_t GetFreeSlotsCount() const { return 32 - m_TextureSlot; }
 
-		void ResetLights() { m_PointLights.clear(); }
+		void ResetLights()
+		{
+			m_AmbientLights.clear();
+			m_DirectionalLights.clear();
+			m_PointLights.clear();
+			m_SpotLights.clear();
+		}
+
+		void AddAmbientLight(AmbientLight *l) { m_AmbientLights.push_back(*l); }
+		void AddDirectionalLight(DirectionalLight *l) { m_DirectionalLights.push_back(*l); }
 		void AddPointLight(PointLight *l) { m_PointLights.push_back(*l); }
-		void UploadLights() { PointLightsSSBO->SetData(m_PointLights.data(), sizeof(PointLightGPU) * m_PointLights.size()); }
+		void AddSpotLight(SpotLight *l) { m_SpotLights.push_back(*l); }
+		void UploadLights()
+		{
+			AmbientLightsSSBO->SetData(m_AmbientLights.data(), sizeof(AmbientLightGPU) * m_AmbientLights.size());
+			DirectionalLightsSSBO->SetData(m_DirectionalLights.data(), sizeof(DirectionalLightGPU) * m_DirectionalLights.size());
+			PointLightsSSBO->SetData(m_PointLights.data(), sizeof(PointLightGPU) * m_PointLights.size());
+			SpotLightsSSBO->SetData(m_SpotLights.data(), sizeof(SpotLightGPU) * m_SpotLights.size());
+		}
 
 	private:
 		// returns unsigned -1 (largest uint32) in case texture is not bound
@@ -68,13 +91,19 @@ namespace Wgine
 
 	public:
 		Camera *ActiveCamera = nullptr;
+		Ref<StorageBuffer> AmbientLightsSSBO;
+		Ref<StorageBuffer> DirectionalLightsSSBO;
 		Ref<StorageBuffer> PointLightsSSBO;
+		Ref<StorageBuffer> SpotLightsSSBO;
 
 	private:
 		uint32_t m_TextureSlot;
 		std::array<Ref<Texture2D>, Renderer::s_TextureSlotsCount> m_Textures;
 
+		std::vector<AmbientLightGPU> m_AmbientLights;
+		std::vector<DirectionalLightGPU> m_DirectionalLights;
 		std::vector<PointLightGPU> m_PointLights;
+		std::vector<SpotLightGPU> m_SpotLights;
 	};
 
 	static RendererData s_RendererData = RendererData();
@@ -132,7 +161,10 @@ namespace Wgine
 			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_AmbientLights", 4, s_RendererData.AmbientLightsSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_DirectionalLights", 5, s_RendererData.DirectionalLightsSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_PointLights", 6, s_RendererData.PointLightsSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_SpotLights", 7, s_RendererData.SpotLightsSSBO->GetPtr());
 			// TODO: use ubo for these 3 (at least for sure for u_Texture to avoid sending all that each time)
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveCamera->GetViewProjectionMatrix());
 			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveCamera->GetLocation());
@@ -281,10 +313,24 @@ namespace Wgine
 	{
 		switch (light->GetLightType())
 		{
-		case Light::LightType::PointLight:
+		case Light::Type::Ambient:
 		{
-			auto pointLight = static_cast<PointLight *>(light);
-			s_RendererData.AddPointLight(pointLight);
+			s_RendererData.AddAmbientLight(static_cast<AmbientLight *>(light));
+			break;
+		}
+		case Light::Type::Directional:
+		{
+			s_RendererData.AddDirectionalLight(static_cast<DirectionalLight *>(light));
+			break;
+		}
+		case Light::Type::Point:
+		{
+			s_RendererData.AddPointLight(static_cast<PointLight *>(light));
+			break;
+		}
+		case Light::Type::Spot:
+		{
+			s_RendererData.AddSpotLight(static_cast<SpotLight *>(light));
 			break;
 		}
 		default:

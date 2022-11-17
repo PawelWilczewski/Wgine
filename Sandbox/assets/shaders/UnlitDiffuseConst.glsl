@@ -46,7 +46,10 @@ void main()
 
 layout(location = 0) out vec4 out_Color;
 layout (std430, binding = 1) buffer ss_Materials { Material Materials[]; };
-layout (std430, binding = 4) buffer ss_PointLights { PointLight PointLights[]; };
+layout (std430, binding = 4) buffer ss_AmbientLights { restrict readonly AmbientLight AmbientLights[]; };
+layout (std430, binding = 5) buffer ss_DirectionalLights { restrict readonly DirectionalLight DirectionalLights[]; };
+layout (std430, binding = 6) buffer ss_PointLights { restrict readonly PointLight PointLights[]; };
+layout (std430, binding = 7) buffer ss_SpotLights { restrict readonly SpotLight SpotLights[]; };
 
 uniform vec3 u_CameraLocation;
 uniform sampler2D u_Texture[32];

@@ -1,93 +1,22 @@
 #type "vertex"
 #version 460 core
 
+#include "include/Transform.glsl"
+
 layout(location = 0) in vec3 in_Position;
 layout(location = 1) in vec3 in_Color;
 layout(location = 2) in vec2 in_TexCoord;
 layout(location = 3) in vec3 in_Normal;
 
-struct Transform
-{
-	vec3 Location;
-	vec3 Rotation;
-	vec3 Scale;
-};
-
-layout (std430, binding = 0) buffer ss_MaterialIDs
-{
-	int MaterialIDs[];
-};
-
-layout (std430, binding = 2) buffer ss_TransformIDs
-{
-	int TransformIDs[];
-};
-
-layout (std430, binding = 3) buffer ss_Transforms
-{ 
-	Transform Transforms[];
-};
-
-
-mat4 rotation3dX(float angle) {
-  float s = sin(angle);
-  float c = cos(angle);
-
-  return mat4(
-    1.0, 0.0, 0.0, 0.0,
-    0.0,   c,   s, 0.0,
-    0.0,  -s,   c, 0.0,
-	0.0, 0.0, 0.0, 1.0
-  );
-}
-
-mat4 rotation3dY(float angle) {
-  float s = sin(angle);
-  float c = cos(angle);
-
-  return mat4(
-      c, 0.0,  -s, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-      s, 0.0,   c, 0.0,
-	0.0, 0.0, 0.0, 1.0
-  );
-}
-
-mat4 rotation3dZ(float angle) {
-  float s = sin(angle);
-  float c = cos(angle);
-
-  return mat4(
-      c,   s, 0.0, 0.0,
-     -s,   c, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-	0.0, 0.0, 0.0, 1.0
-  );
-}
-
-mat4 translation(vec3 delta)
-{
-    return mat4(
-        vec4(1.0, 0.0, 0.0, 0.0),
-        vec4(0.0, 1.0, 0.0, 0.0),
-        vec4(0.0, 0.0, 1.0, 0.0),
-        vec4(delta, 1.0)
-	);
-}
-
-mat4 scale(vec3 s)
-{
-	return mat4(
-        vec4(s[0],  0.0,  0.0, 0.0),
-        vec4( 0.0, s[1],  0.0, 0.0),
-        vec4( 0.0,  0.0, s[2], 0.0),
-        vec4( 0.0,  0.0,  0.0, 1.0)
-	);
-}
+layout (std430, binding = 0) buffer ss_MaterialIDs { int MaterialIDs[]; };
+layout (std430, binding = 2) buffer ss_TransformIDs { int TransformIDs[]; };
+layout (std430, binding = 3) buffer ss_Transforms { Transform Transforms[]; };
 
 uniform mat4 u_ViewProjection;
 
 out vec3 io_Color;
+
+#include "include/MatrixMath.glsl"
 
 void main()
 {
@@ -102,37 +31,15 @@ void main()
 #type "fragment"
 #version 460 core
 
+#include "include/Light.glsl"
+#include "include/Material.glsl"
+
 layout(location = 0) out vec4 out_Color;
-
-struct Material
-{
-	vec3 Diffuse;
-	float Specular;
-	float Ambient;
-	float Shininess;
-	uint Textures[8];
-};
-
-struct PointLight
-{
-	vec3 Location;
-	vec3 Rotation;
-	vec3 Scale;
-	vec3 Color;
-	float Intensity;
-	float Radius;
-	float Cutoff;
-};
-
-layout (std430, binding = 1) buffer ss_Materials
-{ 
-	Material Materials[];
-};
-
-layout (std430, binding = 4) buffer ss_PointLights
-{
-	PointLight PointLights[];
-};
+layout (std430, binding = 1) buffer ss_Materials { restrict readonly Material Materials[]; };
+layout (std430, binding = 4) buffer ss_AmbientLights { restrict readonly AmbientLight AmbientLights[]; };
+layout (std430, binding = 5) buffer ss_DirectionalLights { restrict readonly DirectionalLight DirectionalLights[]; };
+layout (std430, binding = 6) buffer ss_PointLights { restrict readonly PointLight PointLights[]; };
+layout (std430, binding = 7) buffer ss_SpotLights { restrict readonly SpotLight SpotLights[]; };
 
 in vec3 io_Color;
 
