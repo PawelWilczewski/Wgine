@@ -46,10 +46,10 @@ void main()
 
 layout(location = 0) out vec4 out_Color;
 layout (std430, binding = 1) buffer ss_Materials { Material Materials[]; };
-layout (std430, binding = 4) buffer ss_PointLights { PointLight PointLights[]; };
-layout (std430, binding = 5) buffer ss_SpotLights { SpotLight SpotLights[]; };
-layout (std430, binding = 6) buffer ss_DirectionalLights { DirectionalLight DirectionalLights[]; };
-layout (std430, binding = 7) buffer ss_AmbientLights { AmbientLight AmbientLights[]; };
+layout (std430, binding = 4) buffer ss_AmbientLights { AmbientLight AmbientLights[]; };
+layout (std430, binding = 5) buffer ss_DirectionalLights { DirectionalLight DirectionalLights[]; };
+layout (std430, binding = 6) buffer ss_PointLights { PointLight PointLights[]; };
+layout (std430, binding = 7) buffer ss_SpotLights { SpotLight SpotLights[]; };
 
 uniform sampler2D u_Texture[32];
 uniform vec2 u_Tiling; // TODO: tiling implemented per-texture (in material array of vec2d?)

@@ -1,3 +1,16 @@
+struct AmbientLight
+{
+	vec3 Color;
+	float Intensity;
+};
+
+struct DirectionalLight
+{
+	vec3 Rotation;
+	vec3 Color;
+	float Intensity;
+};
+
 struct PointLight
 {
 	vec3 Location;
@@ -15,18 +28,5 @@ struct SpotLight
 	float Intensity;
 	float Radius;
 	float CutoffRadius;
-	float CutoffHalfAngle;
-};
-
-struct DirectionalLight
-{
-	vec3 Rotation;
-	vec3 Color;
-	float Intensity;
-};
-
-struct AmbientLight
-{
-	vec3 Color;
-	float Intensity;
+	float CutoffAngle;
 };

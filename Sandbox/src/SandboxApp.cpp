@@ -81,12 +81,12 @@ public:
 		floor->SetScale({ 100.f, 100.f, 1.f });
 
 		constexpr uint32_t lightCount = 3;
-		Transform lightTransforms[lightCount] = { Transform({1.f, 3.f, 4.f}), Transform({-2.5f, -2.f, 0.f}), Transform({0.f, 4.f, 4.f}) };
+		glm::vec3 lightLocations[lightCount] = { glm::vec3(1.f, 3.f, 4.f), glm::vec3(-2.5f, -2.f, 0.f), glm::vec3(0.f, 4.f, 4.f) };
 		glm::vec3 lightColors[lightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
 		for (uint32_t i = 0; i < lightCount; i++)
 		{
-			auto pointLight = m_Scene->ConstructLight<PointLight>(lightTransforms[i], lightColors[i], 1.f, 0.f, 4.f);
-			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(lightTransforms[i]);
+			auto pointLight = m_Scene->ConstructLight<PointLight>(lightLocations[i], lightColors[i], 1.f, 0.f, 4.f);
+			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(Transform(lightLocations[i]));
 			lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
 			lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitDiffuseConst.glsl");
 			lightVis->MaterialData = MakeRef<Material>(lightColors[i]);

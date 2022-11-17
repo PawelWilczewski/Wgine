@@ -132,7 +132,7 @@ namespace Wgine
 			Shader->SetupStorageBuffer("ss_Materials", 1, MaterialSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_TransformIDs", 2, TransformIDSSBO->GetPtr());
 			Shader->SetupStorageBuffer("ss_Transforms", 3, TransformSSBO->GetPtr());
-			Shader->SetupStorageBuffer("ss_PointLights", 4, s_RendererData.PointLightsSSBO->GetPtr());
+			Shader->SetupStorageBuffer("ss_PointLights", 6, s_RendererData.PointLightsSSBO->GetPtr());
 			// TODO: use ubo for these 3 (at least for sure for u_Texture to avoid sending all that each time)
 			Shader->UploadUniformMat4("u_ViewProjection", s_RendererData.ActiveCamera->GetViewProjectionMatrix());
 			Shader->UploadUniformFloat3("u_CameraLocation", s_RendererData.ActiveCamera->GetLocation());

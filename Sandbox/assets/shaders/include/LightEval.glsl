@@ -1,3 +1,13 @@
+vec3 EvaluateAmbientLight(AmbientLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
+{
+	return vec3(0.0);
+}
+
+vec3 EvaluateDirectionalLight(DirectionalLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
+{
+	return vec3(0.0);
+}
+
 vec3 EvaluatePointLight(PointLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
 {
 	// ambient lighting
@@ -22,16 +32,6 @@ vec3 EvaluatePointLight(PointLight light, Material mat, vec3 matDiffuse, float m
 }
 
 vec3 EvaluateSpotLight(SpotLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
-{
-	return vec3(0.0);
-}
-
-vec3 EvaluateDirectionalLight(DirectionalLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
-{
-	return vec3(0.0);
-}
-
-vec3 EvaluateAmbientLight(AmbientLight light, Material mat, vec3 matDiffuse, float matSpecular, vec3 normal)
 {
 	return vec3(0.0);
 }
