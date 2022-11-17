@@ -73,6 +73,13 @@ public:
 		//m_Scene->SetActiveCamera(m_Camera); // TODO: probably no need to ever store this
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);
 
+		// floor
+		auto floor = m_Scene->ConstructEntity<SceneEntity>();
+		floor->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
+		floor->MaterialData = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f));
+		floor->MeshData = MeshLibrary::GetQuad();
+		floor->SetScale({ 100.f, 100.f, 1.f });
+
 		constexpr uint32_t lightCount = 3;
 		Transform lightTransforms[lightCount] = { Transform({1.f, 3.f, 4.f}), Transform({-2.5f, -2.f, 0.f}), Transform({0.f, 4.f, 4.f}) };
 		glm::vec3 lightColors[lightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
@@ -90,13 +97,13 @@ public:
 		m_Cube->MeshData = MeshLibrary::GetCube(false);
 		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		m_Cube->MaterialData = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/diffuse.png"), TextureLibrary::Get("assets/textures/specular.png"));
-		m_Cube->SetLocation({ 3.f, 0.f, 0.f });
+		m_Cube->SetLocation({ 3.f, 0.f, 0.5f });
 
 		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
 		m_Sphere->MeshData = MeshLibrary::GetSphere(); // 16, 16 for 4x better performance lol
 		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		//m_Sphere->MaterialData = m_BaseMaterial;
-		m_Sphere->SetLocation({ -2.f, 0.f, 1.f });
+		m_Sphere->SetLocation({ -2.f, 0.f, 2.f });
 
 		m_Axis = m_Scene->ConstructEntity<SceneEntity>();
 		m_AxisCamera = m_Scene->ConstructEntity<SceneEntity>();
@@ -155,6 +162,7 @@ public:
 			m_Axis->MeshData->RecalculateNormals();
 			m_Axis->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
+			m_Axis->SetLocation({ 0.f, 0.f, 0.1f });
 		}
 	}
 

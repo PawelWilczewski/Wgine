@@ -15,9 +15,8 @@ vec3 EvaluatePointLight(PointLight light, Material mat, vec3 matDiffuse, float m
 	vec3 specular = matSpecular * spec * light.Color;
 
 	// attenuation
-    float d = max(length(light.Location - io_WorldPos) - light.Radius, 0.0); // distance respecting the light radius
-    float t = d / light.Cutoff; // normalized distance
-	float attenuation = light.Intensity / (t * t); // inverse square, div by 0 possible but the perf hit of removing that is not worth it
+    float d = max(length(light.Location - io_WorldPos) - light.Radius, 0.0) / light.Cutoff; // normalized distance respecting the light radius
+	float attenuation = light.Intensity / (d * d); // inverse square, div by 0 possible but the perf hit of removing that is not worth it
 
 	return (ambient + diffuse + specular) * attenuation;
 }
