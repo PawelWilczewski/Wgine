@@ -78,20 +78,16 @@ namespace Wgine
 	{
 		PointLightGPU(const PointLight &pointLight)
 			: Location(pointLight.GetLocation()),
-			  Rotation(pointLight.GetRotation()),
-			  Scale(pointLight.GetScale()),
 			  Color(pointLight.GetColor()),
 			  Intensity(pointLight.GetIntensity()),
 			  Radius(pointLight.GetRadius()),
-			  Cutoff(pointLight.GetCutoff())
+			  CutoffRadius(pointLight.GetCutoff())
 		{}
 
 		alignas(16) glm::vec3 Location;
-		alignas(16) glm::vec3 Rotation;
-		alignas(16) glm::vec3 Scale;
 		alignas(16) glm::vec3 Color;
 		float Intensity;
 		float Radius;
-		float Cutoff;
+		float CutoffRadius;
 	};
 }
