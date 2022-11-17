@@ -15,20 +15,9 @@ vec3 EvaluatePointLight(PointLight light, Material mat, vec3 matDiffuse, float m
 	vec3 specular = matSpecular * spec * light.Color;
 
 	// attenuation
-	// calculate normalized light vector and distance to sphere light surface
-    float dist = length(light.Location - io_WorldPos);
-    float d = max(dist - light.Radius, 0.0);
-     
-    // calculate basic attenuation
-//    float denom = d / max(light.Radius, 0.00001) + 1.0;
-//    float attenuation = 1.0 / (denom * denom);
-	float denominv = light.Radius / (d + light.Radius);
-	float attenuation = denominv * denominv;
-     
-    // scale and bias attenuation such that:
-    //   attenuation == 0 at extent of max influence
-    //   attenuation == 1 when d == 0
-    attenuation = light.Intensity * max((attenuation - light.Cutoff) / (1.0 - light.Cutoff), 0.0);
+    float d = max(length(light.Location - io_WorldPos) - light.Radius, 0.0); // distance respecting the light radius
+    float t = d / light.Cutoff; // normalized distance
+	float attenuation = light.Intensity / (t * t); // inverse square, div by 0 possible but the perf hit of removing that is not worth it
 
 	return (ambient + diffuse + specular) * attenuation;
 }

@@ -73,7 +73,7 @@ void main()
 
 	vec3 light = vec3(0.0);
 	for (int i = 0; i < 3; i++)
-		light += EvaluatePointLight(PointLights[0], mat, matDiffuse, matSpecular, normal);
+		light += EvaluatePointLight(PointLights[i], mat, matDiffuse, matSpecular, normal);
 
     out_Color = vec4(vec3(PointLights[0].Intensity) * light, 1.0);
 }
