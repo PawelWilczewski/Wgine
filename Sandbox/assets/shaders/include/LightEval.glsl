@@ -16,10 +16,8 @@ vec3 EvaluatePointLight(PointLight light, Material mat, vec3 matDiffuse, float m
 
 	// attenuation
 	// calculate normalized light vector and distance to sphere light surface
-    vec3 L = light.Location - io_WorldPos;
-    float dist = length(L);
+    float dist = length(light.Location - io_WorldPos);
     float d = max(dist - light.Radius, 0.0);
-    L /= dist;
      
     // calculate basic attenuation
 //    float denom = d / max(light.Radius, 0.00001) + 1.0;

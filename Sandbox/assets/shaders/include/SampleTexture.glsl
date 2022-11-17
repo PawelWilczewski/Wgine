@@ -1,3 +1,6 @@
+// invalid texture index is uint8(-1) = 255
+#define INVALID_TEXTURE_INDEX 255U
+
 // converts given slot to index to be used in u_Texture (conversion from local texture index in range <0-32> to global texture index in range <x-y>)
 uint ActualTextureIndex(uint slot)
 {

@@ -8,14 +8,3 @@ struct Material
 	// in order to access the appropriate index, pass the desired slot (0-32) to ActualTextureIndex and then access u_Texture using that slot
 	uint Textures[8];
 };
-
-struct PointLight
-{
-	vec3 Location;
-	vec3 Rotation;
-	vec3 Scale;
-	vec3 Color;
-	float Intensity;
-	float Radius;
-	float Cutoff;
-};
