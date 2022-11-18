@@ -38,7 +38,7 @@ namespace Wgine
 	class AmbientLight : public Light
 	{
 	public:
-		virtual Type GetLightType() const { return Type::Ambient; } // TODO: should this be = 0 so the class is abstract?
+		virtual Type GetLightType() const { return Type::Ambient; }
 
 		AmbientLight(const glm::vec3 &color = glm::vec3(1.f), float intensity = 1.f)
 			: Light(color, intensity)
@@ -83,12 +83,12 @@ namespace Wgine
 	struct DirectionalLightGPU
 	{
 		DirectionalLightGPU(const DirectionalLight &light)
-			: Rotation(light.GetRotation()),
+			: Direction(Transform({ 1.f, 0.f, 0.f }, light.GetRotation(), { 1.f, 1.f, 1.f }).GetForwardVector()),
 			Color(light.GetColor()),
 			Intensity(light.GetIntensity())
 		{}
 
-		alignas(16) glm::vec3 Rotation;
+		alignas(16) glm::vec3 Direction;
 		alignas(16) glm::vec3 Color;
 		float Intensity;
 	};
@@ -151,45 +151,48 @@ namespace Wgine
 			float intensity = 1.f,
 			float radius = 0.f,
 			float cutoffRadius = 1000.f,
-			float cutoffAngle = 45.f)
-			: PointLight(location, color, intensity, radius, cutoffRadius), m_Rotation(rotation), m_CutoffAngle(cutoffAngle)
+			float cutoffAngle = 45.f,
+			float cutoffAngleInner = 40.f)
+			: PointLight(location, color, intensity, radius, cutoffRadius), m_Rotation(rotation), m_CutoffAngle(cutoffAngle), m_CutoffAngleInner(cutoffAngleInner)
 		{}
 
 		virtual ~SpotLight()
 		{}
 
 		const glm::vec3 &GetRotation() const { return m_Rotation; }
-		//const glm::vec3 GetForwardVector() const { return m_Transform.GetForwardVector(); }
-		//const glm::vec3 GetRightVector() const { return m_Transform.GetRightVector(); }
-		//const glm::vec3 GetUpVector() const { return m_Transform.GetUpVector(); }
 		float GetCutoffAngle() const { return m_CutoffAngle; }
+		float GetCutoffAngleInner() const { return m_CutoffAngleInner; }
 
 		void SetRotation(const glm::vec3 &rotation) { m_Rotation = rotation; }
 		void SetCutoffAngle(float cutoffAngle) { m_CutoffAngle = cutoffAngle; }
+		void SetCutoffAngleInner(float cutoffAngleInner) { m_CutoffAngleInner = cutoffAngleInner; }
 
 	protected:
 		glm::vec3 m_Rotation;
 		float m_CutoffAngle;
+		float m_CutoffAngleInner;
 	};
 
 	struct SpotLightGPU
 	{
 		SpotLightGPU(const SpotLight &light)
 			: Location(light.GetLocation()),
-			Rotation(light.GetRotation()),
+			Direction(Transform({ 1.f, 0.f, 0.f }, light.GetRotation(), { 1.f, 1.f, 1.f }).GetForwardVector()),
 			Color(light.GetColor()),
 			Intensity(light.GetIntensity()),
 			Radius(light.GetRadius()),
 			CutoffRadius(light.GetCutoffRadius()),
-			CutoffAngle(light.GetCutoffAngle())
+			CutoffAngle(light.GetCutoffAngle()),
+			CutoffAngleInner(light.GetCutoffAngleInner())
 		{}
 
 		alignas(16) glm::vec3 Location;
-		alignas(16) glm::vec3 Rotation;
+		alignas(16) glm::vec3 Direction;
 		alignas(16) glm::vec3 Color;
 		float Intensity;
 		float Radius;
 		float CutoffRadius;
 		float CutoffAngle;
+		float CutoffAngleInner;
 	};
 }

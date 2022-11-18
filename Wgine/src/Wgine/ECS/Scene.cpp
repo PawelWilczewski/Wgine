@@ -10,6 +10,7 @@ namespace Wgine
 		: m_DeltaSeconds(1.f/60.f), m_ActiveCamera(nullptr), m_Lights(std::vector<Light *>()), m_Entities(std::vector<Entity *>()), m_SceneEntities(std::vector<SceneEntity *>())
 	{
 		m_Entities.reserve(50);
+		m_Lights.reserve(16);
 	}
 
 	void Scene::OnStart()

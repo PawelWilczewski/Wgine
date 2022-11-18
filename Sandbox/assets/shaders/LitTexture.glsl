@@ -75,17 +75,17 @@ void main()
 	float matSpecular = SampleTextureScalar(1U, io_TexCoord, mat.Specular);
 
 	vec3 light = vec3(0.0);
-	for (int i = 0; i < PointLights.length(); i++) // TODO: does this length always work correctly?
-		light += EvaluatePointLight(PointLights[i], mat, matDiffuse, matSpecular, normal);
-
-	for (int i = 0; i < SpotLights.length(); i++) // TODO: does this length always work correctly?
-		light += EvaluateSpotLight(SpotLights[i], mat, matDiffuse, matSpecular, normal);
-
-	for (int i = 0; i < DirectionalLights.length(); i++) // TODO: does this length always work correctly?
-		light += EvaluateDirectionalLight(DirectionalLights[i], mat, matDiffuse, matSpecular, normal);
-
-	for (int i = 0; i < AmbientLights.length(); i++) // TODO: does this length always work correctly?
+	for (int i = 0; i < AmbientLights.length(); i++) // TODO: this length doesnt work correctly?
 		light += EvaluateAmbientLight(AmbientLights[i], mat, matDiffuse, matSpecular, normal);
 
-	out_Color = vec4(vec3(PointLights[0].Intensity) * light, 1.0);
+	for (int i = 0; i < DirectionalLights.length(); i++)
+		light += EvaluateDirectionalLight(DirectionalLights[i], mat, matDiffuse, matSpecular, normal);
+
+	for (int i = 0; i < PointLights.length(); i++)
+		light += EvaluatePointLight(PointLights[i], mat, matDiffuse, matSpecular, normal);
+
+	for (int i = 0; i < SpotLights.length(); i++)
+		light += EvaluateSpotLight(SpotLights[i], mat, matDiffuse, matSpecular, normal);
+
+	out_Color = vec4(light, 1.0);
 }

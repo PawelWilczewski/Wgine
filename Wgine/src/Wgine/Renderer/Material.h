@@ -10,10 +10,9 @@ namespace Wgine
 	class Material
 	{
 	public:
-		Material(glm::vec3 diffuse = glm::vec3(0.2f, 0.6f, 1.f), float specular = 0.5f, float ambient = 0.2f, float shininess = 32.f)
+		Material(glm::vec3 diffuse = glm::vec3(0.2f, 0.6f, 1.f), float specular = 0.5f, float ambient = 1.0f, float shininess = 32.f)
 			: Diffuse(diffuse), Specular(specular), Ambient(ambient), Shininess(shininess), DiffuseTex(nullptr), SpecularTex(nullptr)
-		{
-		}
+		{}
 
 		Material(glm::vec3 diffuse, float specular, float ambient, float shininess, Ref<Texture2D> diffuseTex, Ref<Texture2D> specularTex)
 			: Diffuse(diffuse), Specular(specular), Ambient(ambient), Shininess(shininess), DiffuseTex(diffuseTex), SpecularTex(specularTex)
@@ -34,7 +33,7 @@ namespace Wgine
 	// TODO: material tiling param for each texture
 	struct MaterialGPU
 	{
-		MaterialGPU(glm::vec3 diffuse = glm::vec3(0.2f, 0.6f, 1.f), float specular = 0.5f, float ambient = 0.2f, float shininess = 0.5f)
+		MaterialGPU(glm::vec3 diffuse = glm::vec3(0.2f, 0.6f, 1.f), float specular = 0.5f, float ambient = 1.0f, float shininess = 0.5f)
 			: Diffuse(diffuse), Specular(specular), Ambient(ambient), Shininess(shininess)
 		{}
 

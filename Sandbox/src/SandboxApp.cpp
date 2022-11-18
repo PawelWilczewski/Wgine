@@ -80,16 +80,34 @@ public:
 		floor->MeshData = MeshLibrary::GetQuad();
 		floor->SetScale({ 100.f, 100.f, 1.f });
 
-		constexpr uint32_t lightCount = 3;
-		glm::vec3 lightLocations[lightCount] = { glm::vec3(1.f, 3.f, 4.f), glm::vec3(-2.5f, -2.f, 0.f), glm::vec3(0.f, 4.f, 4.f) };
-		glm::vec3 lightColors[lightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
-		for (uint32_t i = 0; i < lightCount; i++)
+		// lighting
+		auto ambientLight = m_Scene->ConstructLight<AmbientLight>(glm::vec3(1.f, 1.f, 1.f), 0.2f);
+		auto diretionalLight = m_Scene->ConstructLight<DirectionalLight>(glm::vec3(0.f, -30.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 0.5f);
+		
+		constexpr uint32_t pointLightCount = 3;
+		glm::vec3 pointLightLocations[pointLightCount] = { glm::vec3(1.f, 3.f, 4.f), glm::vec3(-2.5f, -2.f, 1.f), glm::vec3(0.f, 4.f, 4.f) };
+		glm::vec3 pointLightColors[pointLightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
+		for (uint32_t i = 0; i < pointLightCount; i++)
 		{
-			auto pointLight = m_Scene->ConstructLight<PointLight>(lightLocations[i], lightColors[i], 1.f, 0.f, 4.f);
-			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(Transform(lightLocations[i]));
+			auto light = m_Scene->ConstructLight<PointLight>(pointLightLocations[i], pointLightColors[i], 1.f, 0.f, 4.f);
+			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(Transform(pointLightLocations[i]));
 			lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
 			lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitDiffuseConst.glsl");
-			lightVis->MaterialData = MakeRef<Material>(lightColors[i]);
+			lightVis->MaterialData = MakeRef<Material>(pointLightColors[i]);
+			lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
+		}
+
+		constexpr uint32_t spotLightCount = 3;
+		glm::vec3 spotLightLocations[spotLightCount] = { glm::vec3(17.f, 13.f, 1.f), glm::vec3(-19.f, -12.f, 7.f), glm::vec3(-15.f, 20.f, 3.f) };
+		glm::vec3 spotLightRotations[spotLightCount] = { glm::vec3(0.f, -90.f, 0.f), glm::vec3(0.f, -30.f, 180.f), glm::vec3(0.f, -60.f, 120.f) };
+		glm::vec3 spotLightColors[spotLightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
+		for (uint32_t i = 0; i < spotLightCount; i++)
+		{
+			auto light = m_Scene->ConstructLight<SpotLight>(spotLightLocations[i], spotLightRotations[i], spotLightColors[i], 1.f, 0.f, 10.f, 45.f, 20.f);
+			auto lightVis = m_Scene->ConstructEntity<SceneEntity>(Transform(spotLightLocations[i]));
+			lightVis->MeshData = MeshLibrary::GetSphere(16, 16);
+			lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitDiffuseConst.glsl");
+			lightVis->MaterialData = MakeRef<Material>(spotLightColors[i]);
 			lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 		}
 
