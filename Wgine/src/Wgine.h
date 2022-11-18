@@ -12,6 +12,7 @@
 
 #include "Wgine/Renderer/RenderCommand.h"
 #include "Wgine/Renderer/Renderer.h"
+#include "Wgine/Renderer/RendererDebug.h"
 #include "Wgine/Renderer/Renderer2D.h"
 #include "Wgine/Renderer/Texture.h"
 #include "Wgine/Renderer/TextureLibrary.h"

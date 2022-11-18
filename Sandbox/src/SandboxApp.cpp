@@ -82,10 +82,12 @@ public:
 
 		// lighting
 		auto ambientLight = m_Scene->ConstructLight<AmbientLight>(glm::vec3(1.f, 1.f, 1.f), 0.2f);
-		auto diretionalLight = m_Scene->ConstructLight<DirectionalLight>(glm::vec3(0.f, -30.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 0.5f);
-		
+		auto directionalLight = m_Scene->ConstructLight<DirectionalLight>(glm::vec3(0.f, 30.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 0.5f);
+		m_DebugLinePoints.push_back({ 0.f, 0.f, 0.f });
+		m_DebugLinePoints.push_back(directionalLight->GetDirection());
+
 		constexpr uint32_t pointLightCount = 3;
-		glm::vec3 pointLightLocations[pointLightCount] = { glm::vec3(1.f, 3.f, 4.f), glm::vec3(-2.5f, -2.f, 1.f), glm::vec3(0.f, 4.f, 4.f) };
+		glm::vec3 pointLightLocations[pointLightCount] = { glm::vec3(10.f, 30.f, 4.f), glm::vec3(-25.f, -20.f, 1.f), glm::vec3(10.f, 4.f, 7.f) };
 		glm::vec3 pointLightColors[pointLightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
 		for (uint32_t i = 0; i < pointLightCount; i++)
 		{
@@ -100,7 +102,7 @@ public:
 		// TODO: correctly implement spot light radius (we need to find the intersection point behind the circle and thats gonna be the actual emission point), then we can properly calculate the light respecting the radius
 		constexpr uint32_t spotLightCount = 3;
 		glm::vec3 spotLightLocations[spotLightCount] = { glm::vec3(17.f, 13.f, 1.f), glm::vec3(-19.f, -12.f, 7.f), glm::vec3(-15.f, 20.f, 3.f) };
-		glm::vec3 spotLightRotations[spotLightCount] = { glm::vec3(0.f, -90.f, 0.f), glm::vec3(0.f, -30.f, 180.f), glm::vec3(0.f, -60.f, 120.f) };
+		glm::vec3 spotLightRotations[spotLightCount] = { glm::vec3(0.f, 90.f, 0.f), glm::vec3(0.f, 30.f, 90.f), glm::vec3(0.f, 60.f, 120.f) };
 		glm::vec3 spotLightColors[spotLightCount] = { { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f } };
 		for (uint32_t i = 0; i < spotLightCount; i++)
 		{
@@ -110,6 +112,8 @@ public:
 			lightVis->ShaderData = ShaderLibrary::Get("assets/shaders/UnlitDiffuseConst.glsl");
 			lightVis->MaterialData = MakeRef<Material>(spotLightColors[i]);
 			lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
+			m_DebugLinePoints.push_back(light->GetLocation());
+			m_DebugLinePoints.push_back(light->GetLocation() + light->GetDirection());
 		}
 
 		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
@@ -209,9 +213,13 @@ public:
 
 		
 		Renderer::Submit(m_Scene.get());
-		m_Sphere->DebugDrawNormals();
-		m_Cube->DebugDrawNormals();
-		m_Axis->DebugDrawNormals();
+
+		//m_Sphere->DebugDrawNormals();
+		//m_Cube->DebugDrawNormals();
+		//m_Axis->DebugDrawNormals();
+		for (int i = 0; i < m_DebugLinePoints.size(); i += 2)
+			RendererDebug::DrawLine(m_DebugLinePoints[i], m_DebugLinePoints[i + 1]);
+
 		Renderer::Flush();
 	}
 
@@ -249,6 +257,8 @@ private:
 	Ref<Material> m_BaseMaterial;
 
 	Ref<Texture2D> m_Texture, m_TransparentTexture;
+
+	std::vector<glm::vec3> m_DebugLinePoints = {};
 
 	glm::vec4 m_PickedColor = glm::vec4(0.5f, 0.2f, 0.8f, 1.f);
 };

@@ -67,23 +67,31 @@ namespace Wgine
 		virtual Type GetLightType() const override { return Type::Directional; }
 
 		DirectionalLight(const glm::vec3 &rotation = glm::vec3(0.f), glm::vec3 color = glm::vec3(1.f), float intensity = 1.f)
-			: Light(color, intensity), m_Rotation(rotation)
-		{}
+			: Light(color, intensity)
+		{
+			SetRotation(rotation);
+		}
 
 		virtual ~DirectionalLight()
 		{}
 
 		const glm::vec3 &GetRotation() const { return m_Rotation; }
-		void SetRotation(const glm::vec3 &rotation) { m_Rotation = rotation; }
+		const glm::vec3 &GetDirection() const { return m_Direction; }
+		void SetRotation(const glm::vec3 &rotation)
+		{
+			m_Rotation = rotation;
+			m_Direction = Transform({ 1.f, 0.f, 0.f }, m_Rotation, { 1.f, 1.f, 1.f }).GetForwardVector();
+		}
 
 	protected:
 		glm::vec3 m_Rotation;
+		glm::vec3 m_Direction;
 	};
 
 	struct DirectionalLightGPU
 	{
 		DirectionalLightGPU(const DirectionalLight &light)
-			: Direction(Transform({ 1.f, 0.f, 0.f }, light.GetRotation(), { 1.f, 1.f, 1.f }).GetForwardVector()),
+			: Direction(light.GetDirection()),
 			Color(light.GetColor()),
 			Intensity(light.GetIntensity())
 		{}
@@ -153,8 +161,10 @@ namespace Wgine
 			float cutoffRadius = 1000.f,
 			float cutoffAngle = 45.f,
 			float cutoffAngleInner = 40.f)
-			: PointLight(location, color, intensity, radius, cutoffRadius), m_Rotation(rotation), m_CutoffAngle(cutoffAngle), m_CutoffAngleInner(cutoffAngleInner)
-		{}
+			: PointLight(location, color, intensity, radius, cutoffRadius), m_CutoffAngle(cutoffAngle), m_CutoffAngleInner(cutoffAngleInner)
+		{
+			SetRotation(rotation);
+		}
 
 		virtual ~SpotLight()
 		{}
@@ -162,13 +172,19 @@ namespace Wgine
 		const glm::vec3 &GetRotation() const { return m_Rotation; }
 		float GetCutoffAngle() const { return m_CutoffAngle; }
 		float GetCutoffAngleInner() const { return m_CutoffAngleInner; }
+		const glm::vec3 &GetDirection() const { return m_Direction; }
 
-		void SetRotation(const glm::vec3 &rotation) { m_Rotation = rotation; }
+		void SetRotation(const glm::vec3 &rotation)
+		{
+			m_Rotation = rotation;
+			m_Direction = Transform({ 1.f, 0.f, 0.f }, m_Rotation, { 1.f, 1.f, 1.f }).GetForwardVector();
+		}
 		void SetCutoffAngle(float cutoffAngle) { m_CutoffAngle = cutoffAngle; }
 		void SetCutoffAngleInner(float cutoffAngleInner) { m_CutoffAngleInner = cutoffAngleInner; }
 
 	protected:
 		glm::vec3 m_Rotation;
+		glm::vec3 m_Direction;
 		float m_CutoffAngle;
 		float m_CutoffAngleInner;
 	};
@@ -177,7 +193,7 @@ namespace Wgine
 	{
 		SpotLightGPU(const SpotLight &light)
 			: Location(light.GetLocation()),
-			Direction(Transform({ 1.f, 0.f, 0.f }, light.GetRotation(), { 1.f, 1.f, 1.f }).GetForwardVector()),
+			Direction(light.GetDirection()),
 			Color(light.GetColor()),
 			Intensity(light.GetIntensity()),
 			Radius(light.GetRadius()),
