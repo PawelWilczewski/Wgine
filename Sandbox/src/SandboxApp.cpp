@@ -97,6 +97,7 @@ public:
 			lightVis->SetScale({ 0.1f, 0.1f, 0.1f });
 		}
 
+		// TODO: correctly implement spot light radius (we need to find the intersection point behind the circle and thats gonna be the actual emission point), then we can properly calculate the light respecting the radius
 		constexpr uint32_t spotLightCount = 3;
 		glm::vec3 spotLightLocations[spotLightCount] = { glm::vec3(17.f, 13.f, 1.f), glm::vec3(-19.f, -12.f, 7.f), glm::vec3(-15.f, 20.f, 3.f) };
 		glm::vec3 spotLightRotations[spotLightCount] = { glm::vec3(0.f, -90.f, 0.f), glm::vec3(0.f, -30.f, 180.f), glm::vec3(0.f, -60.f, 120.f) };
