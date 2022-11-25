@@ -19,6 +19,7 @@ IncludeDir["Glad"] = "Wgine/thirdparty/Glad/include"
 IncludeDir["ImGui"] = "Wgine/thirdparty/ImGui"
 IncludeDir["glm"] = "Wgine/thirdparty/glm"
 IncludeDir["stb_image"] = "Wgine/thirdparty/stb_image"
+IncludeDir["cgltf"] = "Wgine/thirdparty/cgltf"
 
 group "Dependencies"
 	include "Wgine/thirdparty/GLFW"
@@ -46,7 +47,9 @@ group ""
 			"%{prj.name}/thirdparty/stb_image/**.h",
 			"%{prj.name}/thirdparty/stb_image/**.cpp",
 			"%{prj.name}/thirdparty/glm/glm/**.hpp",
-			"%{prj.name}/thirdparty/glm/glm/**.inl"
+			"%{prj.name}/thirdparty/glm/glm/**.inl",
+			"%{prj.name}/thirdparty/cgltf/**.h",
+			"%{prj.name}/thirdparty/cgltf/**.cpp"
 		}
 
 		includedirs
@@ -57,7 +60,8 @@ group ""
 			"%{IncludeDir.Glad}",
 			"%{IncludeDir.ImGui}",
 			"%{IncludeDir.glm}",
-			"%{IncludeDir.stb_image}"
+			"%{IncludeDir.stb_image}",
+			"%{IncludeDir.cgltf}"
 		}
 
 		links
