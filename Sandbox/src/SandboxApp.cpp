@@ -116,11 +116,20 @@ public:
 			m_DebugLinePoints.push_back(light->GetLocation() + light->GetDirection());
 		}
 
-		m_Cube = m_Scene->ConstructEntity<SceneEntity>();
-		m_Cube->MeshData = MeshLibrary::GetCube(false);
-		m_Cube->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
-		m_Cube->MaterialData = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/diffuse.png"), TextureLibrary::Get("assets/textures/specular.png"));
-		m_Cube->SetLocation({ 3.f, 0.f, 0.5f });
+		auto cubeMesh = MeshLibrary::GetCube(false);
+		auto cubeShader = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
+		auto cubeMaterial = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/diffuse.png"), TextureLibrary::Get("assets/textures/specular.png"));
+		for (int y = 0; y < 10; y++)
+		{
+			for (int x = 0; x < 10; x++)
+			{
+				m_Cube = m_Scene->ConstructEntity<SceneEntity>();
+				m_Cube->MeshData = cubeMesh;
+				m_Cube->ShaderData = cubeShader;
+				m_Cube->MaterialData = cubeMaterial;
+				m_Cube->SetLocation({ 10.f + x * 3.f, 10.f + y * 3.f, 0.5f });
+			}
+		}
 
 		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
 		m_Sphere->MeshData = MeshLibrary::GetSphere(); // 16, 16 for 4x better performance lol
