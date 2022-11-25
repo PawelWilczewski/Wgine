@@ -14,7 +14,3 @@
 [submodule "Wgine/thirdparty/glm"]
 	path = Wgine/thirdparty/glm
 	url = https://github.com/g-truc/glm
-[submodule "Wgine/thirdparty/assimp"]
-	path = Wgine/thirdparty/assimp
-	url = https://github.com/pawelwilczewski/assimp
-	ignore = dirty
