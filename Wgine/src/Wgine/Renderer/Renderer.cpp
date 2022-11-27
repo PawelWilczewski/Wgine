@@ -32,6 +32,9 @@ namespace Wgine
 		{
 		}
 
+		virtual ~RendererData()
+		{}
+
 		void Init()
 		{
 			AmbientLightsSSBO = StorageBuffer::Create(sizeof(AmbientLightGPU) * 1);
