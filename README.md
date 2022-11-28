@@ -25,5 +25,9 @@ Now, open `Wgine.sln` in Visual Studio and build the project.
 
 Running [GenerateProjects.bat](GenerateProjects.bat) will regenerate project files at any time.
 
+# Gallery
+
+![Initial Lighting Setup](../assets/img/initial_lighting.png?raw=true)
+
 # Credit
 The initial project setup and some of the overall structure of the engine inspired by [the Hazel 2D Game Engine series](https://www.youtube.com/watch?v=JxIZbV_XjAs&list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT) by [The Cherno](https://www.youtube.com/c/TheChernoProject). Thank you to the author for creating such an amazing learning resource!
