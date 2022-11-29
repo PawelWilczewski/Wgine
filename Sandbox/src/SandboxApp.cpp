@@ -196,6 +196,11 @@ public:
 			m_AxisCamera->ShaderData = ShaderLibrary::Get("assets/shaders/VertexColor.glsl");
 			m_Axis->SetLocation({ 0.f, 0.f, 0.1f });
 		}
+
+		m_Rifle = m_Scene->ConstructEntity<SceneEntity>();
+		m_Rifle->MeshData = MakeRef<Mesh>("assets/meshes/R14.gltf");
+		m_Rifle->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
+		m_Rifle->MaterialData = cubeMaterial;
 	}
 
 	virtual void OnAttach() override
@@ -262,6 +267,7 @@ private:
 	SceneEntity *m_AxisCamera;
 	SceneEntity *m_Sphere;
 	SceneEntity *m_Cube;
+	SceneEntity *m_Rifle;
 
 	Ref<Material> m_BaseMaterial;
 

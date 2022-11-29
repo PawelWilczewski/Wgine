@@ -1,6 +1,5 @@
 #include "WginePCH.h"
 #include "ShaderLibrary.h"
-#include <filesystem>
 
 namespace Wgine
 {

@@ -4,7 +4,6 @@
 #include "Wgine/Core/FileUtils.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <regex>
-#include <filesystem>
 
 namespace Wgine
 {

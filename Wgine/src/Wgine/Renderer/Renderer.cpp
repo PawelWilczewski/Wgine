@@ -294,7 +294,7 @@ namespace Wgine
 
 		// push vertices
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
-			shaderData.Vertices.push_back(mesh->GetVertices()[i]);
+			shaderData.Vertices.push_back(mesh->GetVertices()[i]); // TODO: don't push vertices if mesh ref is already present somewhere (only use indices to draw another instance)
 
 		// material
 		uint32_t index;

@@ -20,6 +20,11 @@ namespace Wgine
 			if (recalculateNormals) RecalculateNormals();
 		}
 
+		// TODO: wigne asset file path wrapper
+		Mesh(const std::string &filePath, bool recalculateNormals = false);
+
+		virtual ~Mesh() {}
+
 		std::vector<Vertex> GetVertices() const { return m_Vertices; }
 		std::vector<uint32_t> GetIndices() const { return m_Indices; }
 
