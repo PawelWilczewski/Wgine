@@ -47,7 +47,10 @@ namespace Wgine
 					for (int i = 0; i < primitive->indices->count; i++)
 						indices32[i] = (uint32_t)indices[i];
 					AddIndices(indices32.get(), primitive->indices->count);
+
+					// reverse order because we're using front face culling
 					std::reverse(m_Indices.begin(), m_Indices.end());
+
 					break;
 				}
 				case cgltf_component_type_r_32u:
