@@ -29,7 +29,7 @@ namespace Wgine
 		// parse
 		cgltf_result result = cgltf_parse_file(&options, fullPath.c_str(), &data);
 		WGINE_CORE_ASSERT(result == cgltf_result_success, "Error importing a mesh from .gltf file: {0}", fullPath);
-
+		cgltf_load_buffers(&options, data, fullPath.c_str());
 		for (cgltf_mesh *mesh = data->meshes; mesh < data->meshes + data->meshes_count; mesh++)
 		{
 			for (cgltf_primitive *primitive = mesh->primitives; primitive < mesh->primitives + mesh->primitives_count; primitive++)
@@ -37,75 +37,217 @@ namespace Wgine
 				// append indices
 				switch (primitive->indices->component_type)
 				{
-				case cgltf_component_type_invalid: WGINE_CORE_ASSERT(false, "TODO: fill up");  break;
 				case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 				case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 				case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 				case cgltf_component_type_r_16u:
 				{
-					auto test = data->buffers->data;
-					// TODO: we should support 16 bit index and more
-					auto start = primitive->indices->buffer_view->offset;
-					//auto start = primitive->indices->buffer_view->size;
-
-					//auto buffer = data->buffers + (cgltf_buffer *)primitive->indices->buffer_view->buffer->data;
-					auto indices = (uint16_t *)primitive->indices->buffer_view->data;
-					//AddIndices((uint32_t *)indices, primitive->indices->count);
+					auto indices = (uint16_t *)cgltf_buffer_view_data(primitive->indices->buffer_view);
+					auto indices32 = MakeScope<uint32_t[]>(primitive->indices->count);
+					for (int i = 0; i < primitive->indices->count; i++)
+						indices32[i] = (uint32_t)indices[i];
+					AddIndices(indices32.get(), primitive->indices->count);
+					std::reverse(m_Indices.begin(), m_Indices.end());
 					break;
 				}
-				case cgltf_component_type_r_32u: AddIndices((uint32_t *)primitive->indices->buffer_view->data, primitive->indices->count);  break;
+				case cgltf_component_type_r_32u:
+				{
+					AddIndices((uint32_t *)cgltf_buffer_view_data(primitive->indices->buffer_view), primitive->indices->count);
+					break;
+				}
 				case cgltf_component_type_r_32f: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 				case cgltf_component_type_max_enum: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-				default: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+				default: WGINE_CORE_ASSERT(false, "Invalid index component type for imported mesh!"); break;
 				}
 
-				// create the vertices data
+				// parse the vertices data
 				for (cgltf_attribute *attribute = primitive->attributes; attribute < primitive->attributes + primitive->attributes_count; attribute++)
 				{
-					float *result = new float[attribute->data->count];
-					for (int i = 0; i < attribute->data->count; i++)
-						cgltf_accessor_read_float(attribute->data, i, &result[i], 3);
-					delete[] result;
-					switch (attribute->data->type)
-					{
-					case cgltf_type_invalid: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_scalar: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_vec2: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_vec3: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_vec4: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_mat2: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_mat3: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_mat4: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_type_max_enum: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					default: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					}
-
-					switch (attribute->data->component_type)
-					{
-					case cgltf_component_type_invalid: WGINE_CORE_ASSERT(false, "TODO: fill up");  break;
-					case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_r_16u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_r_32f: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_component_type_max_enum: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					default: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					}
-
 					switch (attribute->type)
 					{
-					case cgltf_attribute_type_invalid: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_position: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_normal: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_tangent: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_texcoord: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_color: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_joints: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_weights: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_custom: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					case cgltf_attribute_type_max_enum: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
-					default: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+					case cgltf_attribute_type_position:
+					{
+						switch (attribute->data->type)
+						{
+						case cgltf_type_vec2: WGINE_CORE_ASSERT(false, "Mesh position data as 2D vector!"); break;
+						case cgltf_type_vec3:
+						{
+							switch (attribute->data->component_type)
+							{
+							case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32f:
+							{
+								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].Position = data[i];
+								break;
+							}
+							default: WGINE_CORE_ASSERT(false, "Invalid component type for position of imported mesh!"); break;
+							}
+
+							break;
+						}
+						case cgltf_type_vec4: WGINE_CORE_ASSERT(false, "Mesh position data as 4D vector!"); break;
+						default: WGINE_CORE_ASSERT(false, "Invalid position data type for imported mesh!"); break;
+						}
+						break;
+					}
+					case cgltf_attribute_type_normal:
+					{
+						switch (attribute->data->type)
+						{
+						case cgltf_type_vec2: WGINE_CORE_ASSERT(false, "Mesh normal data as 2D vector!"); break;
+						case cgltf_type_vec3:
+						{
+							switch (attribute->data->component_type)
+							{
+							case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32f:
+							{
+								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].Normal = data[i];
+								break;
+							}
+							default: WGINE_CORE_ASSERT(false, "Invalid component type for normal of imported mesh!"); break;
+							}
+							break;
+						}
+						case cgltf_type_vec4: WGINE_CORE_ASSERT(false, "Mesh normal data as 4D vector!"); break;
+						default: WGINE_CORE_ASSERT(false, "Invalid normal data type for imported mesh!"); break;
+						}
+						break;
+					}
+					case cgltf_attribute_type_tangent:
+					{
+						WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+						break;
+					}
+					case cgltf_attribute_type_texcoord:
+					{
+						switch (attribute->data->type)
+						{
+						case cgltf_type_vec2: 
+						{
+							switch (attribute->data->component_type)
+							{
+							case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32f:
+							{
+								auto data = (glm::vec2 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].TexCoord = data[i];
+								break;
+							}
+							default: WGINE_CORE_ASSERT(false, "Invalid component type for texcoord of imported mesh!"); break;
+							}
+							break;
+						}
+						case cgltf_type_vec3: WGINE_CORE_ASSERT(false, "Mesh texcoords data as 3D vector!"); break;
+						case cgltf_type_vec4: WGINE_CORE_ASSERT(false, "Mesh texcoords data as 4D vector!"); break;
+						default: WGINE_CORE_ASSERT(false, "Invalid texcoords data type for imported mesh!"); break;
+						}
+						break;
+					}
+					case cgltf_attribute_type_color:
+					{
+						switch (attribute->data->type)
+						{
+						case cgltf_type_vec2: WGINE_CORE_ASSERT(false, "Mesh color data as 2D vector!"); break;
+						case cgltf_type_vec3:
+						{
+							switch (attribute->data->component_type)
+							{
+							case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32f:
+							{
+								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].Color = data[i];
+								break;
+							}
+							default: WGINE_CORE_ASSERT(false, "Invalid component type for color of imported mesh!"); break;
+							}
+							break;
+						}
+						case cgltf_type_vec4:
+						{
+							switch (attribute->data->component_type)
+							{
+							case cgltf_component_type_r_8: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_8u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_16u:
+							{
+								auto data = (glm::vec<4, uint16_t> *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].Color = glm::vec3(data[i].x / 255.f, data[i].y / 255.f, data[i].z/ 255.f);
+								break;
+							}
+							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+							case cgltf_component_type_r_32f:
+							{
+								auto data = (glm::vec4 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								if (m_Vertices.size() < attribute->data->count)
+									m_Vertices.resize(attribute->data->count);
+								for (int i = 0; i < attribute->data->count; i++)
+									m_Vertices[i].Color = data[i];
+								break;
+							}
+							default: WGINE_CORE_ASSERT(false, "Invalid component type for color of imported mesh!"); break;
+							}
+							break;
+						}
+						default: WGINE_CORE_ASSERT(false, "Invalid color data type for imported mesh!"); break;
+						}
+						break;
+					}
+					case cgltf_attribute_type_joints:
+					{
+						WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+					}
+					case cgltf_attribute_type_weights:
+					{
+						WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+					}
+					case cgltf_attribute_type_custom:
+					{
+						WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+					}
+					case cgltf_attribute_type_max_enum:
+					{
+						WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
+					}
+					default:
+					{
+						WGINE_CORE_ASSERT(false, "Invalid/not implemented attribute type for imported mesh!"); break; // TODO: probs just skip instead
+					}
 					}
 				}
 			}
