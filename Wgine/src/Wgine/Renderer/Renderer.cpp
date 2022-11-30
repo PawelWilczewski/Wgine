@@ -277,6 +277,9 @@ namespace Wgine
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
 
+		// TODO: DO NOW dict <Ref<Mesh>, index> to be able to only update dirty meshes, and sort them accordingly without bigger effort, and avoid duplication of vertices for the same mesh reference
+		//  + mesh library for reading from files; optional make copy if user wants to edit that mesh; if not: return the ref stored in the dictionary
+
 		// push meshes, transforms
 		shaderData.Meshes.push_back(mesh);
 		int32_t transformID = shaderData.Transforms.size();
