@@ -198,7 +198,7 @@ public:
 		}
 
 		m_Rifle = m_Scene->ConstructEntity<SceneEntity>();
-		m_Rifle->MeshData = MakeRef<Mesh>("assets/meshes/R14.gltf");
+		m_Rifle->MeshData = MakeRef<Mesh>("assets/meshes/R14.glb");
 		m_Rifle->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		m_Rifle->MaterialData = cubeMaterial;
 	}

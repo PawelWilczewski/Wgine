@@ -21,6 +21,7 @@ namespace Wgine
 
 		// TODO: wgine asset file path wrapper
 		// TODO: probs move to MeshLibrary
+		// TODO: import options like which axis up, scale for each axis (i. e. -1 to mirror) etc.
 		Mesh(const std::string &filePath, bool recalculateNormals = false);
 
 		virtual ~Mesh() {}
