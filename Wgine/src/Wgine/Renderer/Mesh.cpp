@@ -262,8 +262,64 @@ namespace Wgine
 		if (recalculateNormals) RecalculateNormals();
 	}
 
+	void Mesh::AddVertex(const Vertex &v)
+	{
+		m_DirtyVertices = true;
+		m_Vertices.push_back(v);
+	}
+
+	void Mesh::AddVertices(std::vector<Vertex> v)
+	{
+		m_DirtyVertices = true;
+		m_Vertices.insert(m_Vertices.end(), v.begin(), v.end());
+	}
+
+	void Mesh::AddVertices(Vertex *v, int count)
+	{
+		m_DirtyVertices = true;
+		m_Vertices.insert(m_Vertices.end(), v, v + count);
+	}
+
+	void Mesh::AddIndex(uint32_t i)
+	{
+		m_DirtyIndices = true;
+		m_Indices.push_back(i);
+	}
+
+	void Mesh::AddIndices(uint32_t *i, int count)
+	{
+		m_DirtyIndices = true;
+		m_Indices.insert(m_Indices.end(), i, i + count);
+	}
+
+	void Mesh::AddIndices(std::vector<uint32_t> i)
+	{
+		m_DirtyIndices = true;
+		m_Indices.insert(m_Indices.end(), i.begin(), i.end());
+	}
+
+	void Mesh::AddTriangle(const Vertex &v0, const Vertex &v1, const Vertex &v2)
+	{
+		m_DirtyIndices = true;
+		m_DirtyVertices = true;
+		uint32_t nextIndex = m_Vertices.size();
+		m_Vertices.insert(m_Vertices.end(), { v0, v1, v2 });
+		m_Indices.insert(m_Indices.end(), { nextIndex, nextIndex + 1, nextIndex + 2 });
+	}
+
+	void Mesh::AddQuad(const Vertex &v0, const Vertex &v1, Vertex v2, Vertex v3)
+	{
+		m_DirtyIndices = true;
+		m_DirtyVertices = true;
+		uint32_t nextIndex = m_Vertices.size();
+		m_Vertices.insert(m_Vertices.end(), { v0, v1, v2, v3 });
+		m_Indices.insert(m_Indices.end(), { nextIndex, nextIndex + 1, nextIndex + 2, nextIndex + 2, nextIndex + 3, nextIndex });
+	}
+
 	void Mesh::RecalculateNormals()
 	{
+		m_DirtyVertices = true;
+
 		// area and angle-weighted smooth shading
 		for (int i = 0; i < m_Indices.size(); i += 3)
 		{
