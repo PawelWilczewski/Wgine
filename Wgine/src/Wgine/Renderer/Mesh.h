@@ -43,13 +43,15 @@ namespace Wgine
 		// must share vertices for smooth and must not for flat
 		void RecalculateNormals();
 
-		void ClearDirtyIndicesFlag() { m_DirtyIndices = false; }
+		bool HasDirtyVertices() const { return m_DirtyVertices; }
+
+		//void ClearDirtyIndicesFlag() { m_DirtyIndices = false; }
 		void ClearDirtyVerticesFlag() { m_DirtyVertices = false; }
 
 	protected:
 		std::vector<Vertex> m_Vertices;
 		std::vector<uint32_t> m_Indices;
-		bool m_DirtyIndices = true;
+		bool m_DirtyIndices = true; // TODO: what to do about this...
 		bool m_DirtyVertices = true;
 	};
 }
