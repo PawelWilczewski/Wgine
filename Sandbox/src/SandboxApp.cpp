@@ -119,9 +119,9 @@ public:
 		auto cubeMesh = MeshLibrary::GetCube(false);
 		auto cubeShader = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		auto cubeMaterial = MakeRef<Material>(glm::vec3(0.2f, 0.8f, 0.3f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/diffuse.png"), TextureLibrary::Get("assets/textures/specular.png"));
-		for (int y = 0; y < 10; y++)
+		for (int y = 0; y < 2; y++)
 		{
-			for (int x = 0; x < 10; x++)
+			for (int x = 0; x < 2; x++)
 			{
 				m_Cube = m_Scene->ConstructEntity<SceneEntity>();
 				m_Cube->MeshData = cubeMesh;
@@ -132,7 +132,7 @@ public:
 		}
 
 		m_Sphere = m_Scene->ConstructEntity<SceneEntity>();
-		m_Sphere->MeshData = MeshLibrary::GetSphere(); // 16, 16 for 4x better performance lol
+		m_Sphere->MeshData = MeshLibrary::GetSphere();
 		m_Sphere->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 		//m_Sphere->MaterialData = m_BaseMaterial;
 		m_Sphere->SetLocation({ -2.f, 0.f, 2.f });
@@ -200,7 +200,7 @@ public:
 		m_Rifle = m_Scene->ConstructEntity<SceneEntity>();
 		m_Rifle->MeshData = MakeRef<Mesh>("assets/meshes/R14.glb");
 		m_Rifle->ShaderData = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
-		m_Rifle->MaterialData = cubeMaterial;
+		m_Rifle->MaterialData = MakeRef<Material>(glm::vec3(1.f), 1.f, 0.4f, 128.f, TextureLibrary::Get("assets/textures/R14_BaseColor.png"));
 	}
 
 	virtual void OnAttach() override

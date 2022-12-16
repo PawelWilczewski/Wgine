@@ -30,6 +30,8 @@ namespace Wgine
 		cgltf_result result = cgltf_parse_file(&options, fullPath.c_str(), &data);
 		WGINE_CORE_ASSERT(result == cgltf_result_success, "Error importing a mesh from .gltf file: {0}", fullPath);
 		cgltf_load_buffers(&options, data, fullPath.c_str());
+
+		bool uvImported = false;
 		for (cgltf_mesh *mesh = data->meshes; mesh < data->meshes + data->meshes_count; mesh++)
 		{
 			for (cgltf_primitive *primitive = mesh->primitives; primitive < mesh->primitives + mesh->primitives_count; primitive++)
@@ -84,11 +86,11 @@ namespace Wgine
 							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_32f:
 							{
-								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].Position = data[i];
+									m_Vertices[i].Position = bufferData[i];
 								break;
 							}
 							default: WGINE_CORE_ASSERT(false, "Invalid component type for position of imported mesh!"); break;
@@ -117,11 +119,11 @@ namespace Wgine
 							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_32f:
 							{
-								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].Normal = data[i];
+									m_Vertices[i].Normal = bufferData[i];
 								break;
 							}
 							default: WGINE_CORE_ASSERT(false, "Invalid component type for normal of imported mesh!"); break;
@@ -140,6 +142,9 @@ namespace Wgine
 					}
 					case cgltf_attribute_type_texcoord:
 					{
+						// only import the first uv coords
+						if (uvImported) break;
+
 						switch (attribute->data->type)
 						{
 						case cgltf_type_vec2: 
@@ -153,11 +158,12 @@ namespace Wgine
 							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_32f:
 							{
-								auto data = (glm::vec2 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec2 *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].TexCoord = data[i];
+									m_Vertices[i].TexCoord = bufferData[i];
+								uvImported = true;
 								break;
 							}
 							default: WGINE_CORE_ASSERT(false, "Invalid component type for texcoord of imported mesh!"); break;
@@ -186,11 +192,11 @@ namespace Wgine
 							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_32f:
 							{
-								auto data = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec3 *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].Color = data[i];
+									m_Vertices[i].Color = bufferData[i];
 								break;
 							}
 							default: WGINE_CORE_ASSERT(false, "Invalid component type for color of imported mesh!"); break;
@@ -206,21 +212,21 @@ namespace Wgine
 							case cgltf_component_type_r_16: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_16u:
 							{
-								auto data = (glm::vec<4, uint16_t> *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec<4, uint16_t> *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].Color = glm::vec3(data[i].x / 255.f, data[i].y / 255.f, data[i].z/ 255.f);
+									m_Vertices[i].Color = glm::vec3(bufferData[i].x / 255.f, bufferData[i].y / 255.f, bufferData[i].z/ 255.f);
 								break;
 							}
 							case cgltf_component_type_r_32u: WGINE_CORE_ASSERT(false, "TODO: fill up"); break;
 							case cgltf_component_type_r_32f:
 							{
-								auto data = (glm::vec4 *)cgltf_buffer_view_data(attribute->data->buffer_view);
+								auto bufferData = (glm::vec4 *)cgltf_buffer_view_data(attribute->data->buffer_view);
 								if (m_Vertices.size() < attribute->data->count)
 									m_Vertices.resize(attribute->data->count);
 								for (int i = 0; i < attribute->data->count; i++)
-									m_Vertices[i].Color = data[i];
+									m_Vertices[i].Color = bufferData[i];
 								break;
 							}
 							default: WGINE_CORE_ASSERT(false, "Invalid component type for color of imported mesh!"); break;

@@ -18,6 +18,10 @@ namespace Wgine
 			: Diffuse(diffuse), Specular(specular), Ambient(ambient), Shininess(shininess), DiffuseTex(diffuseTex), SpecularTex(specularTex)
 		{}
 
+		Material(glm::vec3 diffuse, float specular, float ambient, float shininess, Ref<Texture2D> diffuseTex)
+			: Diffuse(diffuse), Specular(specular), Ambient(ambient), Shininess(shininess), DiffuseTex(diffuseTex), SpecularTex(nullptr)
+		{}
+
 		~Material()
 		{}
 

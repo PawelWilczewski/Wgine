@@ -149,8 +149,9 @@ namespace Wgine
 			TransformIDs.clear();
 			Materials.clear();
 			MaterialIDs.clear();
-			Vertices.clear();
+			//Vertices.clear();
 			Indices.clear();
+			ShouldUpdateVertices = false;
 		}
 
 		void Flush()
@@ -174,7 +175,18 @@ namespace Wgine
 			// TODO: can this be uploaded only once at the start?
 			Shader->UploadUniformIntArray("u_Texture", Renderer::s_TextureSlots, Renderer::s_TextureSlotsCount);
 
-			VBO->SetData(Vertices.data(), sizeof(Vertex) * Vertices.size());
+
+			// clear any unnecessary vertices (out of date)
+			for (auto const &element : MeshVerticesStart)
+			{
+				if (std::find(Meshes.begin(), Meshes.end(), element.first) == Meshes.end())
+				{
+					// TODO: urgent, this mesh should be removed from the vbo - it's not used anymore
+				}
+			}
+
+			if (ShouldUpdateVertices)
+				VBO->SetData(Vertices.data(), sizeof(Vertex) * Vertices.size());
 			IBO->SetData(Indices.data(), Indices.size());
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
@@ -220,6 +232,10 @@ namespace Wgine
 		std::vector<int32_t> MaterialIDs;
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
+
+		std::unordered_map<Ref<Mesh>, uint32_t> MeshVerticesStart;
+
+		bool ShouldUpdateVertices = false;
 	};
 
 	static std::unordered_map<std::string, PerShaderData> s_ShaderData;
@@ -266,13 +282,10 @@ namespace Wgine
 	{
 		WGINE_ASSERT(s_RendererData.ActiveCamera, "No active camera for renderer!");
 
-		// TODO: in order to greatly improve performance, only update "dirty" entities (use some array mask to make it more efficient)
-
-		if (!mesh)
-			return;
+		if (!mesh) return;
 
 		// new Shader
-		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched c++ 20 use .contains instead
+		if (s_ShaderData.find(shader->GetPath()) == s_ShaderData.end()) // TODO: when switched to c++ 20 use .contains instead
 			s_ShaderData[shader->GetPath()] = PerShaderData(shader);
 
 		auto &shaderData = s_ShaderData[shader->GetPath()];
@@ -280,7 +293,11 @@ namespace Wgine
 		// TODO: DO NOW dict <Ref<Mesh>, index> to be able to only update dirty meshes, and sort them accordingly without bigger effort, and avoid duplication of vertices for the same mesh reference
 		//  + mesh library for reading from files; optional make copy if user wants to edit that mesh; if not: return the ref stored in the dictionary
 
-		// push meshes, transforms
+		// TODO: same thing to mark as dirty for transforms
+
+		// push transforms
+		//if (shader->GetPath().compare("assets/shaders/LitTexture.glsl"))
+		//	__debugbreak();
 		shaderData.Meshes.push_back(mesh);
 		int32_t transformID = shaderData.Transforms.size();
 		shaderData.Transforms.push_back(transform);
@@ -289,15 +306,25 @@ namespace Wgine
 		for (int i = 0; i < mesh->GetVertices().size(); i++)
 			shaderData.TransformIDs.push_back(transformID);
 
-		// push offset indices
-		auto offset = shaderData.Vertices.size();
+		// push vertices
+		bool newMesh = shaderData.MeshVerticesStart.count(mesh) == 0;
+		if (newMesh || mesh->HasDirtyVertices())
+		{
+			// TODO: if dirty verts, also remove from the vertices array (mind the start offset difference and stuff)
+			shaderData.MeshVerticesStart[mesh] = shaderData.Vertices.size();
+
+			mesh->ClearDirtyVerticesFlag();
+			shaderData.ShouldUpdateVertices = true;
+
+			for (int i = 0; i < mesh->GetVertices().size(); i++)
+				shaderData.Vertices.push_back(mesh->GetVertices()[i]);
+		}
+
+		//  indices
+		auto offset = shaderData.MeshVerticesStart[mesh];
 		auto &indices = mesh->GetIndices();
 		for (int i = 0; i < indices.size(); i++)
 			shaderData.Indices.push_back(indices[i] + offset);
-
-		// push vertices
-		for (int i = 0; i < mesh->GetVertices().size(); i++)
-			shaderData.Vertices.push_back(mesh->GetVertices()[i]); // TODO: don't push vertices if mesh ref is already present somewhere (only use indices to draw another instance)
 
 		// material
 		uint32_t index;

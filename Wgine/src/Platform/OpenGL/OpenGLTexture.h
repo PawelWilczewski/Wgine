@@ -19,6 +19,8 @@ namespace Wgine
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
+		// TODO: get texture channel (rgba, scalar/int option)
+
 	private:
 		std::string m_Path;
 		uint32_t m_Width, m_Height;
