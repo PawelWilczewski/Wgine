@@ -45,7 +45,7 @@ namespace Wgine
 				case cgltf_component_type_r_16u:
 				{
 					auto indices = (uint16_t *)cgltf_buffer_view_data(primitive->indices->buffer_view);
-					auto indices32 = MakeScope<uint32_t[]>(primitive->indices->count);
+					auto indices32 = MakeUnique<uint32_t[]>(primitive->indices->count);
 					for (int i = 0; i < primitive->indices->count; i++)
 						indices32[i] = (uint32_t)indices[i];
 					AddIndices(indices32.get(), primitive->indices->count);

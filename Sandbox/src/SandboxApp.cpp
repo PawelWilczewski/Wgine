@@ -62,13 +62,14 @@ class GameplayLayer : public Layer
 public:
 	GameplayLayer()
 		: Layer("Gameplay")
-	{
+	{ 
 		m_Texture = TextureLibrary::Get("assets/textures/coords.png");
 		m_TransparentTexture = TextureLibrary::Get("assets/textures/transparent.png");
 		m_BaseMaterial = MakeRef<Material>(glm::vec3(1.f, 0.2f, 0.3f), 1.f, 0.f, 32.f, m_Texture, m_TransparentTexture);
 
 		m_Scene = std::make_shared<Scene>();
-		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 0.1f, 100000.f);
+		//m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -3.f, -5.f, 2.f }), 45.f, 0.1f, 100000.f);
+		m_Camera = m_Scene->ConstructEntity<PerspectiveCamera>(Transform({ -10.f, 0.f, 0.f }), 45.f);
 		Renderer::SetActiveCamera(m_Camera);
 		//m_Scene->SetActiveCamera(m_Camera); // TODO: probably no need to ever store this
 		auto controller = m_Scene->ConstructEntity<CameraController>(m_Camera);

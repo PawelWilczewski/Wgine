@@ -179,7 +179,7 @@ namespace Wgine
 			TransformSSBO->SetData(Transforms.data(), sizeof(TransformGPU) * Transforms.size());
 			TransformIDSSBO->SetData(TransformIDs.data(), sizeof(int32_t) * TransformIDs.size());
 
-			Scope<MaterialGPU[]> materialsData(new MaterialGPU[Materials.size()]);
+			Unique<MaterialGPU[]> materialsData(new MaterialGPU[Materials.size()]);
 			for (int i = 0; i < Materials.size(); i++)
 			{
 				if (s_RendererData.GetFreeSlotsCount() < 2) // TODO: adjust to include dynamic texture count

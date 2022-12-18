@@ -29,10 +29,10 @@ namespace Wgine
 	//	Ref<Shader> UnlitTextureShader;
 
 	//	uint32_t IndexCount = 0;
-	//	Scope<Vertex[]> VBBase = nullptr;
+	//	Unique<Vertex[]> VBBase = nullptr;
 	//	Vertex *VB = nullptr;
 
-	//	//Scope<glm::mat4[]> Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
+	//	//Unique<glm::mat4[]> Transforms = MakeUnique<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
 	//	Scene *ActiveScene = nullptr;
 	//};
@@ -48,9 +48,9 @@ namespace Wgine
 		//s_Data.VBO->SetLayout(Vertex::GetLayout());
 		//s_Data.VAO->AddVertexBuffer(s_Data.VBO);
 		//
-		//s_Data.VBBase = MakeScope<Vertex[]>(s_Data.MaxVertsPerCall);
+		//s_Data.VBBase = MakeUnique<Vertex[]>(s_Data.MaxVertsPerCall);
 
-		//auto indices = MakeScope<uint32_t[]>(s_Data.MaxIndicesPerCall);
+		//auto indices = MakeUnique<uint32_t[]>(s_Data.MaxIndicesPerCall);
 		//// index buffer
 		////unsigned int quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		//for (uint32_t i = 0; i < s_Data.MaxIndicesPerCall; i++)
@@ -58,7 +58,7 @@ namespace Wgine
 		//s_Data.IBO = IndexBuffer::Create(indices.get(), s_Data.MaxIndicesPerCall);
 		//s_Data.VAO->SetIndexBuffer(s_Data.IBO);
 
-		////s_Data.Transforms = MakeScope<glm::mat4[]>(s_Data.MaxVertsPerCall);
+		////s_Data.Transforms = MakeUnique<glm::mat4[]>(s_Data.MaxVertsPerCall);
 
 		//s_Data.UnlitTextureShader = ShaderLibrary::Get("assets/shaders/LitTexture.glsl");
 	}

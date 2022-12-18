@@ -2,8 +2,6 @@
 #include "Camera.h"
 #include "Wgine/Core/Application.h"
 
-#include <glm/gtx/euler_angles.hpp>
-
 namespace Wgine
 {
 	void Camera::UpdateEntityMatrix()

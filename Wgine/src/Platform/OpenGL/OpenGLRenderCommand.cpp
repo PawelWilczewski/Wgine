@@ -111,6 +111,7 @@ namespace Wgine
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_CLAMP);
 		glDepthFunc(GL_LEQUAL); // left-handed coordinate system so this is necessary
+		glFrontFace(GL_CW);
 
 		// normals
 		glEnable(GL_CULL_FACE);
